@@ -2,6 +2,9 @@
 {% load static %}
 {% block contenido %}
 
+  <div class="container bg-warning">
+    <a>Dinero en Caja: {{TCaja.dinero}}$</a>
+  </div>
 <div class="container mt-5 ">
     <table class="table table-dark centrado shadow p-3 mb-5 bg-body-tertiary rounded">
         <thead>
@@ -15,20 +18,30 @@
         </thead>   
         <tbody>  
             {% for p in TProductos %}
+              {% if p.En_Almacen != 0 %}  
                 <tr>
-                    <th scope="row">{{p.id}}</th>
-                    <td ><a class="link-light" href="{% url 'productos' %}">{{p.name}}</a></td>
-                    <td>{{p.precio}}</td>
-                    <td>{{p.En_Almacen}}</td>
-                    <td>{{p.Vendidos}}</td>
+                  <th scope="row">
+                    {{p.id}}
+                  </th>
+                  <td >
+                    <a class="link-light" href="{% url 'productos'%}{{p.id}}">
+                      {{p.name}}
+                    </a>
+                  </td>
+                  <td>
+                    {{p.precio}}$
+                  </td>
+                  <td>
+                    {{p.En_Almacen}}
+                  </td>
+                  <td>
+                    {{p.Vendidos}}
+                  </td>
                 </tr>
-                {% comment %} {{p.imagen.url}}
-               <p> <img src="{{p.imagen.url}}" class="img-thumbnail"></p> {% endcomment %}
+              {% endif %}
             {% endfor %}
 
         </tbody>
       </table>
 </div>
-
-
 {% endblock  %}

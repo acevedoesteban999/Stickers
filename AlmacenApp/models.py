@@ -10,16 +10,29 @@ class Productos(models.Model):
     descripcion=models.CharField(max_length=100,blank=True)
     def __str__(self):
         return self.name
+    @classmethod
+    def _PrecioStr(self):
+        return self.precio.__str__()+' $'
+    
+class Caja(models.Model):
+    dinero=models.IntegerField(default=0)
+    def __str__(self):
+        return self.dinero.__str__()+' $'
     
 
 class Movimientos(models.Model):
-    TipoChoise = [('E','Entrada'),('S','Salida'),]
-    tipo=models.CharField(max_length=1,choices=TipoChoise)
+    TipoChoise = [('EP','Entrada_Productos'),('SP','Salida_Productos'),('SD','Salida_Dinero')]
+    tipo=models.CharField(max_length=2,choices=TipoChoise)
     fecha=models.DateTimeField(auto_now_add=True)
     producto=models.ForeignKey(Productos, on_delete=models.CASCADE)
     cantidad=models.IntegerField(default=0)
+    importe=models.IntegerField(default=0)
     def __str__(self):
         return self.fecha.date().__str__()
+    @classmethod
+    def _ImporteStr(self):
+        return self.importe.__str__()+' $'
+
 
 
 
