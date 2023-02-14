@@ -2,7 +2,20 @@
 {% load static %}
 {% block contenido %}
 
-Home
+
+{% if user.is_authenticated  %}
+    Autenticado
+{% else %}
+    No Autenticado
+    <form method="POST" action="" >
+        {% csrf_token %}
+            {{auth_form}}
+            <button type="reset"  class="btn btn-secondary">Cancelar</button>
+            <input type="submit" name="Iniicar_Sesion">
+    </form> 
+{% endif %}
+
+
 
 
 {% endblock  %}

@@ -2,29 +2,29 @@
 {% load static %}
 {% block contenido %}
 
-  <div class="container bg-warning">
-    <a>Dinero en Caja: {{TCaja.dinero}}$</a>
+  <div class="container mx-3 mt-2" style="text-align: right;">
+    <a class="text-success bg-warning">Dinero en Caja: {{t_caja.dinero}}$</a>
+    {% comment %} <form method="POST" action="">
+        {% csrf_token %}       
+        <input type="submit"  name="ReiniciarCajaDinero" class="btn btn-primary" value="Reiniciar">
+    </form>   {% endcomment %}
   </div>
-<div class="container mt-5 ">
+<div class="container mt-2 ">
     <table class="table table-dark centrado shadow p-3 mb-5 bg-body-tertiary rounded">
         <thead>
           <tr>
-            <th scope="col" class="h3">ID</th>
-            <th scope="col" class="h3">Name</th>
+            <th scope="col" class="h3">Nombre</th>
             <th scope="col" class="h3">Precio</th>
             <th scope="col" class="h3">En Almacen</th>
             <th scope="col" class="h3">Vendidos</th>
           </tr>
         </thead>   
         <tbody>  
-            {% for p in TProductos %}
-              {% if p.En_Almacen != 0 %}  
+            {% for p in t_productos %}
+              {% if p.En_Almacen != 0 and p.eliminado == False %}  
                 <tr>
-                  <th scope="row">
-                    {{p.id}}
-                  </th>
                   <td >
-                    <a class="link-light" href="{% url 'productos'%}{{p.id}}">
+                    <a class="link-light h4" style=" text-decoration: none;" href="{% url 'producto' p.id %}">
                       {{p.name}}
                     </a>
                   </td>

@@ -8,7 +8,7 @@ urlpatterns = [
     path('Home/', views.HomeView,name='home'),
     path('Almacen/', views.AlmacenView,name='almacen'),
     path('Productos/', views.ProductosView,name='productos'),
-    path('Productos/<int:productID>', views.ProductoIdView,name='productosID'),
+    path('Producto/<int:productoID>/', views.ProductoView,name='producto'),
     path('Ventas/', views.VentasView,name='ventas'),
 ]
 

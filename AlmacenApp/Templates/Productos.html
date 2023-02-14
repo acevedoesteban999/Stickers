@@ -2,37 +2,81 @@
 {% load static %}
 {% block contenido %}
 
-
-{% if Product%}
-    <div class="card" style="width: 18rem;">
-        <img src="{{Product.imagen.url}}" class="card-img-top" height="200px" width="200px" alt="Foto del producto">
-        <div class="card-body">
-        <h5 class="card-title">{{Product.name}}</h5>
-        <p class="card-text">{{Product.precio}}$</p>
-        <p class="card-text">{{Product.descripcion}}</p>
-        <a href="#" class="btn btn-primary">Editar</a>
+<div class="container-md">
+    <div class="container">
+        <div class="container m-3"style="text-align: center;">
+            <button type="button" class="btn btn-dark " data-bs-toggle="modal" data-bs-target="#CrearModal" data-bs-whatever="@mdo">Crear Producto</button>     
         </div>
-    </div>
-{% elif TProductos %}  
-    <div class="container-md text-center">
-        <div class="row">
-        {% for p in TProductos %}
-            <div class="col">       
-                <div class="card my-3 mx-1 p-2" style="width: 18rem;">
-                    <img src="{{p.imagen.url}}" class="card-img-top" width="150px" height="200px" alt="Foto del producto">
-                    <div class="card-body">
-                        <h5 class="card-title">{{p.name}}</h5>
-                        <p class="card-text">{{p.precio}}$</p>
-                        <p class="card-text">{{p.descripcion}}</p>
-                        <div class="d-grid gap-2 col-6 mx-auto">
-                            <button  href="#" class="btn btn-primary">Editar</button >
-                        </div>
+        <div class="modal fade" id="CrearModal" tabindex="-1" aria-labelledby="CrearModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="CrearModalLabel">Nuevo Producto</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="" enctype=multipart/form-data>
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="name" id="floatingInput" placeholder="Nombre">
+                                    <label for="floatingInput">Nombre</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" name="precio"id="floatingInput" placeholder="Precio">
+                                    <label for="floatingInput">Precio</label>
+                                  </div>
+                                  <div class="form-floating mb-3">
+                                    <textarea  type="text" class="form-control" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;"></textarea >
+                                    <label for="floatingInput">Descripcion</label>
+                                  </div>
+                                  <div class="form-floating mb-3">
+                                    <input type="file" class="form-control " name="imagen" id="floatingInput" placeholder="Imagen">
+                                    <label for="floatingInput">Imagen</label>
+                                  </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <input class="btn btn-success" type="submit" name="EditarForm" value="Crear">
+                            </div>
+                        </form>
+                        {% comment %} <form method="POST" action="" enctype=multipart/form-data>
+                            {% csrf_token %}
+                                <table>{{crear_form}}</table>
+                                <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <input type="submit" value="Crear">
+                        </form>  {% endcomment %}
                     </div>
                 </div>
             </div>
-        {% endfor %}
         </div>
-    {% endif %}
-
+        {% if productos %}       
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for p in productos %}
+                    {% if p.eliminado == False %}    
+                        <div class="col-3 ">
+                            <div class="card h-100 p-3 my-3 ">
+                                {% if p.imagen %}
+                                    <img src="{{p.imagen.url}}" style="width:70%; align-self:center" class="card-img-top" alt="...">
+                                {% else %}
+                                    <img src="" style="width:70%; align-self:center" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h3 class="card-title">{{p.name}}</h3>
+                                    <h5 class="card-title">{{p.precio}}$</h5>
+                                    <h6 class="card-title">Almacen : {{p.En_Almacen}}</h6>
+                                    <h6 class="card-title">Vendidos: {{p.Vendidos}}</h6>
+                                    <p class="card-text">{{p.descripcion}}</p>
+                                    <a type="button" href="{% url 'producto' p.id %}" class="btn btn-outline-secondary " >Ver {{Producto.name}}</a>
+                                </div>     
+                            </div>
+                        </div> 
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+    
 
 {% endblock  %}
