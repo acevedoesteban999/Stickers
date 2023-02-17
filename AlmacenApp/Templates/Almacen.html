@@ -21,21 +21,21 @@
         </thead>   
         <tbody>  
             {% for p in t_productos %}
-              {% if p.En_Almacen != 0 and p.eliminado == False %}  
+              {% if product.stored != 0 and product.eliminado == False %}  
                 <tr>
                   <td >
-                    <a class="link-light h4" style=" text-decoration: none;" href="{% url 'producto' p.id %}">
-                      {{p.name}}
+                    <a class="link-light h4" style=" text-decoration: none;" href="{% url 'producto' product.id %}">
+                      {{product.name}}
                     </a>
                   </td>
                   <td>
-                    {{p.precio}}$
+                    {{product.price}}$
                   </td>
                   <td>
-                    {{p.En_Almacen}}
+                    {{product.stored}}
                   </td>
                   <td>
-                    {{p.Vendidos}}
+                    {{product.sold}}
                   </td>
                 </tr>
               {% endif %}

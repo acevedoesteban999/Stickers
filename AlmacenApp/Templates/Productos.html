@@ -2,10 +2,41 @@
 {% load static %}
 {% block contenido %}
 
+
 <div class="container-md">
     <div class="container">
         <div class="container m-3"style="text-align: center;">
-            <button type="button" class="btn btn-dark " data-bs-toggle="modal" data-bs-target="#CrearModal" data-bs-whatever="@mdo">Crear Producto</button>     
+            {% if Error %}
+                <div class="alert alert-danger alert-dismissible fade show m-2 p-2" role="alert">
+                    {% if Error == "IntegrityError" %}
+                        <div class="h4">
+                            <strong>Ha ocurrido un error!</strong>
+                        </div>
+                        <div class="h6">
+                            Ya existe un producto con el nombre {{ErrorName}}
+                        </div> 
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    {% else %}
+                        <strong>Error!</strong> , ha ocurido un error inesperado
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    {% endif %}
+                </div>
+            {% elif not Error %}
+                {% if ProductName %}
+                    <div class="alert alert-success alert-dismissible fade show m-2 p-2" role="alert">
+                        <div class="h4">
+                            <strong>Completado!</strong>
+                        </div>
+                        <div class="h6">
+                            Se ha creado el producto {{ErrorName}} correctamente
+                        </div> 
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% endif %}
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <button type="button" class="btn btn-success " data-bs-toggle="modal" data-bs-target="#CrearModal" data-bs-whatever="@mdo">Crear Producto</button>     
+            </div>
         </div>
         <div class="modal fade" id="CrearModal" tabindex="-1" aria-labelledby="CrearModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -23,7 +54,7 @@
                                     <label for="floatingInput">Nombre</label>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="number" class="form-control" name="precio"id="floatingInput" placeholder="Precio">
+                                    <input min="1" type="number" class="form-control" name="precio"id="floatingInput" placeholder="Precio">
                                     <label for="floatingInput">Precio</label>
                                   </div>
                                   <div class="form-floating mb-3">
@@ -37,7 +68,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <input class="btn btn-success" type="submit" name="EditarForm" value="Crear">
+                                <input class="btn btn-success" type="submit" name="CrearProducto" value="Crear">
                             </div>
                         </form>
                         {% comment %} <form method="POST" action="" enctype=multipart/form-data>
@@ -50,24 +81,24 @@
                 </div>
             </div>
         </div>
-        {% if productos %}       
+        {% if products %}       
             <div class="row row-cols-1 row-cols-md-3 g-4">
-                {% for p in productos %}
-                    {% if p.eliminado == False %}    
+                {% for product in products %}
+                    {% if product.removed == False %}    
                         <div class="col-3 ">
                             <div class="card h-100 p-3 my-3 ">
-                                {% if p.imagen %}
-                                    <img src="{{p.imagen.url}}" style="width:70%; align-self:center" class="card-img-top" alt="...">
+                                {% if product.image %}
+                                    <img src="{{product.image.url}}" style="width:70%; align-self:center" class="card-img-top" alt="...">
                                 {% else %}
                                     <img src="" style="width:70%; align-self:center" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
                                 {% endif %}
                                 <div class="card-body">
-                                    <h3 class="card-title">{{p.name}}</h3>
-                                    <h5 class="card-title">{{p.precio}}$</h5>
-                                    <h6 class="card-title">Almacen : {{p.En_Almacen}}</h6>
-                                    <h6 class="card-title">Vendidos: {{p.Vendidos}}</h6>
-                                    <p class="card-text">{{p.descripcion}}</p>
-                                    <a type="button" href="{% url 'producto' p.id %}" class="btn btn-outline-secondary " >Ver {{Producto.name}}</a>
+                                    <h3 class="card-title">{{product.name}}</h3>
+                                    <h5 class="card-title">{{product.price}}$</h5>
+                                    <h6 class="card-title">Almacen : {{product.stored}}</h6>
+                                    <h6 class="card-title">Vendidos: {{product.sold}}</h6>
+                                    <p class="card-text">{{product.description}}</p>
+                                    <a type="button" href="{% url 'producto' product.id %}" class="btn btn-outline-secondary " >Ver {{product.name}}</a>
                                 </div>     
                             </div>
                         </div> 

@@ -19,8 +19,8 @@
             {% for m in t_movimientos %}
                 <tr>
                     <td >
-                        <a style=" text-decoration: none;" class="link-light h4" href="{% url 'producto' m.producto.id %}">
-                        {{m.producto.name}}
+                        <a style=" text-decoration: none;" class="link-light h4" href="{% url 'producto' m.product.id %}">
+                        {{m.product.name}}
                         </a>
                     </td>
                     <th scope="row">
@@ -28,19 +28,19 @@
                     </th>
                     
                     <td>
-                        {{m.cantidad}}
+                        {{m.lot}}
                     </td>
                     <td>
                         
-                        {% if m.tipo == "VP" %}
-                            {{m.importe}}$
+                        {% if m.type == "VP" %}
+                            {{m.amount}}$
                         {% else %}
                             -
                         {% endif %}
                             
                     </td>
                     <th scope="row">
-                        {{m.fecha}}
+                        {{m.date}}
                     </th>
                 </tr>
             {% endfor %}
