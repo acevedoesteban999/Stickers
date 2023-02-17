@@ -1,0 +1,2 @@
+def RetTr():
+    return "AAA"

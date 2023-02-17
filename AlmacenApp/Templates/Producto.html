@@ -2,269 +2,287 @@
 {% load static %}
 {% block contenido %}
     
-
-<div class="container p-5 m-6 ">
-    {% if product %}
-        {% if not Error %}
-            {% if lot_add %}
-                <div class="alert alert-success alert-dismissible fade show m-2 p-2" role="alert">
+{% if user.is_authenticated %}
+    <div class="container p-5 m-6 ">
+        {% if product %}
+            {% if not Error %}
+                {% if lot_add %}
+                    <div class="alert alert-success alert-dismissible fade show m-2 p-2" role="alert">
+                        <div class="h4">
+                            <strong>Agrgado!</strong>
+                        </div>
+                        <div class="h6">
+                            Se han agregado {{lot_add}} {{product.name}} correctamente
+                        </div> 
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% elif lot_sell %}
+                    <div class="alert alert-success alert-dismissible fade show m-2 p-2" role="alert">
+                        <div class="h4">
+                            <strong>Vendido!</strong>
+                        </div>
+                        <div class="h6">
+                            Se han vendido {{lot_sell}} {{product.name}} correctamente
+                        </div> 
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% elif lot_edit %}
+                    <div class="alert alert-success alert-dismissible fade show m-2 p-2" role="alert">
+                        <div class="h4">
+                            <strong>Editado!</strong>
+                        </div>
+                        <div class="h6">
+                            Se ha editado {{product.name}} correctamente
+                        </div> 
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% elif Error == "IntegrityError" %}
+                <div class="alert alert-danger alert-dismissible fade show m-2 p-2" role="alert">
                     <div class="h4">
-                        <strong>Agrgado!</strong>
+                        <strong>Error!</strong>
                     </div>
                     <div class="h6">
-                        Se han agregado {{lot_add}} {{product.name}} correctamente
+                        Ya existe un producto con nombre {{ErrorName}}, elija otro 
                     </div> 
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-            {% elif lot_sell %}
-                <div class="alert alert-success alert-dismissible fade show m-2 p-2" role="alert">
+            {% else %}
+                <div class="alert alert-danger alert-dismissible fade show m-2 p-2" role="alert">
                     <div class="h4">
-                        <strong>Vendido!</strong>
+                        <strong>Error!</strong>
                     </div>
                     <div class="h6">
-                        Se han vendido {{lot_sell}} {{product.name}} correctamente
-                    </div> 
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% elif lot_edit %}
-                <div class="alert alert-success alert-dismissible fade show m-2 p-2" role="alert">
-                    <div class="h4">
-                        <strong>Editado!</strong>
-                    </div>
-                    <div class="h6">
-                        Se ha editado {{product.name}} correctamente
+                        Ha ocurido un error inesperado!
                     </div> 
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% endif %}
-        {% elif Error == "IntegrityError" %}
-            <div class="alert alert-danger alert-dismissible fade show m-2 p-2" role="alert">
-                <div class="h4">
-                    <strong>Error!</strong>
-                </div>
-                <div class="h6">
-                    Ya existe un producto con nombre {{ErrorName}}, elija otro 
-                </div> 
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% else %}
-            <div class="alert alert-danger alert-dismissible fade show m-2 p-2" role="alert">
-                <div class="h4">
-                    <strong>Error!</strong>
-                </div>
-                <div class="h6">
-                    Ha ocurido un error inesperado!
-                </div> 
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endif %}
-        <div class="card mb-3" style="max-width: auto;">
-            <div class="row g-0">
-                <div class="col-md-4">
-                    {% if product.image %}
-                        <img src="{{product.image.url}}" style="width:70%; align-self:center" class="card-img-top" alt="...">
-                    {% else %}
-                        <img src="" style="width:70%; align-self:center" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
-                    {% endif %}
-                </div>
-                <div class="col-md-4">
-                    <div class="card-body">
-                        <h2 class="card-title"><strong>{{product.name}}</strong></h2>
-                        <h3 class="card-text">{{product.price}}$</h3>
-                        <h6 class="card-title">Almacenados: {{product.stored}}</h6>
-                        <h6 class="card-title">  Vendidos : {{product.sold}}</h6>
-                        <div class="row">
-                            <p class="card-text"><small class="text-muted">{{product.description}}</small></p>
-                            <div class="col"> 
-                                <button type="button" class="float-start btn btn-warning m-3 px-4" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">Editar</button> 
-                            </div> 
-                        </div>      
-                    </div>            
-                </div>
-                {% comment %}=================================== COLPASE =================================  {% endcomment %}
-
-                <div class="col-md-4 ">
-                    {% comment %} =========== ADD =============== {% endcomment %}
-                    <div class="continer m-3 pt-5">
-                        <div class="collapse" id="collapseAdd">
-                            <form method="POST" action="">
-                                {% csrf_token %}
-                                <div class="row">
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">Agregar</span>
-                                        <div class="form-floating">
-                                            <input value="1" type="number" min="1" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                            <label for="floatingInput">Cantidad de {{product.name}}</label>        
-                                        </div>
-                                    </div>
-                                </div>        
-                                <div class="row">
-                                    <div class="col-6">
-                                        <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd">         
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="submit"  name="AddProduct" class="btn btn-info float-end mx-2" value="Agregar">
-                                    </div>
-                                </div>       
-                            </form>  
-                        </div>
-                    </div>
-                    
-                    {% comment %} ======== SELL =========== {% endcomment %}
-                    <div class="continer m-3 pt-5">
-                        <div class="collapse" id="collapseSell">
-                            <form method="POST" action="">
-                                {% csrf_token %}
-                                <div class="row">
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">Vender</span>
-                                        <div class="form-floating">
-                                            <input type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                            <label for="floatingInput">Cantidad</label>       
-                                        </div>
-                                    </div>
-                                </div>        
-                                <div class="row">
-                                    <div class="col-6">
-                                        <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseSell" role="button" aria-expanded="false" aria-controls="collapseAdd">         
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="submit"  name="SellProduct" class="btn btn-success float-end mx-2" value="Vender">
-                                    </div>
-                                </div>       
-                            </form>  
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {% comment %} =============== BUTTONS ======================== {% endcomment %}
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col">
-                        <a class="float-start btn btn-info" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd">
-                            Agregar
-                        </a>  
-                        {% if product.stored != 0 %}
-                            <a class="float-end btn btn-success " data-bs-toggle="collapse" href="#collapseSell" role="button" aria-expanded="false" aria-controls="collapseSell">
-                                Vender
-                            </a>  
+            <div class="card mb-3" style="max-width: auto;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if product.image %}
+                            <img src="{{product.image.url}}" style="width:70%; align-self:center" class="card-img-top" alt="...">
+                        {% else %}
+                            <img src="" style="width:70%; align-self:center" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
                         {% endif %}
                     </div>
-                </div>
-            </div>            
-        </div>   
-        
-        {% comment %}=================================== MODALS =================================  {% endcomment %}
-
-        {% comment %} ========================= REMOVE ===============    {% endcomment %}
-        <div class="modal fade" id="RemoveModal" tabindex="-1" aria-labelledby="RemoveModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="RemoveModalLabel">Eliminar</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="col-md-4">
+                        <div class="card-body">
+                            <h2 class="card-title"><strong>{{product.name}}</strong></h2>
+                            <h3 class="card-text">{{product.price}}$</h3>
+                            <h6 class="card-title">Almacenados: {{product.stored}}</h6>
+                            <h6 class="card-title">  Vendidos : {{product.sold}}</h6>
+                            <div class="row">
+                                <p class="card-text"><small class="text-muted">{{product.description}}</small></p>
+                            </div>      
+                        </div>            
                     </div>
-                    <form method="POST" action="">
-                        {% csrf_token %}
-                        <div class="modal-body">
-                            <table>Eliminar a {{product.name}} </table>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">
-                            <input class="btn btn-danger" type="submit" name="RemoveProduct" value="Eliminar">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+                    {% comment %}=================================== COLPASE =================================  {% endcomment %}
 
-        {% comment %} ===================================== EDIT ==================================== {% endcomment %}
-        <div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="EditModalLabel">Editar {{product.name}}</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form method="POST" action="" enctype=multipart/form-data>
-                        {% csrf_token %}
-                        <div class="modal-body">
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{product.name}}">
-                                <label for="floatingInput">Nombre</label>
+                    <div class="col-md-4 ">
+                        {% comment %} =========== ADD =============== {% endcomment %}
+                        <div class="continer m-3 pt-5">
+                            <div class="collapse" id="collapseAdd">
+                                <form method="POST" action="">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">Agregar</span>
+                                            <div class="form-floating">
+                                                <input value="1" type="number" min="1" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                <label for="floatingInput">Cantidad de {{product.name}}</label>        
+                                            </div>
+                                        </div>
+                                    </div>        
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd">         
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="submit"  name="AddProduct" class="btn btn-info float-end mx-2" value="Agregar">
+                                        </div>
+                                    </div>       
+                                </form>  
                             </div>
-                            <div class="form-floating mb-3">
-                                <input type="number" min="1" class="form-control" name="precio"id="floatingInput" placeholder="Precio" value="{{product.price}}">
-                                <label for="floatingInput">Precio</label>
-                              </div>
-                              <div class="form-floating mb-3">
-                                <textarea  type="text" class="form-control" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;">{{product.description}}</textarea >
-                                <label for="floatingInput">Descripcion</label>
-                              </div>
-                              <div class="form-floating mb-3">
-                                <input type="file" class="form-control " name="imagen" id="floatingInput" placeholder="Imagen">
-                                <label for="floatingInput">Imagen</label>
-                              </div>
                         </div>
-                        <div class="modal-footer">
-                            <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">
-                            <input class="btn btn-warning" type="submit" name="EditProduct" value="Editar">
+                        
+                        {% comment %} ======== SELL =========== {% endcomment %}
+                        <div class="continer m-3 ">
+                            <div class="collapse" id="collapseSell">
+                                <form method="POST" action="">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">Vender</span>
+                                            <div class="form-floating">
+                                                <input type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                <label for="floatingInput">Cantidad</label>       
+                                            </div>
+                                        </div>
+                                    </div>        
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseSell" role="button" aria-expanded="false" aria-controls="collapseAdd">         
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="submit"  name="SellProduct" class="btn btn-success float-end mx-2" value="Vender">
+                                        </div>
+                                    </div>       
+                                </form>  
+                            </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
-        </div>   
-        {% comment %} =================  TABLE  ==================== {% endcomment %}
-        <div class="card bg-dark" style="max-width: auto;">
-            <table class="table table-dark centrado shadow p-3 mb-0 bg-body-tertiary rounded">
-                <thead>
-                  <tr> 
-                    
-                    <th scope="col" class="h3">Tipo</th>
-                    <th scope="col" class="h3">Cantidad</th>
-                    <th scope="col" class="h3">Importe</th>
-                    <th scope="col" class="h3">Fecha</th>
-                  </tr>
-                </thead>   
-                <tbody>  
-                    {% for movement in movements %}
-                        <tr>
-                            <th scope="row">
-                                {{movement.get_tipo_display}}
-                            </th>
-                            
-                            <td>
-                                {{movement.lot}}
-                            </td>
-                            <td>
-                                
-                                {% if movement.type == "VP" %}
-                                    {{movement.amount}}$
-                                {% else %}
-                                    -
-                                {% endif %}
-                                    
-                            </td>
-                            <th scope="row">
-                                {{movement.date}}
-                            </th>
-                        </tr>
-                    {% endfor %}
-        
-                </tbody>
-            </table>
-           
-            <div class="row ">
-                <div class="col">
-                    
-                    <button type="button" class="float-end btn btn-danger m-3 p-2" data-bs-toggle="modal" data-bs-target="#RemoveModal" data-bs-whatever="0">Eliminar Producto: {{product.name}}</button>
-                </div>
-                
-            </div>
-        </div>
-    {% endif %}
-</div>
 
+                {% comment %} =============== BUTTONS ======================== {% endcomment %}
+                <div class="card-footer">
+                    <div class="d-flex justify-content-around">
+                        <a class="btn btn-info" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd">
+                            Agregar
+                        </a>
+                        <button type="button" class=" btn btn-warning" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">Editar</button> 
+                        <a class="btn btn-success " data-bs-toggle="collapse" href="#collapseSell" role="button" aria-expanded="false" aria-controls="collapseSell">
+                            Vender
+                        </a>  
+                    </div>
+                </div>            
+            </div>   
+            
+            {% comment %}=================================== MODALS =================================  {% endcomment %}
+
+            {% comment %} ========================= REMOVE ===============    {% endcomment %}
+            <div class="modal fade" id="RemoveModal" tabindex="-1" aria-labelledby="RemoveModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="RemoveModalLabel">Eliminar</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <table>Eliminar a {{product.name}} </table>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">
+                                <input class="btn btn-danger" type="submit" name="RemoveProduct" value="Eliminar">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            {% comment %} ===================================== EDIT ==================================== {% endcomment %}
+            <div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="EditModalLabel">Editar {{product.name}}</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="" enctype=multipart/form-data>
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{product.name}}">
+                                    <label for="floatingInput">Nombre</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="number" min="1" class="form-control" name="precio"id="floatingInput" placeholder="Precio" value="{{product.price}}">
+                                    <label for="floatingInput">Precio</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <textarea  type="text" class="form-control" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;">{{product.description}}</textarea >
+                                    <label for="floatingInput">Descripcion</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="file" class="form-control " name="imagen" id="floatingInput" placeholder="Imagen">
+                                    <label for="floatingInput">Imagen</label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">
+                                <input class="btn btn-warning" type="submit" name="EditProduct" value="Editar">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>   
+            {% comment %} =================  TABLE  ==================== {% endcomment %}
+            <div class="card bg-dark" style="max-width: auto;">
+                <table class="table table-dark centrado shadow p-3 mb-0 bg-body-tertiary rounded">
+                    <thead>
+                    <tr> 
+                        
+                        <th scope="col" class="h3">Tipo</th>
+                        <th scope="col" class="h3">Cantidad</th>
+                        <th scope="col" class="h3">Importe</th>
+                        <th scope="col" class="h3">Fecha</th>
+                        <th scope="col" class="h3">Info</th>
+                    </tr>
+                    </thead>   
+                    <tbody>  
+                        {% for movement in movements %}
+                            <tr>
+                                <th scope="row">
+                                    {{movement.get_type_display}}
+                                </th>
+                                
+                                <td>
+                                    {% if movement.type == "VP" or movement.type == "EP" or movement.type == "RP" or  movement.type == "SP" %}
+                                        {{movement.lot}}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                    
+                                </td>
+                                <td>
+                                    
+                                    {% if movement.type == "VP" %}
+                                        {{movement.amount}}$
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                        
+                                </td>
+                                <th scope="row">
+                                    {{movement.date}}
+                                </th>
+                                <th scope="row">
+                                    {% if movement.type == "CP" or movement.type == "eP" %}
+                                    <div class="h6 p-3">
+                                            Precio: {{movement.lot}}$
+                                    </div>
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                    
+                                </th>
+                            </tr>
+                            {% empty %}
+                            <div class="text-bg-warning p-2  d-flex justify-content-center">
+                                No hay movmimientos de {{product.name}} para mostrar
+                            </div>
+        
+                            
+                                
+                        {% endfor %}
+                    </tbody>
+                </table>
+            
+                <div class="row ">
+                    <div class="col">
+                        
+                        <button type="button" class="float-end btn btn-danger m-3 p-2" data-bs-toggle="modal" data-bs-target="#RemoveModal" data-bs-whatever="0">Eliminar Producto: {{product.name}}</button>
+                    </div>
+                    
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% else %}
+    <meta http-equiv="Refresh" content="0; url='{% url 'productos' %}'" />
+{% endif %}
 
 {% endblock  %}

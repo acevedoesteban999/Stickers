@@ -20,7 +20,7 @@ class RegisteCash(models.Model):
     
 
 class Movement(models.Model):
-    MChoise = [('EP','Entrada de Productos'),('SP','Salida de Productos'),('SD','Salida de Dinero'),("DP","Editado de Producto"),("VP","Venta de Productos"),("RD","Reembolso de Productos"),("RP","Remover Producto")]
+    MChoise = [('EP','Entrada de Productos'),('CP','Creado Producto'),('SP','Salida de Productos'),('SD','Salida de Dinero'),("eP","Editado de Producto"),("VP","Venta de Productos"),("RD","Reembolso de Productos"),("RP","Remover Producto")]
     type=models.CharField(max_length=2,choices=MChoise)
     date=models.DateTimeField(auto_now_add=True)
     product=models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -30,6 +30,19 @@ class Movement(models.Model):
     def __str__(self):
         return self.date.date().__str__()
 
+    @classmethod
+    def Create(cls,name,price,description,image):
+        if price  > 0:
+            product=Product(name=name,price=price,description=description)
+            if product:
+                if image:
+                    product.image=image
+                product.save()
+                movement=cls(type="CP",product=product,lot=price)
+                if movement:
+                    movement.save()
+                return True
+        return False
     @classmethod
     def Remove(cls,product):
         import datetime
@@ -67,7 +80,7 @@ class Movement(models.Model):
             product.description=description
             if image:
                 product.image=image
-            movement=cls(type="DP",product=product,lot=price)
+            movement=cls(type="eP",product=product,lot=price)
             if movement:
                 movement.save()
                 product.save()

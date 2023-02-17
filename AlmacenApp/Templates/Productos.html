@@ -35,7 +35,9 @@
                 {% endif %}
             {% endif %}
             <div class="d-grid gap-2 col-6 mx-auto">
-                <button type="button" class="btn btn-success " data-bs-toggle="modal" data-bs-target="#CrearModal" data-bs-whatever="@mdo">Crear Producto</button>     
+                {% if user.is_authenticated %}
+                    <button type="button" class="btn btn-success " data-bs-toggle="modal" data-bs-target="#CrearModal" data-bs-whatever="@mdo">Crear Producto</button>     
+                {% endif %}
             </div>
         </div>
         <div class="modal fade" id="CrearModal" tabindex="-1" aria-labelledby="CrearModalLabel" aria-hidden="true">
@@ -98,13 +100,18 @@
                                     <h6 class="card-title">Almacen : {{product.stored}}</h6>
                                     <h6 class="card-title">Vendidos: {{product.sold}}</h6>
                                     <p class="card-text">{{product.description}}</p>
-                                    <a type="button" href="{% url 'producto' product.id %}" class="btn btn-outline-secondary " >Ver {{product.name}}</a>
-                                </div>     
+                                    {% if user.is_authenticated %}
+                                        <a type="button" href="{% url 'producto' product.id %}" class="btn btn-outline-secondary " >Ver {{product.name}}</a>
+                                    {% endif %}
+                            </div>     
                             </div>
                         </div> 
                     {% endif %}
                 {% endfor %}
-            </div>
+        </div>
+            {% else %}
+            <div class="text-bg-warning p-2  d-flex justify-content-center">No hay productos para mostrar</div>
+      
         {% endif %}
     </div>
 </div>

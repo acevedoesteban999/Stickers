@@ -3,17 +3,52 @@
 {% block contenido %}
 
 
-{% if user.is_authenticated  %}
-    Autenticado
-{% else %}
-    No Autenticado
-    <form method="POST" action="" >
-        {% csrf_token %}
-            {{auth_form}}
-            <button type="reset"  class="btn btn-secondary">Cancelar</button>
-            <input type="submit" name="Iniicar_Sesion">
-    </form> 
-{% endif %}
+<div class="continer my-2 mx-5 w-3">
+
+    {% if log_out == True %}
+        <div class="alert alert-success alert-dismissible fade show m-2 p-2" role="alert">
+            <div class="h4">
+                <strong>Completado!</strong>
+            </div>
+            <div class="h6">
+                Se ha cerrado la sesion correctamente
+            </div> 
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+    {% if log_in == True %}
+        <div class="alert alert-success alert-dismissible fade show m-2 p-2" role="alert">
+            <div class="h4">
+                <strong>Completado!</strong>
+            </div>
+            <div class="h6">
+                Se ha iniciado sesion como {{user.username}}
+            </div> 
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% elif log_in == False%}
+        <div class="alert alert-danger alert-dismissible fade show m-2 p-2" role="alert">
+            <div class="h4">
+                <strong>Error!</strong>
+            </div>
+            <div class="h6">
+                Usuario o Password incorrecto, intente de nuevo!
+            </div> 
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+</div>
+
+<div class="container-fluid w-50">
+    {% if not user.is_authenticated %}
+        <div class="card text-center">
+          <div class="card-body bg-dark text-warning m-3 ">
+            <h4 class="card-title">Inicio de Sesion</h4>
+            <p class="card-text">No se ha iniciado sesion , puse <span style="border-radius: 60px;" class="badge bg-success p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Ingresar</span> para iniciar la sesion</p>
+          </div>
+        </div>
+    {% endif %}
+</div>
 
 
 
