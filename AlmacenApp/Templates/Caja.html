@@ -1,0 +1,86 @@
+{% extends 'Base.html' %}
+{% load static %}
+{% block contenido %}
+    {% if user.is_authenticated and "Administradores" in Groups %}
+        <div class="continer-md">
+            <div class="container my-3"style="text-align: center;">
+                <div class="d-grid gap-2 col-6 mx-auto">
+                    {% if user.is_authenticated %}
+                        <button type="button" class="btn btn-warning " data-bs-toggle="modal" data-bs-target="#RetirarModal" data-bs-whatever="@RetDin">Retirar dinero</button>     
+                    {% endif %}
+                    <div class="modal fade" id="RetirarModal" tabindex="-1" aria-labelledby="RetirarModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="CrearModalLabel">Retirar Dinero</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="POST" action="">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" name="cantidad" id="floatingInput" placeholder="Nombre">
+                                                <label for="floatingInput">Cantidad</label>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <input class="btn btn-warning" type="submit" name="RetireProduct" value="Retirar">
+                                        </div>
+                                    </form>
+                                    {% comment %} <form method="POST" action="" enctype=multipart/form-data>
+                                        {% csrf_token %}
+                                            <table>{{crear_form}}</table>
+                                            <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <input type="submit" value="Crear">
+                                    </form>  {% endcomment %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="continer my-2 mx-5 w-3">
+                <table class="table table-dark centrado shadow p-3 mb-5 bg-body-tertiary rounded">
+                    <thead>
+                    <tr>
+                        <th scope="col">Tipo</th>
+                        <th scope="col">Producto</th>
+                        <th scope="col">Cantidad</th>
+                        <th scope="col">$</th>
+                        <th scope="col">Fecha</th>
+                    </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                    {% for movement in movements %}
+                    <tr>
+                        <td>{{movement.get_type_display}}</td>
+                        
+                            {% if movement.type == "VP" %}
+                                <td>{{movement.product.name}}</td>
+                                <td>{{movement.lot}}</td>
+                                <td>{% widthratio movement.price 1 movement.lot %}</td>
+                            {% elif movement.type == "RD" %}
+                                <td>-</td>
+                                <td>-</td>
+                                <td>{{movement.lot}}</td>
+                            {% elif movement.type == "rP" %}
+                                <td>{{movement.product.name}}</td>
+                                <td>{{movement.lot}}</td>
+                                <td>{% widthratio movement.price 1 movement.lot %}</td>
+                            {% endif %}
+                        <td>{{movement.date}}</td>
+                        
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    {% else %}
+        <meta http-equiv="Refresh" content="0; url='{% url 'home' %}'" />
+    {% endif %}
+
+{% endblock  %}

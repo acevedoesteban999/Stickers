@@ -1,63 +1,10 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
-    
+
 {% if user.is_authenticated %}
     <div class="container p-5 m-6 ">
         {% if product %}
-            {% if not Error %}
-                {% if lot_add %}
-                    <div class="alert alert-success alert-dismissible fade show m-2 p-2" role="alert">
-                        <div class="h4">
-                            <strong>Agrgado!</strong>
-                        </div>
-                        <div class="h6">
-                            Se han agregado {{lot_add}} {{product.name}} correctamente
-                        </div> 
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% elif lot_sell %}
-                    <div class="alert alert-success alert-dismissible fade show m-2 p-2" role="alert">
-                        <div class="h4">
-                            <strong>Vendido!</strong>
-                        </div>
-                        <div class="h6">
-                            Se han vendido {{lot_sell}} {{product.name}} correctamente
-                        </div> 
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% elif lot_edit %}
-                    <div class="alert alert-success alert-dismissible fade show m-2 p-2" role="alert">
-                        <div class="h4">
-                            <strong>Editado!</strong>
-                        </div>
-                        <div class="h6">
-                            Se ha editado {{product.name}} correctamente
-                        </div> 
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                {% endif %}
-            {% elif Error == "IntegrityError" %}
-                <div class="alert alert-danger alert-dismissible fade show m-2 p-2" role="alert">
-                    <div class="h4">
-                        <strong>Error!</strong>
-                    </div>
-                    <div class="h6">
-                        Ya existe un producto con nombre {{ErrorName}}, elija otro 
-                    </div> 
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% else %}
-                <div class="alert alert-danger alert-dismissible fade show m-2 p-2" role="alert">
-                    <div class="h4">
-                        <strong>Error!</strong>
-                    </div>
-                    <div class="h6">
-                        Ha ocurido un error inesperado!
-                    </div> 
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endif %}
             <div class="card mb-3" style="max-width: auto;">
                 <div class="row g-0">
                     <div class="col-md-4">
@@ -82,133 +29,213 @@
 
                     <div class="col-md-4 ">
                         {% comment %} =========== ADD =============== {% endcomment %}
-                        <div class="continer m-3 pt-5">
-                            <div class="collapse" id="collapseAdd">
-                                <form method="POST" action="">
-                                    {% csrf_token %}
-                                    <div class="row">
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text">Agregar</span>
-                                            <div class="form-floating">
-                                                <input value="1" type="number" min="1" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                                <label for="floatingInput">Cantidad de {{product.name}}</label>        
+                        {% if "Administradores" in Groups %}
+                            <div class="continer m-3 pt-5">
+                                <div class="collapse" id="collapseAdd">
+                                    <form method="POST" action="">
+                                        {% csrf_token %}
+                                        <div class="row">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">Agregar</span>
+                                                <div class="form-floating">
+                                                    <input value="1" type="number" min="1" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                    <label for="floatingInput">Cantidad de {{product.name}}</label>        
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>        
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd">         
-                                        </div>
-                                        <div class="col-6">
-                                            <input type="submit"  name="AddProduct" class="btn btn-info float-end mx-2" value="Agregar">
-                                        </div>
-                                    </div>       
-                                </form>  
+                                        </div>        
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd">         
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="submit"  name="AddProduct" class="btn btn-info float-end mx-2" value="Agregar">
+                                            </div>
+                                        </div>       
+                                    </form>  
+                                </div>
                             </div>
-                        </div>
-                        
+                        {% endif %}
                         {% comment %} ======== SELL =========== {% endcomment %}
-                        <div class="continer m-3 ">
-                            <div class="collapse" id="collapseSell">
-                                <form method="POST" action="">
-                                    {% csrf_token %}
-                                    <div class="row">
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text">Vender</span>
-                                            <div class="form-floating">
-                                                <input type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                                <label for="floatingInput">Cantidad</label>       
+                        {% if product.stored != 0 %}
+                            <div class="continer m-3 ">
+                                <div class="collapse" id="collapseSell">
+                                    <form method="POST" action="">
+                                        {% csrf_token %}
+                                        <div class="row">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">Vender</span>
+                                                <div class="form-floating">
+                                                    <input type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                    <label for="floatingInput">Cantidad</label>       
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>        
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseSell" role="button" aria-expanded="false" aria-controls="collapseAdd">         
-                                        </div>
-                                        <div class="col-6">
-                                            <input type="submit"  name="SellProduct" class="btn btn-success float-end mx-2" value="Vender">
-                                        </div>
-                                    </div>       
-                                </form>  
+                                        </div>        
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseSell" role="button" aria-expanded="false" aria-controls="collapseSell">         
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="submit"  name="SellProduct" class="btn btn-success float-end mx-2" value="Vender">
+                                            </div>
+                                        </div>       
+                                    </form>  
+                                </div>
                             </div>
-                        </div>
+                        {% endif %}
+                        {% comment %} ======== SUBB =========== {% endcomment %}
+                        {% if product.stored != 0 %}
+                            <div class="continer m-3 ">
+                                <div class="collapse" id="collapseSub">
+                                    <form method="POST" action="">
+                                        {% csrf_token %}
+                                        <div class="row">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">Quitar</span>
+                                                <div class="form-floating">
+                                                    <input type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                    <label for="floatingInput">Cantidad</label>       
+                                                </div>
+                                            </div>
+                                        </div>        
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseSub" role="button" aria-expanded="false" aria-controls="collapseSub">         
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="submit"  name="SubProduct" class="btn btn-danger float-end mx-2" value="Quitar">
+                                            </div>
+                                        </div>       
+                                    </form>  
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% comment %} ======== REFUND =========== {% endcomment %}
+                        {% if product.sold != 0 %}
+                            <div class="continer m-3 ">
+                                <div class="collapse" id="collapseRefund">
+                                    <form method="POST" action="">
+                                        {% csrf_token %}
+                                        <div class="row">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">Reembolsar</span>
+                                                <div class="form-floating">
+                                                    <input type="number" value="1" min="1" max="{{product.sold}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                    <label for="floatingInput">Cantidad</label>       
+                                                </div>
+                                            </div>
+                                        </div>        
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseRefund" role="button" aria-expanded="false" aria-controls="collapseRefund">         
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="submit"  name="RefundProduct" style="background-color: orangered; color: white;" class="btn float-end mx-2" value="Reembolsar">
+                                            </div>
+                                        </div>       
+                                    </form>  
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 
                 {% comment %} =============== BUTTONS ======================== {% endcomment %}
                 <div class="card-footer">
                     <div class="d-flex justify-content-around">
-                        <a class="btn btn-info" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd">
-                            Agregar
-                        </a>
-                        <button type="button" class=" btn btn-warning" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">Editar</button> 
-                        <a class="btn btn-success " data-bs-toggle="collapse" href="#collapseSell" role="button" aria-expanded="false" aria-controls="collapseSell">
-                            Vender
-                        </a>  
+                        {% if "Administradores" in Groups %}
+                            <a class="btn btn-info" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd">
+                                Agregar
+                            </a>
+                        
+                            
+                        {% endif %}
+                        {% if product.stored != 0 %}
+                            <a  class="btn btn-success " data-bs-toggle="collapse" href="#collapseSell" role="button" aria-expanded="false" aria-controls="collapseSell">
+                                Vender
+                            </a>  
+                        {% endif %}
+                        {% if "Administradores" in Groups %}
+                            <button type="button" class=" btn btn-warning" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">
+                                Editar
+                            </button> 
+                        {% endif %}
+                        {% if product.sold != 0 %}
+                            <a  class="btn" style="background-color: orangered; color: white;"  data-bs-toggle="collapse" href="#collapseRefund" role="button" aria-expanded="false" aria-controls="collapseSell">
+                                Reembolsar
+                            </a>  
+                        {% endif %}
+                        {% if product.stored != 0 %}
+                            <a  class="btn btn-danger " data-bs-toggle="collapse" href="#collapseSub" role="button" aria-expanded="false" aria-controls="collapseSub">
+                                Quitar
+                            </a>  
+                        {% endif %}
                     </div>
                 </div>            
             </div>   
             
-            {% comment %}=================================== MODALS =================================  {% endcomment %}
-
+        {% comment %}=================================== MODALS =================================  {% endcomment %}
+          
             {% comment %} ========================= REMOVE ===============    {% endcomment %}
-            <div class="modal fade" id="RemoveModal" tabindex="-1" aria-labelledby="RemoveModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="RemoveModalLabel">Eliminar</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            {% if "Administradores" in Groups %}
+                <div class="modal fade" id="RemoveModal" tabindex="-1" aria-labelledby="RemoveModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="RemoveModalLabel">Eliminar</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="POST" action="">
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                    <table>Eliminar a {{product.name}} </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">
+                                    <input class="btn btn-danger" type="submit" name="RemoveProduct" value="Eliminar">
+                                </div>
+                            </form>
                         </div>
-                        <form method="POST" action="">
-                            {% csrf_token %}
-                            <div class="modal-body">
-                                <table>Eliminar a {{product.name}} </table>
-                            </div>
-                            <div class="modal-footer">
-                                <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">
-                                <input class="btn btn-danger" type="submit" name="RemoveProduct" value="Eliminar">
-                            </div>
-                        </form>
                     </div>
                 </div>
-            </div>
-
+            {% endif %}
             {% comment %} ===================================== EDIT ==================================== {% endcomment %}
-            <div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="EditModalLabel">Editar {{product.name}}</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            {% if "Administradores" in Groups %}
+                <div class="modal fade" id="EditModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="EditModalLabel">Editar {{product.name}}</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="POST" action="" enctype=multipart/form-data>
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{product.name}}">
+                                        <label for="floatingInput">Nombre</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input type="number" min="1" class="form-control" name="precio"id="floatingInput" placeholder="Precio" value="{{product.price}}">
+                                        <label for="floatingInput">Precio</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <textarea  type="text" class="form-control" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;">{{product.description}}</textarea >
+                                        <label for="floatingInput">Descripcion</label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input type="file" class="form-control " name="imagen" id="floatingInput" placeholder="Imagen">
+                                        <label for="floatingInput">Imagen</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">
+                                    <input class="btn btn-warning" type="submit" name="EditProduct" value="Editar">
+                                </div>
+                            </form>
                         </div>
-                        <form method="POST" action="" enctype=multipart/form-data>
-                            {% csrf_token %}
-                            <div class="modal-body">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{product.name}}">
-                                    <label for="floatingInput">Nombre</label>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="number" min="1" class="form-control" name="precio"id="floatingInput" placeholder="Precio" value="{{product.price}}">
-                                    <label for="floatingInput">Precio</label>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <textarea  type="text" class="form-control" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;">{{product.description}}</textarea >
-                                    <label for="floatingInput">Descripcion</label>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="file" class="form-control " name="imagen" id="floatingInput" placeholder="Imagen">
-                                    <label for="floatingInput">Imagen</label>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">
-                                <input class="btn btn-warning" type="submit" name="EditProduct" value="Editar">
-                            </div>
-                        </form>
                     </div>
-                </div>
-            </div>   
+                </div>   
+            {% endif %}
             {% comment %} =================  TABLE  ==================== {% endcomment %}
             <div class="card bg-dark" style="max-width: auto;">
                 <table class="table table-dark centrado shadow p-3 mb-0 bg-body-tertiary rounded">
@@ -273,16 +300,16 @@
             
                 <div class="row ">
                     <div class="col">
-                        
-                        <button type="button" class="float-end btn btn-danger m-3 p-2" data-bs-toggle="modal" data-bs-target="#RemoveModal" data-bs-whatever="0">Eliminar Producto: {{product.name}}</button>
+                        {% if "Administradores" in Groups %}
+                            <button type="button" class="float-end btn btn-danger m-3 p-2" data-bs-toggle="modal" data-bs-target="#RemoveModal" data-bs-whatever="0">Eliminar Producto: {{product.name}}</button>
+                        {% endif %}
                     </div>
-                    
                 </div>
             </div>
         {% endif %}
     </div>
 {% else %}
-    <meta http-equiv="Refresh" content="0; url='{% url 'productos' %}'" />
+    <meta http-equiv="Refresh" content="0; url='{% url 'home' %}'" />
 {% endif %}
 
 {% endblock  %}

@@ -10,6 +10,8 @@ urlpatterns = [
     path('Productos/', views.ProductosView,name='productos'),
     path('Producto/<int:productoID>/', views.ProductoView,name='producto'),
     path('Ventas/', views.VentasView,name='ventas'),
+    path('Caja/', views.CajaView,name='caja'),
+    path('BasePost',views.BasePost,name='base_post'),
 ]
 
 urlpatterns+=static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

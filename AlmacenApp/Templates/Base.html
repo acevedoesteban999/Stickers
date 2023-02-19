@@ -6,6 +6,7 @@
     <link href="{% static 'css/styles.css'%}" rel="stylesheet">
 </head>
 <body class='bodycolor'>
+
   <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasRightLabel">
@@ -24,16 +25,15 @@
       </div>
       <div class="row">
         <div class="col">   
-          <form action="{% url 'home' %}" method="POST">
+          <form action="{% url 'base_post' %}" method="POST">
             {% csrf_token %}
             <input type="submit" value="Cerrar Sesion" name="CerrarSesion" class="float-end btn btn-danger m-3 p-2">
           </form>   
-          
       </div>
       </div>
         
       {% else %}
-        <form action="{% url 'home' %}" method="POST">
+        <form action="{% url 'base_post' %}" method="POST">
           {% csrf_token %}
           <div class="form-floating mb-3">
             <input type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username" maxlength="150" required="" class="form-control" id="floatingInput" placeholder="Ususario">
@@ -44,7 +44,7 @@
             <label for="floatingPassword">Password</label>
           </div>
           <input type="reset"  class="float-start btn btn-warning m-3" value="Cancelar" data-bs-dismiss="offcanvas" aria-label="Close">
-          <input type="submit" class="float-end btn btn-success m-3" name="Iniicar_Sesion"value="Ingresar">
+          <input type="submit" class="float-end btn btn-success m-3" name="Inicar_Sesion"value="Ingresar">
           
         </form>
       {% endif %}
@@ -57,7 +57,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-        <a class="navbar-brand" href="#">Almacen</a>
+        <a class="navbar-brand" href="#">Stiker</a>
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <a class="mx-3 nav-link {% if '/Home' in request.path %}active{% endif %}" aria-current="page" href="{% url 'home'%}">Home</a>
@@ -72,6 +72,16 @@
               <a class="nav-link {% if '/Ventas' in request.path%}active{% endif %}" href="{% url 'ventas'%}">Ventas </a>
             </li> {% endcomment %}
         </ul>
+        {% if user.is_authenticated %}
+          <a class="btn btn-warning p-2 mx-5" type="button" {% if "Administradores" in Groups %} href="{% url 'caja' %}"{% endif %} style="border-radius: 60px;" >
+            <p class="h6 pt-1">
+              Dinero en Caja:
+            <span class="text-success">
+                {{registe_cash.money}}$ 
+              </span>
+            </p>
+          </a>
+        {% endif %}
         <div style="border-radius: 60px;" class="bg-success  h6 text-light border border-success m-2 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
           {% if user.is_authenticated %}
             @{{user.username}}
@@ -79,43 +89,76 @@
             Ingresar 
           {% endif %}
         </div>
-
       </div>
     </div>
   </nav>
-    {% comment %} <nav class="navbar navbar-expand-sm navbar-dark bg-dark  ">
-        <a class="navbar-brand" href="#">Almacen</a>
-        <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
-            aria-expanded="false" aria-label="Toggle navigation">
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link {% if '/Home' in request.path %}active{% endif %}" aria-current="page" href="{% url 'home'%}">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% if '/Almacen' in request.path %}active{% endif %}" href="{% url 'almacen'%}">Almacen</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% if '/Productos' in request.path %}active{% endif %}" href="{% url 'productos'%}">Productos</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% if '/Ventas' in request.path%}active{% endif %}" href="{% url 'ventas'%}">Ventas </a>
-            </li>
-          </ul>
-          <div class="d-flex">
-            <div class="btn btn-primary">sadasd</div>
-          </div>
-          
+  {% for message in messages %}
+    <div class="continer-fluid">
+        <div class="alert alert-{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show m-2 p-2 text-center" role="alert">
+            <div class="h4">
+                <strong>
+                  {% if message.tags == "error" %}
+                    Error!
+                  {% elif message.tags == "success" %}
+                    Completado!
+                  {% endif %}
+                  </strong>
+            </div>
+            <div class="h6">
+                {{ message }}
+            </div> 
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    </nav> {% endcomment %}
-    
-    {% block contenido %}  {% endblock  %}
+    </div>
+  {% endfor %}
 
-
-
+  {% block contenido %}
+  {% endblock  %}
 
     <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js'%}" ></script>
 </body>
 
+ <!-- Footer -->
+<footer class="text-center text-lg-start bg-light text-muted bodycolor">
+  <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+    
+  </section>
+  <section class="">
+    <div class="container text-center text-md-start mt-5">
+      <!-- Grid row -->
+      <div class="row mt-3">
+        <!-- Grid column -->
+        <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+          <!-- Content -->
+          <h6 class="text-uppercase fw-bold mb-4">
+            <i class="fas fa-gem me-3"></i>Stiker
+          </h6>
+          <p>
+            Pagina oficial de Stiker para el control de almacenamiento de la tienda
+          </p>
+        </div>
+        <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+          <!-- Links -->
+          <h6 class="text-uppercase fw-bold mb-4">Contacte con Stiker</h6>
+          <p><i class="fas fa-home me-3"></i>Calle Stiker entre Sti y Ker #5555</p>
+          <p>
+            <i class="fas fa-envelope me-3"></i>
+            Stiker@tiendas.com
+          </p>
+          <p><i class="fas fa-phone me-3"></i> + 55 55555555</p>
+        </div>
+        <!-- Grid column -->
+      </div>
+      <!-- Grid row -->
+    </div>
+  </section>
+  <!-- Section: Links  -->
+
+  <!-- Copyright -->
+  <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+    © 2023 TiendasStiker:
+  </div>
+  <!-- Copyright -->
+</footer>
+<!-- Footer -->
 </html>
