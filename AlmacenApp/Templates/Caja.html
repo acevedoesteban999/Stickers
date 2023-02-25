@@ -3,7 +3,7 @@
 {% block contenido %}
     {% if user.is_authenticated and "Administradores" in Groups %}
         <div class="continer-md">
-            <div class="container my-3"style="text-align: center;">
+            <div class="container my-4"style="text-align: center;">
                 <div class="d-grid gap-2 col-6 mx-auto">
                     {% if user.is_authenticated %}
                         <button type="button" class="btn btn-warning " data-bs-toggle="modal" data-bs-target="#RetirarModal" data-bs-whatever="@RetDin">Retirar dinero</button>     
@@ -48,6 +48,7 @@
                         <th scope="col">Tipo</th>
                         <th scope="col">Producto</th>
                         <th scope="col">Cantidad</th>
+                        <th scope="col">Precio Vigente</th>
                         <th scope="col">$</th>
                         <th scope="col">Fecha</th>
                     </tr>
@@ -57,18 +58,22 @@
                     <tr>
                         <td>{{movement.get_type_display}}</td>
                         
-                            {% if movement.type == "VP" %}
-                                <td>{{movement.product.name}}</td>
+                            {% if movement.type == "VP" or movement.type == "rP" %}
+                                <td>
+                                    <a class="link-light h4 fill" style=" text-decoration: none;" href="{% url 'producto' movement.product.id %}">
+                                        <span class="badge bg-secondary w-100" >
+                                            {{movement.product.name}}
+                                        </span>
+                                    </a>
+                                </td>
                                 <td>{{movement.lot}}</td>
-                                <td>{% widthratio movement.price 1 movement.lot %}</td>
+                                <td>{{movement.price}}$</td>
+                                <td>{% widthratio movement.price 1 movement.lot %}$</td>
                             {% elif movement.type == "RD" %}
                                 <td>-</td>
+                                <td>{{movement.lot}}</td>
                                 <td>-</td>
-                                <td>{{movement.lot}}</td>
-                            {% elif movement.type == "rP" %}
-                                <td>{{movement.product.name}}</td>
-                                <td>{{movement.lot}}</td>
-                                <td>{% widthratio movement.price 1 movement.lot %}</td>
+                                <td>-</td> 
                             {% endif %}
                         <td>{{movement.date}}</td>
                         

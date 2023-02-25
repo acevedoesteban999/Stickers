@@ -1,5 +1,5 @@
 from django.db import models
-
+from datetime  import datetime
 # Create your models here.
 def RTRU(self):
         return "A"
@@ -7,7 +7,7 @@ def RTRU(self):
 class Product(models.Model):
     name=models.CharField(max_length=30, unique=True)
     price=models.IntegerField()
-    image=models.ImageField(blank=True,null=True,upload_to='productos',default="productos/no_imagen.jpg", height_field=None, width_field=None, max_length=None)
+    image=models.ImageField(blank=True,null=True,upload_to='productos',default="no_imagen.jpg", height_field=None, width_field=None, max_length=None)
     stored=models.IntegerField(blank=True,default=0)
     sold=models.IntegerField(blank=True,default=0)
     description=models.CharField(max_length=100,blank=True)
@@ -21,7 +21,7 @@ class RegisteCash(models.Model):
     def __str__(self):
         return self.money.__str__()+' $'
     
-
+ 
 class Movement(models.Model):
     MChoise = [
         ('EP','Entrada de Productos'),
@@ -33,12 +33,12 @@ class Movement(models.Model):
         ("rP","Reembolso de Productos"),
         ("RP","Remover Producto")]
     type=models.CharField(max_length=2,choices=MChoise)
-    date=models.DateTimeField(auto_now_add=True)
-    product=models.ForeignKey(Product, on_delete=models.CASCADE,null=True,blank=True)
+    date=models.DateTimeField(default=datetime.now,blank=True)
+    product=models.ForeignKey(Product, on_delete=models.CASCADE,null=True,blank=True,related_name="RN_product")
     price=models.IntegerField(default=0)
     lot=models.IntegerField(default=0)
     def __str__(self):
-        return self.date.date().__str__()
+        return "M"+self.id.__str__()+"-"+self.date.date().__str__()
 
     @classmethod
     def Create(cls,name,price,description,image):
@@ -55,9 +55,9 @@ class Movement(models.Model):
         return False
     @classmethod
     def Remove(cls,product):
-        import datetime
         product.removed = True
-        product.name+="_"+ datetime.datetime.now().__str__()
+        product.description=product.name
+        product.name+="[_X_]"
         movement=cls(type="RP",product=product)
         if movement:
             movement.save()
@@ -90,7 +90,8 @@ class Movement(models.Model):
             product.description=description
             if image:
                 product.image=image
-            movement=cls(type="eP",product=product,lot=price)
+            movement=cls(type="eP",product=product,price=price)
+            
             if movement:
                 movement.save()
                 product.save()

@@ -32,23 +32,25 @@
                             <h5 class="card-title">{{product.price}}$</h5>
                             <h6 class="card-title">Almacenado : {{product.stored}}</h6>
                             {% comment %} <h6 class="card-title">Total Vendido  : {{product.sold}}</h6> {% endcomment %}
-                            <p class="card-text">{{product.description}}</p>
+                            <p class="card-text"><small class="text-muted">{{product.description}}</small></p>
                         </div>
-                        <div class="card-footer bg-ligth">
-                          <div class="d-grid gap-2">
-
-                            {% if user.is_authenticated %}
+                        
+                        {% if user.is_authenticated %}
+                          <div class="card-footer bg-ligth">
+                            <div class="d-grid gap-2">
                               <a type="button" href="{% url 'producto' product.id %}" class="btn btn-outline-secondary " >Ver {{product.name}}</a>
-                            {% endif %}
-                          </div> 
-                        </div>     
+                            </div> 
+                          </div>
+                        {% else %}
+                          <hr></hr>
+                        {% endif %}     
                     </div>
                 </div> 
               {% endif %}
           {% endfor %}
       </div>
     {% else %}
-      <div class="text-bg-warning p-2  d-flex justify-content-center">No hay productos para mostrar</div>
+      <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay productos almacenados para mostrar<h2></div>
     {% endif %}
   </div>
 {% endblock  %}

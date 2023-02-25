@@ -1,5 +1,7 @@
+<!DOCTYPE html>
 <html>
 <head >
+  </body>
     {% load static %}
 
     <link href="{% static 'bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
@@ -68,9 +70,11 @@
             <li class="nav-item">
               <a class="mx-3 nav-link {% if '/Productos' in request.path %}active{% endif %}" href="{% url 'productos'%}">Productos</a>
             </li>
-            {% comment %} <li class="nav-item">
-              <a class="nav-link {% if '/Ventas' in request.path%}active{% endif %}" href="{% url 'ventas'%}">Ventas </a>
-            </li> {% endcomment %}
+            {% if user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link {% if '/Transacciones' in request.path%}active{% endif %}" href="{% url 'transacciones'%}">Transacciones </a>
+              </li> 
+            {% endif %}
         </ul>
         {% if user.is_authenticated %}
           <a class="btn btn-warning p-2 mx-5" type="button" {% if "Administradores" in Groups %} href="{% url 'caja' %}"{% endif %} style="border-radius: 60px;" >
@@ -115,7 +119,8 @@
   {% block contenido %}
   {% endblock  %}
 
-    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js'%}" ></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}" ></script>
+    <script src="{% static 'js/index.js' %}" ></script>
 </body>
 
  <!-- Footer -->
@@ -156,7 +161,7 @@
 
   <!-- Copyright -->
   <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
-    © 2023 TiendasStiker:
+    © {{year}} TiendasStiker:
   </div>
   <!-- Copyright -->
 </footer>

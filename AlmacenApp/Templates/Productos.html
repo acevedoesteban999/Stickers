@@ -3,7 +3,7 @@
 {% block contenido %}
 
     <div class="container-md">
-        <div class="container m-3"style="text-align: center;">
+        <div class="container m-4"style="text-align: center;">
             <div class="d-grid gap-2 col-6 mx-auto">
                 {% if user.is_authenticated %}
                     <button type="button" class="btn btn-success " data-bs-toggle="modal" data-bs-target="#CrearModal" data-bs-whatever="@mdo">Crear Producto</button>     
@@ -69,8 +69,8 @@
                         {% for product in products %}
                             <tr>
                             <td >
-                                <a class="link-light h4" style=" text-decoration: none;" href="{% url 'producto' product.id %}">
-                                    <span class="badge bg-success">
+                                <a class="link-light h4" style=" text-decoration: none;" {% if user.is_authenticated %} href="{% url 'producto' product.id %}" {% endif %}>
+                                    <span class="badge bg-secondary w-100">
                                         {{product.name}}
                                     </span>
                                 </a>
@@ -82,10 +82,19 @@
                                 {{product.stored}}
                             </td>
                             <td>
-                                {{product.sold}}
+                                {% if user.is_authenticated %}
+                                    {{product.sold}}
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                             <td>
-                                {{product.description}}
+                                {% if product.description %}
+                                    {{product.description}}
+                                {% else %}
+                                    -
+                                {% endif %}
+                                
                             </td>
                             </tr>
                         {% endfor %}
@@ -94,7 +103,7 @@
                 </table>
             </div>
         {% else %}
-            <div class="text-bg-warning p-2  d-flex justify-content-center">No hay productos para mostrar</div>
+        <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay productos creados para mostrar<h2></div>
         {% endif %}
     </div>
     

@@ -1,8 +1,7 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
-
-{% if user.is_authenticated %}
+{% if user.is_authenticated and product.removed == False %}
     <div class="container p-5 m-6 ">
         {% if product %}
             <div class="card mb-3" style="max-width: auto;">
@@ -145,9 +144,7 @@
                         {% if "Administradores" in Groups %}
                             <a class="btn btn-info" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd">
                                 Agregar
-                            </a>
-                        
-                            
+                            </a>      
                         {% endif %}
                         {% if product.stored != 0 %}
                             <a  class="btn btn-success " data-bs-toggle="collapse" href="#collapseSell" role="button" aria-expanded="false" aria-controls="collapseSell">
@@ -164,7 +161,7 @@
                                 Reembolsar
                             </a>  
                         {% endif %}
-                        {% if product.stored != 0 %}
+                        {% if "Administradores" in Groups and product.stored != 0 %}
                             <a  class="btn btn-danger " data-bs-toggle="collapse" href="#collapseSub" role="button" aria-expanded="false" aria-controls="collapseSub">
                                 Quitar
                             </a>  
@@ -244,9 +241,9 @@
                         
                         <th scope="col" class="h3">Tipo</th>
                         <th scope="col" class="h3">Cantidad</th>
+                        <th scope="col" class="h3">Precio</th>
                         <th scope="col" class="h3">Importe</th>
                         <th scope="col" class="h3">Fecha</th>
-                        <th scope="col" class="h3">Info</th>
                     </tr>
                     </thead>   
                     <tbody>  
@@ -256,27 +253,31 @@
                                     {{movement.get_type_display}}
                                 </th>
                                 
-                                <td>
-                                    {% if movement.type == "VP" or movement.type == "EP" or movement.type == "RP" or  movement.type == "SP" %}
-                                        {{movement.lot}}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                    
-                                </td>
-                                <td>
-                                    
-                                    {% if movement.type == "VP" %}
-                                        {{movement.amount}}$
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                        
-                                </td>
+                                {% if movement.type == "VP" or movement.type == "rP" %}
+                                    <td>{{movement.lot}}</td>
+                                    <td>{{movement.price}}$</td>
+                                    <td>{% widthratio movement.price 1 movement.lot %}$</td>
+                                {% elif movement.type == "RD" %}
+                                    <td>{{movement.lot}}</td>
+                                    <td>-</td>
+                                    <td>-</td> 
+                                {% elif movement.type == "EP" or movement.type == "SP" %}
+                                    <td>{{movement.lot}}</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                {% elif movement.type == "eP" %}
+                                    <td>-</td>
+                                    <td>{{movement.price}}$</td>
+                                    <td>-</td>
+                                {% elif movement.type == "CP" or movement.type == "RP" %}
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                {% endif %}
                                 <th scope="row">
                                     {{movement.date}}
                                 </th>
-                                <th scope="row">
+                                {% comment %} <th scope="row">
                                     {% if movement.type == "CP" or movement.type == "eP" %}
                                     <div class="h6 p-3">
                                             Precio: {{movement.lot}}$
@@ -285,15 +286,10 @@
                                     -
                                     {% endif %}
                                     
-                                </th>
+                                </th> {% endcomment %}
                             </tr>
                             {% empty %}
-                            <div class="text-bg-warning p-2  d-flex justify-content-center">
-                                No hay movmimientos de {{product.name}} para mostrar
-                            </div>
-        
-                            
-                                
+                            <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay transacciones para mostrar<h2></div>     
                         {% endfor %}
                     </tbody>
                 </table>

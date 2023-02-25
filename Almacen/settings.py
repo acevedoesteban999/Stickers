@@ -64,7 +64,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'AlmacenApp.global.UserGroups',
-                'AlmacenApp.global.GlobalRegisteCash',
+                'AlmacenApp.global.GlobalElements',
             ],
         },
     },
