@@ -126,17 +126,18 @@ class Movement(models.Model):
                 if diff >= 0:
                     r_box=RegisteCash.objects.all().first()
                     if r_box:
-                        product.sold = diff
-                        product.stored += lot
                         amount=lot * product.price
                         r_box.money -= amount
                         if r_box.money >= 0:
+                            product.sold = diff
+                            product.stored += lot
                             movement=cls(type="rP",product=product,lot=lot,price=product.price)
                             if movement:
                                 movement.save()
                                 product.save()
                                 r_box.save()
                                 return True
+                        return None
         return False
     @classmethod
     def Retire(cls,lot):

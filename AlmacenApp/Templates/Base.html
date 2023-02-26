@@ -98,7 +98,8 @@
   </nav>
   {% for message in messages %}
     <div class="continer-fluid">
-        <div class="alert alert-{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show m-2 p-2 text-center" role="alert">
+      <div class="d-flex justify-content-center">
+        <div class="p-3 px-5 m-3 alert alert-{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show m-2 p-2 text-center" role="alert">
             <div class="h4">
                 <strong>
                   {% if message.tags == "error" %}
@@ -113,6 +114,7 @@
             </div> 
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+      </div>
     </div>
   {% endfor %}
 
@@ -145,12 +147,12 @@
         <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
           <!-- Links -->
           <h6 class="text-uppercase fw-bold mb-4">Contacte con Stiker</h6>
-          <p><i class="fas fa-home me-3"></i>Calle Stiker entre Sti y Ker #5555</p>
+          <p><i class="fas fa-home me-3"></i>Direccion</p>
           <p>
             <i class="fas fa-envelope me-3"></i>
             Stiker@tiendas.com
           </p>
-          <p><i class="fas fa-phone me-3"></i> + 55 55555555</p>
+          <p><i class="fas fa-phone me-3"></i>#Telf</p>
         </div>
         <!-- Grid column -->
       </div>

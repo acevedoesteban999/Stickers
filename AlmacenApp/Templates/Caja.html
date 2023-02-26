@@ -5,9 +5,7 @@
         <div class="continer-md">
             <div class="container my-4"style="text-align: center;">
                 <div class="d-grid gap-2 col-6 mx-auto">
-                    {% if user.is_authenticated %}
                         <button type="button" class="btn btn-warning " data-bs-toggle="modal" data-bs-target="#RetirarModal" data-bs-whatever="@RetDin">Retirar dinero</button>     
-                    {% endif %}
                     <div class="modal fade" id="RetirarModal" tabindex="-1" aria-labelledby="RetirarModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">

@@ -9,20 +9,5 @@ class FormLot(forms.Form):
     cantidad=forms.IntegerField(required=True)
 
 
-# FormChoise = [
-        
-#         ('NF','Sin Filtro'),
-#         ('EP','Entrada de Productos'),
-#         ('CP','Creado Producto'),
-#         ('SP','Salida de Productos'),
-#         ('RD','Retirada de Dinero'),
-#         ("eP","Editado de Producto"),
-#         ("VP","Venta de Productos"),
-#         ("rP","Reembolso de Productos"),
-#         ("RP","Remover Producto")]
-        
-# class FormFilter(forms.Form):  
-#     TypeFilter=forms.ChoiceField(choices=FormChoise)
-
 
     

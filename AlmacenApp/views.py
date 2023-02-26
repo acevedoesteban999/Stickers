@@ -158,10 +158,14 @@ def ProductoView(request,productoID):
                 if refund_product.is_valid():
                     lot_refund=refund_product.cleaned_data.get("cantidad")
                     if lot_refund > 0:
-                        if Movement.Refund(product,lot=lot_refund):
+                        rf=Movement.Refund(product,lot=lot_refund)
+                        if rf == True:
                             messages.success(request,"Se han reembolsado {} {} con un importe de {}$".format(lot_refund,product.name,lot_refund*product.price))
                             return render(request,"Producto.html",{'product':product, "movements":movements})
-                messages.error(request,"No se han podido reembolsar {} {}".format(lot_add,product.name))
+                        elif rf == None:
+                            messages.error(request,"No hay suficiente dinero en caja para reembolsar {} {}".format(lot_refund,product.name))
+                            return render(request,"Producto.html",{'product':product, "movements":movements})
+                messages.error(request,"No se han podido reembolsar {} {}".format(lot_refund,product.name))
                 return render(request,"Producto.html",{'product':product ,"movements":movements})
 
         return render(request,"Producto.html",{'product':product ,"movements":movements})
