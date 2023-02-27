@@ -4,6 +4,11 @@ from datetime  import datetime
 def RTRU(self):
         return "A"
 
+class RegisteCash(models.Model):
+    money=models.IntegerField(default=0)
+    def __str__(self):
+        return self.money.__str__()+' $'
+    
 class Product(models.Model):
     name=models.CharField(max_length=30, unique=True)
     price=models.IntegerField()
@@ -15,11 +20,14 @@ class Product(models.Model):
     def __str__(self):
         return self.name
     
-    
-class RegisteCash(models.Model):
-    money=models.IntegerField(default=0)
+class Category(models.Model):
+    name=models.CharField(max_length=10) 
+    stored=models.IntegerField(default=0)
+    sold=models.IntegerField(default=0)
+    product=models.ForeignKey(Product, on_delete=models.CASCADE) 
+
     def __str__(self):
-        return self.money.__str__()+' $'
+        return self.name
     
  
 class Movement(models.Model):
@@ -34,9 +42,11 @@ class Movement(models.Model):
         ("RP","Remover Producto")]
     type=models.CharField(max_length=2,choices=MChoise)
     date=models.DateTimeField(default=datetime.now,blank=True)
-    product=models.ForeignKey(Product, on_delete=models.CASCADE,null=True,blank=True,related_name="RN_product")
     price=models.IntegerField(default=0)
     lot=models.IntegerField(default=0)
+    
+    product=models.ForeignKey(Product, on_delete=models.CASCADE,null=True,blank=True,related_name="RN_product")
+    
     def __str__(self):
         return "M"+self.id.__str__()+"-"+self.date.date().__str__()
 

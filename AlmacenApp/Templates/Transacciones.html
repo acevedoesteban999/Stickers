@@ -103,8 +103,7 @@
                 <thead>
                 <tr> 
                     <th scope="col" class="h3">Tipo</th>
-                    <th scope="col" class="h3">Producto</th>
-                    
+                    <th scope="col" class="h3">Producto</th> 
                     <th scope="col" class="h3">Cantidad</th>
                     <th scope="col" class="h3">Precio</th>
                     <th scope="col" class="h3">Importe</th>
@@ -116,22 +115,6 @@
                     {% for movement in movements %}
                         <tr>
                             <th scope="row">
-                            
-                                {% comment %} {% if movement.type == "VP" %}
-                                            class="badge bg-success"
-                                        {% elif movement.type == "eP" %}
-                                            class="badge bg-warning"
-                                        {% elif movement.type == "EP" %}
-                                            class="badge bg-info"
-                                        {% elif movement.type == "rP" %}
-                                            class="badge" style="background-color: orangered; color: white;"
-                                        {% elif movement.type == "RP" %}
-                                            class="badge bg-danger"
-                                        {% elif movement.type == "CP" %}
-                                            class="badge bg-primary"
-                                        {% else %}
-                                            class="badge bg-secondary"
-                                        {% endif %} {% endcomment %}
                                 {{movement.get_type_display}}
                             </th>
                             {% if movement.type == "VP" or movement.type == "rP" %}

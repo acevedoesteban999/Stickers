@@ -1,5 +1,14 @@
 
-function FilterTime(choiseFilterTime) {
+function AA()
+{
+    console.log("AA")
+    const img=document.getElementById('imgPre')
+    img.src = window.URL.createObjectURL(this.files[0])
+}
+
+    
+function FilterTime1(choiseFilterTime) 
+{
     const RD=document.getElementById("RD")
     const DD=document.getElementById("DD")
     const FD=document.getElementById("filter__day")
@@ -37,6 +46,6 @@ function FilterTime(choiseFilterTime) {
              
                           
     }
-  }
+}
 
    

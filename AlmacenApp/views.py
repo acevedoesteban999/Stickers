@@ -1,5 +1,5 @@
-from django.shortcuts import render,redirect,HttpResponseRedirect
-from .models import Product,RegisteCash,Movement
+from django.shortcuts import render,redirect
+from .models import Product,RegisteCash,Movement,Category
 from .forms import FormProduc,FormLot
 from datetime import datetime ,timedelta
 from django.contrib.auth.forms import AuthenticationForm
@@ -66,7 +66,6 @@ def CajaView(request):
 
 def AlmacenView(request):
     products = Product.objects.exclude(removed=True).filter(stored__gt=0).order_by('name')
-    registe_cash=RegisteCash.objects.all().first()
     return render(request,"Almacen.html",{'products':products})
 
 def ProductosView(request):
@@ -86,15 +85,30 @@ def ProductosView(request):
                         return render(request,"Productos.html",{'products':products})
                 except IntegrityError:
                     messages.error(request,"Nose ha podido  crear, ya existe un objeto de nombre %s"% name)
-                    return render(request,"Productos.html",{'products':products,"Error":"IntegrityError"})
+                    return render(request,"Productos.html",{'products':products})
         messages.error(request,"Ha ocurrido un error  insesperado")
         return render(request,"Productos.html",{'products':products})
     return render(request,"Productos.html",{'products':products})
 
+
+
 def ProductoView(request,productoID):
-    product=Product.objects.get(id=productoID)
+    product=Product.objects.exclude(removed=True).get(id=productoID)
     if product:
+        categorys=Category.objects.filter(product__id=product.id).order_by("name")
+        print(categorys)
         movements=Movement.objects.filter(product_id=product.id).order_by('-date')[:50]
+        def NormalPageProduct():
+            return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys}) 
+        def ErrorProduct(text):
+            messages.error(request,text)
+            return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys}) 
+        def SuccessProduct(text):
+            messages.success(request,text)
+            return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys})
+        def WarningProduct(text):
+            messages.warning(text)
+            return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys})
         if request.method == "POST":
             #Form Editar
             if "EditProduct" in request.POST:
@@ -106,32 +120,41 @@ def ProductoView(request,productoID):
                     image=edit_product.cleaned_data.get("imagen")
                     try:
                         if Movement.Edit(product,name,price,description,image):
-                            messages.success(request,"Se ha editado el producto %s correctamente"%name)
-                            return render(request,"Producto.html",{'product':product,"movements":movements})
+                            # messages.success(request,"Se ha editado el producto %s correctamente"%name)
+                            # return render(request,"Producto.html",{'product':product,"movements":movements})
+                            return SuccessProduct("Se ha editado el producto %s correctamente" %name)
                     except IntegrityError:
                         product=Product.objects.get(id=productoID)
-                        messages.error(request,"No se ha podido editar, ya existe un objeto de nombre %s"% name)
-                        return render(request,"Producto.html",{'product':product,"movements":movements})
-                messages.error(request,"Ha ocurrido un errpr inescperado")
-                return render(request,"Producto.html",{'product':product,"movements":movements})
+                        # messages.error(request,"No se ha podido editar, ya existe un objeto de nombre %s"% name)
+                        # return render(request,"Producto.html",{'product':product,"movements":movements})
+                        return ErrorProduct("No se ha podido editar, ya existe un objeto de nombre %s" %name)
+                #messages.error(request,"Ha ocurrido un errpr inescperado")
+                return ErrorProduct("Ha ocurrido un errpr inescperado")    
+                #return render(request,"Producto.html",{'product':product,"movements":movements})
             #Form Vender
             elif "SellProduct" in request.POST:
                 sell_product=FormLot(request.POST)
                 if sell_product.is_valid():
                     lot_sell=sell_product.cleaned_data.get("cantidad")
                     if Movement.Sell(product,lot_sell):
-                        messages.success(request,"Se han vendido {} {} con un importe de {}$".format(lot_sell,product.name,product.price*lot_sell))
-                        return render(request,"Producto.html",{'product':product,"movements":movements})
-                    messages.error(request,"No se ha podido vender {}, solo quedan {} productos almacenados".format(lot_sell,product.stored))
-                return render(request,"Producto.html",{'product':product, "movements":movements})
+                        # messages.success(request,"Se han vendido {} {} con un importe de {}$".format(lot_sell,product.name,product.price*lot_sell))
+                        # return render(request,"Producto.html",{'product':product,"movements":movements})
+                        return SuccessProduct("Se han vendido {} {} con un importe de {}$".format(lot_sell,product.name,product.price*lot_sell))
+                    #messages.error(request,"No se ha podido vender {}, solo quedan {} productos almacenados".format(lot_sell,product.stored))
+                    #return ErrorProduct("No se ha podido vender {}, solo quedan {} productos almacenados".format(lot_sell,product.stored))
+                    return ErrorProduct("No se ha podido vender {}, solo quedan {} productos almacenados".format(lot_sell,product.stored))  
+                return ErrorProduct("Ha ocurrido un errpr inescperado")   
+                #return render(request,"Producto.html",{'product':product, "movements":movements})
             #Form Eliminar
             elif "RemoveProduct" in request.POST:
                 name=product.name
                 if Movement.Remove(product):
-                    messages.warning(request,"Se ha removido el producto %s"%name)
-                    return redirect('productos')
-                messages.error(request,"No se ha podido remover el producto %s"%name)
-                return render(request,"Producto.html",{'product':product ,"movements":movements})
+                    # messages.warning(request,"Se ha removido el producto %s"%name)
+                    # return redirect('productos')
+                    return WarningProduct("Se ha removido el producto %s, contacte con el administrador del proyecto para usar nuevamante este producto" %name)
+                # messages.error(request,"No se ha podido remover el producto %s"%name)
+                # return render(request,"Producto.html",{'product':product ,"movements":movements})
+                return ErrorProduct("No se ha podido remover el producto %s"%name)
             #Form Agregar
             elif "AddProduct" in request.POST:
                 add_product=FormLot(request.POST)
@@ -139,20 +162,24 @@ def ProductoView(request,productoID):
                     lot_add=add_product.cleaned_data.get("cantidad")
                     if lot_add>= 0:
                         if Movement.Add(product,lot=lot_add):
-                            messages.success(request,"Se han agregado {} {} correctamente".format(lot_add,product.name))
-                            return render(request,"Producto.html",{'product':product, "movements":movements})
-                messages.error(request,"No se han podido insertar {} {}".format(lot_add,product.name))
-                return render(request,"Producto.html",{'product':product ,"movements":movements})
+                            # messages.success(request,"Se han agregado {} {} correctamente".format(lot_add,product.name))
+                            # return render(request,"Producto.html",{'product':product, "movements":movements})
+                            return SuccessProduct("Se han agregado {} {} correctamente".format(lot_add,product.name))
+                # messages.error(request,"No se han podido insertar {} {}".format(lot_add,product.name))
+                # return render(request,"Producto.html",{'product':product ,"movements":movements})
+                return ErrorProduct("No se han podido insertar {} {}".format(lot_add,product.name))
             elif "SubProduct" in request.POST:
                 sub_product=FormLot(request.POST)
                 if sub_product.is_valid():
                     lot_sub=sub_product.cleaned_data.get("cantidad")
                     if lot_sub >= 0:
                         if Movement.Sub(product,lot=lot_sub):
-                            messages.success(request,"Se han quitado {} {} correctamente".format(lot_sub,product.name))
-                            return render(request,"Producto.html",{'product':product, "movements":movements})
-                messages.error(request,"No se han podido quitar {} {}".format(lot_sub,product.name))
-                return render(request,"Producto.html",{'product':product ,"movements":movements})
+                            # messages.success(request,"Se han quitado {} {} correctamente".format(lot_sub,product.name))
+                            # return render(request,"Producto.html",{'product':product, "movements":movements})
+                            return SuccessProduct("Se han quitado {} {} correctamente".format(lot_sub,product.name))
+                # messages.error(request,"No se han podido quitar {} {}".format(lot_sub,product.name))
+                # return render(request,"Producto.html",{'product':product ,"movements":movements})
+                return ErrorProduct("No se han podido quitar {} {}".format(lot_sub,product.name))
             elif "RefundProduct" in request.POST: 
                 refund_product=FormLot(request.POST)
                 if refund_product.is_valid():
@@ -160,15 +187,18 @@ def ProductoView(request,productoID):
                     if lot_refund > 0:
                         rf=Movement.Refund(product,lot=lot_refund)
                         if rf == True:
-                            messages.success(request,"Se han reembolsado {} {} con un importe de {}$".format(lot_refund,product.name,lot_refund*product.price))
-                            return render(request,"Producto.html",{'product':product, "movements":movements})
+                            # messages.success(request,"Se han reembolsado {} {} con un importe de {}$".format(lot_refund,product.name,lot_refund*product.price))
+                            # return render(request,"Producto.html",{'product':product, "movements":movements})
+                            return SuccessProduct("Se han reembolsado {} {} con un importe de {}$".format(lot_refund,product.name,lot_refund*product.price))
                         elif rf == None:
-                            messages.error(request,"No hay suficiente dinero en caja para reembolsar {} {}".format(lot_refund,product.name))
-                            return render(request,"Producto.html",{'product':product, "movements":movements})
-                messages.error(request,"No se han podido reembolsar {} {}".format(lot_refund,product.name))
-                return render(request,"Producto.html",{'product':product ,"movements":movements})
-
-        return render(request,"Producto.html",{'product':product ,"movements":movements})
+                            # messages.error(request,"No hay suficiente dinero en caja para reembolsar {} {}".format(lot_refund,product.name))
+                            # return render(request,"Producto.html",{'product':product, "movements":movements})
+                            return ErrorProduct("No hay suficiente dinero en caja para reembolsar {} {}".format(lot_refund,product.name))
+                # messages.error(request,"No se han podido reembolsar {} {}".format(lot_refund,product.name))
+                # return render(request,"Producto.html",{'product':product ,"movements":movements})
+                return ErrorProduct("No se han podido reembolsar {} {}".format(lot_refund,product.name))
+        #return render(request,"Producto.html",{'product':product ,"movements":movements})
+        return NormalPageProduct()
     else:
         return redirect('productos')        
 

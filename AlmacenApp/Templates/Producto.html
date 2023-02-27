@@ -24,8 +24,8 @@
                             </div>      
                         </div>            
                     </div>
+                    <!--
                     {% comment %}=================================== COLPASE =================================  {% endcomment %}
-
                     <div class="col-md-4 ">
                         {% comment %} =========== ADD =============== {% endcomment %}
                         {% if "Administradores" in Groups %}
@@ -37,7 +37,7 @@
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text">Agregar</span>
                                                 <div class="form-floating">
-                                                    <input value="1" type="number" min="1" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                    <input required value="1" type="number" required min="1" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
                                                     <label for="floatingInput">Cantidad de {{product.name}}</label>        
                                                 </div>
                                             </div>
@@ -64,7 +64,7 @@
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text">Vender</span>
                                                 <div class="form-floating">
-                                                    <input type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                    <input required type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
                                                     <label for="floatingInput">Cantidad</label>       
                                                 </div>
                                             </div>
@@ -91,7 +91,7 @@
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text">Quitar</span>
                                                 <div class="form-floating">
-                                                    <input type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                    <input required type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
                                                     <label for="floatingInput">Cantidad</label>       
                                                 </div>
                                             </div>
@@ -118,7 +118,7 @@
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text">Reembolsar</span>
                                                 <div class="form-floating">
-                                                    <input type="number" value="1" min="1" max="{{product.sold}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                    <input required type="number" value="1" min="1" max="{{product.sold}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
                                                     <label for="floatingInput">Cantidad</label>       
                                                 </div>
                                             </div>
@@ -136,18 +136,20 @@
                             </div>
                         {% endif %}
                     </div>
+                    -->
                 </div>
-
+                
                 {% comment %} =============== BUTTONS ======================== {% endcomment %}
                 <div class="card-footer">
                     <div class="d-flex justify-content-around">
                         {% if "Administradores" in Groups %}
-                            <a class="btn btn-info" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd">
+                            {% comment %} <a class="btn btn-info" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd"> {% endcomment %}
+                            <a type="button" class=" btn btn-info" data-bs-toggle="modal" data-bs-target="#AddModal" data-bs-whatever="1">
                                 Agregar
                             </a>      
                         {% endif %}
                         {% if product.stored != 0 %}
-                            <a  class="btn btn-success " data-bs-toggle="collapse" href="#collapseSell" role="button" aria-expanded="false" aria-controls="collapseSell">
+                            <a type="button" class=" btn btn-success" data-bs-toggle="modal" data-bs-target="#SellModal" data-bs-whatever="1">
                                 Vender
                             </a>  
                         {% endif %}
@@ -157,13 +159,13 @@
                             </button> 
                         {% endif %}
                         {% if product.sold != 0 %}
-                            <a  class="btn" style="background-color: orangered; color: white;"  data-bs-toggle="collapse" href="#collapseRefund" role="button" aria-expanded="false" aria-controls="collapseSell">
+                            <a type="button" style="background-color: orangered; color: white;" class=" btn " data-bs-toggle="modal" data-bs-target="#RefundModal" data-bs-whatever="1">
                                 Reembolsar
                             </a>  
                         {% endif %}
                         {% if "Administradores" in Groups and product.stored != 0 %}
-                            <a  class="btn btn-danger " data-bs-toggle="collapse" href="#collapseSub" role="button" aria-expanded="false" aria-controls="collapseSub">
-                                Quitar
+                        <a type="button" class=" btn btn-danger" data-bs-toggle="modal" data-bs-target="#SubModal" data-bs-whatever="1">
+                            Quitar
                             </a>  
                         {% endif %}
                     </div>
@@ -171,7 +173,133 @@
             </div>   
             
         {% comment %}=================================== MODALS =================================  {% endcomment %}
-          
+            
+            {% comment %} ========================= ADD ===============    {% endcomment %}
+            {% if "Administradores" in Groups %}
+                <div class="modal fade" id="AddModal" tabindex="-1" aria-labelledby="AddModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content p-3 m-2">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="AddModalLabel">Agregar</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="POST" action="">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">Agregar</span>
+                                        <div class="form-floating">
+                                            <input required value="1" type="number" required min="1" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                            <label for="floatingInput">Cantidad de {{product.name}}</label>        
+                                        </div>
+                                    </div>
+                                </div>        
+                                <div class="row">
+                                    <div class="col-6">
+                                        <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="submit"  name="AddProduct" class="btn btn-info float-end mx-2" value="Agregar">
+                                    </div>
+                                </div>       
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% comment %} ========================= SELL ===============    {% endcomment %}
+            <div class="modal fade" id="SellModal" tabindex="-1" aria-labelledby="SellModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content p-3 m-2">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="SellModalLabel">Vender</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">Vender</span>
+                                    <div class="form-floating">
+                                        <input required type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                        <label for="floatingInput">Cantidad</label>       
+                                    </div>
+                                </div>
+                            </div>        
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
+                                </div>
+                                <div class="col-6">
+                                    <input type="submit"  name="SellProduct" class="btn btn-success float-end mx-2" value="Vender">
+                                </div>
+                            </div>       
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% comment %} ========================= REFUND ===============    {% endcomment %}
+            <div class="modal fade" id="RefundModal" tabindex="-1" aria-labelledby="RefundModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content p-3 m-2">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="RefundModalLabel">Reembolsar</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">Reembolsar</span>
+                                    <div class="form-floating">
+                                        <input required type="number" value="1" min="1" max="{{product.sold}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                        <label for="floatingInput">Cantidad</label>       
+                                    </div>
+                                </div>
+                            </div>        
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseRefund" role="button" aria-expanded="false" aria-controls="collapseRefund">         
+                                </div>
+                                <div class="col-6">
+                                    <input type="submit"  name="RefundProduct" style="background-color: orangered; color: white;" class="btn float-end mx-2" value="Reembolsar">
+                                </div>
+                            </div>       
+                        </form>  
+                    </div>
+                </div>
+            </div>
+            {% comment %} ========================= SUB ===============    {% endcomment %}
+            <div class="modal fade" id="SubModal" tabindex="-1" aria-labelledby="SubModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content p-3 m-2">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="SubModalLabel">Quitar</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="POST" action="">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">Quitar</span>
+                                    <div class="form-floating">
+                                        <input required type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                        <label for="floatingInput">Cantidad</label>       
+                                    </div>
+                                </div>
+                            </div>        
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="reset"  value="Cancelar"  class="btn btn-secondary float-start" data-bs-toggle="collapse" href="#collapseSub" role="button" aria-expanded="false" aria-controls="collapseSub">         
+                                </div>
+                                <div class="col-6">
+                                    <input type="submit"  name="SubProduct" class="btn btn-danger float-end mx-2" value="Quitar">
+                                </div>
+                            </div>       
+                        </form>   
+                    </div>
+                </div>
+            </div>
             {% comment %} ========================= REMOVE ===============    {% endcomment %}
             {% if "Administradores" in Groups %}
                 <div class="modal fade" id="RemoveModal" tabindex="-1" aria-labelledby="RemoveModalLabel" aria-hidden="true">
@@ -188,14 +316,14 @@
                                 </div>
                                 <div class="modal-footer">
                                     <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">
-                                    <input class="btn btn-danger" type="submit" name="RemoveProduct" value="Eliminar">
+                                    <input class=" btn btn-danger" type="submit" name="RemoveProduct" value="Eliminar">
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
             {% endif %}
-            {% comment %} ===================================== EDIT ==================================== {% endcomment %}
+            {% comment %} ========================= EDIT =================== {% endcomment %}
             {% if "Administradores" in Groups %}
                 <div class="modal fade" id="EditModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -208,11 +336,11 @@
                                 {% csrf_token %}
                                 <div class="modal-body">
                                     <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{product.name}}">
+                                        <input required type="text" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{product.name}}">
                                         <label for="floatingInput">Nombre</label>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <input type="number" min="1" class="form-control" name="precio"id="floatingInput" placeholder="Precio" value="{{product.price}}">
+                                        <input required type="number" min="1" class="form-control" name="precio"id="floatingInput" placeholder="Precio" value="{{product.price}}">
                                         <label for="floatingInput">Precio</label>
                                     </div>
                                     <div class="form-floating mb-3">
@@ -233,7 +361,50 @@
                     </div>
                 </div>   
             {% endif %}
-            {% comment %} =================  TABLE  ==================== {% endcomment %}
+            {% comment %} =================  TABLE CATEGORYS  ==================== {% endcomment %}
+            
+            {% if categorys %}         
+                <div class="display-2 my-5 text-center">  Categorias </div>
+                <div class="card bg-ligth m-3 border border-dark" style="max-width: auto;">
+                    <table class="table table-ligth centrado shadow p-3 mb-0 bg-body-tertiary rounded">
+                        <thead>
+                        <tr> 
+                            <th scope="col" class="h3">Nombre</th>
+                            <th scope="col" class="h3">Almacenados</th>
+                            <th scope="col" class="h3">Vendidos</th>
+                        </tr>
+                        </thead>   
+                        <tbody> 
+                            {% for category in categorys %}
+                                <tr>
+                                    <th scope="row">
+                                        {{category.name}}
+                                    </th>
+                                    <th scope="row">
+                                        {{category.stored}}
+                                    </th>
+                                    <th scope="row">
+                                        {{category.sold}}
+                                    </th>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                
+                    <div class="row ">
+                        <div class="col">
+                            {% if "Administradores" in Groups %}
+                            <div class="d-flex justify-content-around">
+                                <button type="button" class="float-start btn btn-warning m-3 p-2" data-bs-toggle="modal" data-bs-target="#AddCategoryModal" data-bs-whatever="0">Agregar Categoria</button>
+                                <button type="button" class="float-end btn btn-danger m-3 p-2" data-bs-toggle="modal" data-bs-target="#RemoveCategoryModal" data-bs-whatever="0">Eliminar Categoria</button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="display-2 my-5 text-center">  Transacciones </div>
+            {% comment %} =================  TABLE MOVEMENTS ==================== {% endcomment %}
             <div class="card bg-dark" style="max-width: auto;">
                 <table class="table table-dark centrado shadow p-3 mb-0 bg-body-tertiary rounded">
                     <thead>
