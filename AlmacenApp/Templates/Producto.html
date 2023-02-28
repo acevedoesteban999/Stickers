@@ -173,7 +173,75 @@
             </div>   
             
         {% comment %}=================================== MODALS =================================  {% endcomment %}
-            
+            {% comment %} ========================= ADD CATEGORY ===============    {% endcomment %}
+            {% if "Administradores" in Groups %}
+                <div class="modal fade" id="AddCategoryModal" tabindex="-1" aria-labelledby="AddCategoryModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content p-3 m-2">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="AddCategoryModalLabel">Agregar Categoria</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="POST" action="">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">Categoria</span>
+                                        <div class="form-floating">
+                                            <input required type="text" required  name="name" class="form-control" id="floatingInput" placeholder="Nombre de Categoria">
+                                            <label for="floatingInput">Nombre de Categoria</label>        
+                                        </div>
+                                    </div>
+                                </div>        
+                                <div class="row">
+                                    <div class="col-6">
+                                        <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="submit"  name="AddCategory" class="btn btn-info float-end mx-2" value="Agregar">
+                                    </div>
+                                </div>       
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% comment %} ========================= REMOVE CATEGORY ===============    {% endcomment %}
+            {% if "Administradores" in Groups %}
+                <div class="modal fade" id="RemoveCategoryModal" tabindex="-1" aria-labelledby="RemoveCategoryModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content p-3 m-2">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="RemoveCategoryModalLabel">Eliminar Categoria</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="POST" action="">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">Categoria</span>
+                                        <select required name="RemoveCategorySelect" class="form-select" aria-label="Default select example">  
+                                            {% for category in categorys %}
+                                                {% if category.name != "Sin Categoria" %}
+                                                    <option name="category_id" value="{{category.id}}">{{category.name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>        
+                                <div class="row">
+                                    <div class="col-6">
+                                        <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="submit"  name="RemoveCategory" class="btn btn-danger float-end mx-2" value="Eliminar">
+                                    </div>
+                                </div>       
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
             {% comment %} ========================= ADD ===============    {% endcomment %}
             {% if "Administradores" in Groups %}
                 <div class="modal fade" id="AddModal" tabindex="-1" aria-labelledby="AddModalLabel" aria-hidden="true">
@@ -185,6 +253,16 @@
                             </div>
                             <form method="POST" action="">
                                 {% csrf_token %}
+                                {% if categorys %}
+                                    <div class="input-group mb-3">
+                                        <label class="input-group-text" for="inputGroupSelect01">Categoria</label>    
+                                        <select name="CategorySelect" class="form-select" aria-label="Default select example">  
+                                            {% for category in categorys %}
+                                                <option  value="{{category.id}}">{{category.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endif %}
                                 <div class="row">
                                     <div class="input-group mb-3">
                                         <span class="input-group-text">Agregar</span>
@@ -217,6 +295,16 @@
                         </div>
                         <form method="POST" action="">
                             {% csrf_token %}
+                            {% if categorys %}
+                                <div class="input-group mb-3">
+                                    <label class="input-group-text" for="inputGroupSelect01">Categoria</label>    
+                                    <select name="CategorySelect" class="form-select" aria-label="Default select example">  
+                                        {% for category in categorys %}
+                                            <option  value="{{category.id}}">{{category.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% endif %}
                             <div class="row">
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">Vender</span>
@@ -248,6 +336,16 @@
                         </div>
                         <form method="POST" action="">
                             {% csrf_token %}
+                            {% if categorys %}
+                                <div class="input-group mb-3">
+                                    <label class="input-group-text" for="inputGroupSelect01">Categoria</label>    
+                                    <select name="CategorySelect" class="form-select" aria-label="Default select example">  
+                                        {% for category in categorys %}
+                                            <option  value="{{category.id}}">{{category.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% endif %}
                             <div class="row">
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">Reembolsar</span>
@@ -279,6 +377,16 @@
                         </div>
                         <form method="POST" action="">
                             {% csrf_token %}
+                            {% if categorys %}
+                                <div class="input-group mb-3">
+                                    <label class="input-group-text" for="inputGroupSelect01">Categoria</label>    
+                                    <select name="CategorySelect" class="form-select" aria-label="Default select example">  
+                                        {% for category in categorys %}
+                                            <option  value="{{category.id}}">{{category.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% endif %}
                             <div class="row">
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">Quitar</span>
@@ -361,11 +469,10 @@
                     </div>
                 </div>   
             {% endif %}
-            {% comment %} =================  TABLE CATEGORYS  ==================== {% endcomment %}
-            
-            {% if categorys %}         
-                <div class="display-2 my-5 text-center">  Categorias </div>
-                <div class="card bg-ligth m-3 border border-dark" style="max-width: auto;">
+            {% comment %} =================  TABLE CATEGORYS  ==================== {% endcomment %}             
+            <div class="display-2 my-5 text-center">  Categorias </div>
+            <div class="card bg-ligth m-3 border border-dark" style="max-width: auto;">
+                {% if categorys %}
                     <table class="table table-ligth centrado shadow p-3 mb-0 bg-body-tertiary rounded">
                         <thead>
                         <tr> 
@@ -390,19 +497,24 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                
-                    <div class="row ">
-                        <div class="col">
-                            {% if "Administradores" in Groups %}
-                            <div class="d-flex justify-content-around">
-                                <button type="button" class="float-start btn btn-warning m-3 p-2" data-bs-toggle="modal" data-bs-target="#AddCategoryModal" data-bs-whatever="0">Agregar Categoria</button>
+                {% else %}
+                    <div class="h2  m-3 text-center">
+                        Sin Categorias
+                    </div>
+                {% endif %}  
+                <div class="row ">
+                    <div class="col">
+                        {% if "Administradores" in Groups %}
+                        <div class="d-flex justify-content-around">
+                            <button type="button" class="float-start btn btn-warning m-3 p-2" data-bs-toggle="modal" data-bs-target="#AddCategoryModal" data-bs-whatever="0">Agregar Categoria</button>
+                            {% if categorys %}
                                 <button type="button" class="float-end btn btn-danger m-3 p-2" data-bs-toggle="modal" data-bs-target="#RemoveCategoryModal" data-bs-whatever="0">Eliminar Categoria</button>
-                            </div>
                             {% endif %}
                         </div>
+                        {% endif %}
                     </div>
                 </div>
-            {% endif %}
+            </div>
             <div class="display-2 my-5 text-center">  Transacciones </div>
             {% comment %} =================  TABLE MOVEMENTS ==================== {% endcomment %}
             <div class="card bg-dark" style="max-width: auto;">
@@ -414,6 +526,7 @@
                         <th scope="col" class="h3">Cantidad</th>
                         <th scope="col" class="h3">Precio</th>
                         <th scope="col" class="h3">Importe</th>
+                        <th scope="col" class="h3">Info</th>
                         <th scope="col" class="h3">Fecha</th>
                     </tr>
                     </thead>   
@@ -440,24 +553,17 @@
                                     <td>-</td>
                                     <td>{{movement.price}}$</td>
                                     <td>-</td>
-                                {% elif movement.type == "CP" or movement.type == "RP" %}
+                                {% elif movement.type == "CP" or movement.type == "RP" or movement.type == "AC" or movement.type == "RC" %}
                                     <td>-</td>
                                     <td>-</td>
                                     <td>-</td>
                                 {% endif %}
                                 <th scope="row">
+                                    {% firstof movement.extra_info "-" %}
+                                </th>
+                                <th scope="row">
                                     {{movement.date}}
                                 </th>
-                                {% comment %} <th scope="row">
-                                    {% if movement.type == "CP" or movement.type == "eP" %}
-                                    <div class="h6 p-3">
-                                            Precio: {{movement.lot}}$
-                                    </div>
-                                    {% else %}
-                                    -
-                                    {% endif %}
-                                    
-                                </th> {% endcomment %}
                             </tr>
                             {% empty %}
                             <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay transacciones para mostrar<h2></div>     

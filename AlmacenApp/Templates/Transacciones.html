@@ -14,6 +14,8 @@
                     <div class="card">
                         <div class="card-body">
                             <p class="card-text">
+                                <>
+                                    
                                 <form method="POST" action="">
                                     {% csrf_token %}
                                     <div class="row m-3">
@@ -22,15 +24,9 @@
                                                 Tipo 
                                             </div>
                                             <select name="TypeFilter" class="form-select" aria-label="Default select example">  
-                                                <option {% if type_filter == "NF" %} selected {% endif %} value="NF">Sin Filtro</option>
-                                                <option {% if type_filter == "CP" %} selected {% endif %} value="CP">Creado Producto</option>
-                                                <option {% if type_filter == "EP" %} selected {% endif %} value="EP">Entrada de Productos</option>
-                                                <option {% if type_filter == "SP" %} selected {% endif %} value="SP">Salida de Productos</option>
-                                                <option {% if type_filter == "RD" %} selected {% endif %} value="RD">Retirada de Dinero</option>
-                                                <option {% if type_filter == "eP" %} selected {% endif %} value="eP">Editado de Producto</option>
-                                                <option {% if type_filter == "VP" %} selected {% endif %} value="VP">Venta de Productos</option>
-                                                <option {% if type_filter == "rP" %} selected {% endif %} value="rP">Reembolso de Productos</option>
-                                                <option {% if type_filter == "RP" %} selected {% endif %} value="RP">Remover Producto</option>
+                                                {% for value,value_text in MChoise  %}
+                                                    <option {% if type_filter == "value" %} selected {% endif %} value="{{value}}">{{value_text}}</option>
+                                                {% endfor %}
                                             </select>
                                         </div>
                                         <div class="col-4">
@@ -107,6 +103,7 @@
                     <th scope="col" class="h3">Cantidad</th>
                     <th scope="col" class="h3">Precio</th>
                     <th scope="col" class="h3">Importe</th>
+                    <th scope="col" class="h3">Info</th> 
                     <th scope="col" class="h3">Fecha</th>
                     
                 </tr>
@@ -156,14 +153,16 @@
                                 <td>{{movement.lot}}</td>
                                 <td>-</td>
                                 <td>-</td>
-                            {% elif movement.type == "CP" or movement.type == "RP" %}
+                            {% elif movement.type == "CP" or movement.type == "RP" or movement.type == "AC" or movement.type == "RC" %}
                                 <td>
                                     <a class="link-light h4" style=" text-decoration: none;" href="{% url 'producto' movement.product.id %}">
                                         <span 
                                         {% if movement.type == "CP" %}
                                             class="badge bg-primary w-100"
-                                        {% else%}
+                                        {% elif movement.type == "RP"%}
                                             class="badge bg-danger w-100"
+                                        {% else%}
+                                            class="badge bg-secondary w-100"
                                         {% endif %}
                                         >
                                             {% if movement.type == "RP" %}
@@ -189,6 +188,9 @@
                                 <td>{{movement.price}}$</td>
                                 <td>-</td>
                             {% endif %}
+                            <th scope="row">
+                                {% firstof movement.extra_info "-" %}
+                            </th>
                             <th scope="row">
                                 {{movement.date}}
                             </th>

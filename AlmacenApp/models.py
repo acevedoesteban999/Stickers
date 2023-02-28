@@ -1,8 +1,6 @@
 from django.db import models
 from datetime  import datetime
 # Create your models here.
-def RTRU(self):
-        return "A"
 
 class RegisteCash(models.Model):
     money=models.IntegerField(default=0)
@@ -25,28 +23,31 @@ class Category(models.Model):
     stored=models.IntegerField(default=0)
     sold=models.IntegerField(default=0)
     product=models.ForeignKey(Product, on_delete=models.CASCADE) 
-
+    @classmethod
+    def create(cls,product,name,stored=0,sold=0):
+        return cls(product=product,name=name,stored=stored,sold=sold)
     def __str__(self):
         return self.name
     
- 
+MChoise = [
+    ('EP','Agregado de Productos'),
+    ('CP','Creado de Producto'),
+    ('SP','Quitado de Productos'),
+    ('RD','Retiro de Dinero'),
+    ("eP","Editado de Producto"),
+    ("VP","Venta de Productos"),
+    ("rP","Reembolso de Productos"),
+    ("RP","Removido de Producto"),
+    ("AC","Agregado de Categoria"),
+    ("RC","Removido de Categoria"),
+    ]
 class Movement(models.Model):
-    MChoise = [
-        ('EP','Entrada de Productos'),
-        ('CP','Creado Producto'),
-        ('SP','Salida de Productos'),
-        ('RD','Retirada de Dinero'),
-        ("eP","Editado de Producto"),
-        ("VP","Venta de Productos"),
-        ("rP","Reembolso de Productos"),
-        ("RP","Remover Producto")]
     type=models.CharField(max_length=2,choices=MChoise)
     date=models.DateTimeField(default=datetime.now,blank=True)
     price=models.IntegerField(default=0)
     lot=models.IntegerField(default=0)
-    
+    extra_info=models.CharField(max_length=25,null=True,blank=True)
     product=models.ForeignKey(Product, on_delete=models.CASCADE,null=True,blank=True,related_name="RN_product")
-    
     def __str__(self):
         return "M"+self.id.__str__()+"-"+self.date.date().__str__()
 
@@ -75,7 +76,7 @@ class Movement(models.Model):
             return True
         return False
     @classmethod
-    def Sell(cls,product,lot):
+    def Sell(cls,product,lot,category_id):
         if product and lot > 0:
             diff = product.stored - lot 
             if diff >= 0:
@@ -87,6 +88,16 @@ class Movement(models.Model):
                     r_box.money += amount
                     movement=cls(type="VP",product=product,lot=lot,price=product.price)
                     if movement:
+                        if category_id:
+                            category=Category.objects.get(id=category_id)
+                            diff = category.stored - lot
+                            if diff >= 0:
+                                category.stored = diff
+                                category.sold += lot
+                                category.save()
+                                movement.extra_info=category.name
+                            else:
+                                return None
                         movement.save()
                         product.save()
                         r_box.save()
@@ -108,29 +119,43 @@ class Movement(models.Model):
                 return True
         return False 
     @classmethod
-    def Add(cls,product,lot):
+    def Add(cls,product,lot,category_id):
         if product and lot > 0:
             product.stored += lot 
             movement=cls(type="EP",product=product,lot=lot)
             if movement:
+                if category_id:
+                    category=Category.objects.get(id=category_id)
+                    category.stored += lot
+                    category.save()
+                    movement.extra_info=category.name
                 movement.save()
                 product.save()
                 return True
         return False
     @classmethod
-    def Sub(cls,product,lot):
+    def Sub(cls,product,lot,category_id):
         if product and lot > 0:
-            dif= product.stored - lot
-            if dif >= 0:
-                product.stored = dif
+            diff= product.stored - lot
+            if diff >= 0:
+                product.stored = diff
                 movement=cls(type="SP",product=product,lot=lot)
                 if movement:
+                    if category_id:
+                        category=Category.objects.get(id=category_id)
+                        diff = category.stored - lot
+                        if diff >= 0:
+                            category.stored = diff
+                            category.save()
+                            movement.extra_info=category.name
+                        else:
+                            return None
                     movement.save()
                     product.save()
                     return True
         return False
     @classmethod
-    def Refund(cls,product,lot):
+    def Refund(cls,product,lot,category_id):
         if product and lot > 0:
                 diff = product.sold - lot 
                 if diff >= 0:
@@ -143,6 +168,16 @@ class Movement(models.Model):
                             product.stored += lot
                             movement=cls(type="rP",product=product,lot=lot,price=product.price)
                             if movement:
+                                if category_id:
+                                    category=Category.objects.get(id=category_id)
+                                    diff = category.sold - lot 
+                                    if diff >= 0:
+                                        category.sold = diff
+                                        category.stored += lot
+                                        category.save()
+                                        movement.extra_info=category.name
+                                    else:
+                                        return {"None":True}
                                 movement.save()
                                 product.save()
                                 r_box.save()
@@ -163,8 +198,35 @@ class Movement(models.Model):
                         r_box.save()
                         return True
         return False
-  
-    
+    @classmethod
+    def AddCategory(cls,product,category_name):
+        categorys=Category.objects.filter(product__id=product.id)
+        if categorys:
+            for cat_name in categorys:
+                if cat_name.__str__() == category_name.__str__():
+                    return None
+        else:
+            category_nc=Category.create(product=product,name="Sin Categoria",stored=product.stored,sold=product.sold)
+            category_nc.save()  
+        category=Category.create(product=product,name=category_name)
+        movement=cls(type="AC",product=product,extra_info=category_name.__str__()[:25])
+        category.save()
+        movement.save()
+        return True
+    @classmethod
+    def RemoveCategory(cls,id,p_id):
+        category=Category.objects.get(id=id)
+        if category:
+            categorys=Category.objects.filter(product__id=p_id)
+            if categorys.count() == 2:
+                for category_d in categorys:
+                    category_d.delete()
+            movement=cls(type="RC",product=category.product,extra_info=category.name.__str__()[:25])
+            category.delete()
+            movement.save()
+            
+            return True
+        return False    
 
 
 
