@@ -5,7 +5,7 @@
     <div class="container md ">
         {% if movements or date_filter != "NF" or type_filter != "NF" or product_filter != "NF" %}
             <div class="container m-4"style="text-align: center;">
-                <div class="d-grid gap-2 col-6 mx-auto">
+                <div class="d-grid gap-2 col-6 mx-auto m-2">
                     <a class="btn btn-light" data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">
                         Filtro
                     </a>
@@ -14,8 +14,6 @@
                     <div class="card">
                         <div class="card-body">
                             <p class="card-text">
-                                <>
-                                    
                                 <form method="POST" action="">
                                     {% csrf_token %}
                                     <div class="row m-3">

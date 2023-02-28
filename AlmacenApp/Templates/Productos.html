@@ -27,23 +27,28 @@
                                 <div class="form-floating mb-3">
                                     <input min="1" type="number" class="form-control" required name="precio"id="floatingInput" placeholder="Precio">
                                     <label for="floatingInput">Precio</label>
-                                    </div>
-                                    <div class="form-floating mb-3">
+                                </div>
+                                <div class="form-floating mb-3">
                                     <textarea  type="text" class="form-control" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;"></textarea >
                                     <label for="floatingInput">Descripcion</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <div class="row m-2">
+                                        Imagen
                                     </div>
-                                    <div class="form-floating mb-3">
                                     <div class="row">
-                                        <div class="col-9">
-                                            <input onchange="PrevImg" type="file"  class="form-control " name="imagen" id="InputImagePre" placeholder="Imagen">
-                                            <label for="floatingInput">Imagen</label>
+                                        <div class="col-9" id="ImgDiv">
+                                            <div id="divid">
+                                                <input onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Imagen">
+                                            </div>
                                         </div> 
                                         <div class="col-3">
-                                            <button class="btn btn-danger" id="ButtonImgPree" onClick="AA()">Eliminar </button>
+                                            <a style="display: none;" class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
                                         </div>    
                                     </div>
-                                    <img id="imgPre" src="">
-                                    
+                                    <div class="d-flex justify-content-center m-3">
+                                        <img id="imgPre" src="" alt=" ">
+                                    </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
