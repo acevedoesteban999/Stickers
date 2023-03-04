@@ -1,12 +1,12 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
-    {% if user.is_authenticated and "Administradores" in Groups %}
+    {% if user.is_authenticated and "Admin" in Groups %}
         <div class="continer-md">
             <div class="container my-4"style="text-align: center;">
                 <div class="d-grid gap-2 col-6 mx-auto">
                         <button type="button" class="btn btn-warning " data-bs-toggle="modal" data-bs-target="#RetirarModal" data-bs-whatever="@RetDin">Retirar dinero</button>     
-                    <div class="modal fade" id="RetirarModal" tabindex="-1" aria-labelledby="RetirarModalLabel" aria-hidden="true">
+                    <div class="modal fade" data-bs-backdrop="static" id="RetirarModal" tabindex="-1" aria-labelledby="RetirarModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -18,7 +18,7 @@
                                         {% csrf_token %}
                                         <div class="modal-body">
                                             <div class="form-floating mb-3">
-                                                <input type="text" class="form-control" name="cantidad" id="floatingInput" placeholder="Nombre">
+                                                <input required type="text" class="form-control" name="cantidad" id="floatingInput" placeholder="Nombre">
                                                 <label for="floatingInput">Cantidad</label>
                                             </div>
                                         </div>

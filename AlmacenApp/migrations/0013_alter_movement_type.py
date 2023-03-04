@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='movement',
             name='type',
-            field=models.CharField(choices=[('EP', 'Agregado de Productos'), ('CP', 'Creado de Producto'), ('SP', 'Quitado de Productos'), ('RD', 'Retiro de Dinero'), ('eP', 'Editado de Producto'), ('VP', 'Venta de Productos'), ('rP', 'Reembolso de Productos'), ('RP', 'Removido de Producto'), ('AC', 'Agregado de Categoria'), ('RC', 'Removido de Categoria')], max_length=2),
+            field=models.CharField(choices=[('EP', 'Agregado de Productos'), ('CP', 'Creado de Producto'), ('SP', 'Quitado de Productos'), ('RD', 'Retiro de Dinero'), ('eP', 'Editado de Producto'), ('VP', 'Venta de Productos'), ('rP', 'Reembolso de Productos'), ('RP', 'Removido de Producto'), ('AC', 'Agregado de Categoría'), ('RC', 'Removido de Categoría')], max_length=2),
         ),
     ]

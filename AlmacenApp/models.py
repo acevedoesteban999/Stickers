@@ -22,6 +22,7 @@ class Category(models.Model):
     name=models.CharField(max_length=10) 
     stored=models.IntegerField(default=0)
     sold=models.IntegerField(default=0)
+    image=models.ImageField(blank=True,null=True,upload_to='categorías', height_field=None, width_field=None, max_length=None)
     product=models.ForeignKey(Product, on_delete=models.CASCADE) 
     @classmethod
     def create(cls,product,name,stored=0,sold=0):
@@ -38,8 +39,8 @@ MChoise = [
     ("VP","Venta de Productos"),
     ("rP","Reembolso de Productos"),
     ("RP","Removido de Producto"),
-    ("AC","Agregado de Categoria"),
-    ("RC","Removido de Categoria"),
+    ("AC","Agregado de Categoría"),
+    ("RC","Removido de Categoría"),
     ]
 class Movement(models.Model):
     type=models.CharField(max_length=2,choices=MChoise)
@@ -91,6 +92,7 @@ class Movement(models.Model):
                         if category_id:
                             category=Category.objects.get(id=category_id)
                             diff = category.stored - lot
+                            print(diff)
                             if diff >= 0:
                                 category.stored = diff
                                 category.sold += lot
@@ -199,16 +201,19 @@ class Movement(models.Model):
                         return True
         return False
     @classmethod
-    def AddCategory(cls,product,category_name):
+    def AddCategory(cls,product,category_name,image):
         categorys=Category.objects.filter(product__id=product.id)
         if categorys:
             for cat_name in categorys:
                 if cat_name.__str__() == category_name.__str__():
                     return None
         else:
-            category_nc=Category.create(product=product,name="Sin Categoria",stored=product.stored,sold=product.sold)
+            category_nc=Category.create(product=product,name="Sin Categoría",stored=product.stored,sold=product.sold)
             category_nc.save()  
         category=Category.create(product=product,name=category_name)
+        if category:
+            if image:
+                category.image=image
         movement=cls(type="AC",product=product,extra_info=category_name.__str__()[:25])
         category.save()
         movement.save()
