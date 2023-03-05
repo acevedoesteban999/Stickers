@@ -1,4 +1,4 @@
 ## Stiker Store
 
-source .venv/bin/activate
-sudo systemctl restart apache2
+# source .venv/bin/activate
+# sudo systemctl restart apache2
