@@ -1,3 +1,7 @@
+Almacen
+AlmacenApp/__pycache__
+AlmacenApp/migrations
+media
+static
 db.sqlite3
-media/productos
-media/categorías
+manage.py
