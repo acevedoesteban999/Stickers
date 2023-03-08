@@ -1,1 +1,1 @@
-## Stiker Store
+## Django Almacen
