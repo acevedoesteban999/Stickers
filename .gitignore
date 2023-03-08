@@ -1,2 +1,6 @@
 db.sqlite3
-media/productos
+Almacen/
+media/
+staic/bootstrap/
+AlmcenApp/__pycache__/
+AlmcenApp/migrations/
