@@ -2,8 +2,7 @@
 {% load static %}
 {% block contenido %}
 
-
-<div class="container-fluid w-50 md">
+{% comment %} <div class="container-fluid w-50 md">
     {% if not user.is_authenticated %}
         <div class="card text-center m-4">
           <div class="card-body bg-dark text-warning m-3 ">
@@ -12,8 +11,8 @@
           </div>
         </div>
     {% endif %}
-</div>
-  <div class="continer-fluid">
+</div> {% endcomment %}
+  {% comment %} <div class="continer-fluid">
     <div class="row text-center"> 
       <div class="display-1 m-3 ">Hoy</div>
       <hr></hr>
@@ -156,7 +155,7 @@
         {% endif %}
       </div>
     </div>
-  </div> 
+  </div>  {% endcomment %}
 
 
 
