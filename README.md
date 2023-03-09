@@ -1,2 +1,2 @@
-## Proyect Django-Apache-Debian
+## Debian-Apache-Django
 
