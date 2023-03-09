@@ -7,7 +7,10 @@ class FormProduc(forms.Form):
 
 class FormLot(forms.Form):
     cantidad=forms.IntegerField(required=True)
-
+    
+class FormImg(forms.Form):
+    name=forms.CharField(required=True)
+    imagen=forms.ImageField(required=False)
 
 
     

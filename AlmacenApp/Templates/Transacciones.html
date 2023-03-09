@@ -22,6 +22,7 @@
                                                 Tipo 
                                             </div>
                                             <select name="TypeFilter" class="form-select" aria-label="Default select example">  
+                                                <option {% if type_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
                                                 {% for value,value_text in MChoise  %}
                                                     <option {% if type_filter == "value" %} selected {% endif %} value="{{value}}">{{value_text}}</option>
                                                 {% endfor %}
@@ -77,6 +78,7 @@
                                         </div>       
                                     </div>       
                                     <div class="row">
+                                        <hr></hr>
                                         <div class="col-4">
                                             <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">         
                                         </div>

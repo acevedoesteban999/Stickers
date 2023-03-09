@@ -8,118 +8,126 @@
     <link href="{% static 'css/styles.css'%}" rel="stylesheet">
 </head>
 <body class='bodycolor'>
-
-  <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasRightLabel">
-          {% if user.is_authenticated %}
-            {{user.username}}
-          {% else %}
-            Ingrsar 
-          {% endif %}
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-      {% if user.is_authenticated %}
-      <div class="row">
-        Cuenta: {{user.username}}
+  <div calss="container-sm">
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+      <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasRightLabel">
+            {% if user.is_authenticated %}
+              {{user.username}}
+            {% else %}
+              Ingrsar 
+            {% endif %}
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
-      <div class="row">
-        <div class="col">   
+      <div class="offcanvas-body">
+        {% if user.is_authenticated %}
+          <div class="row">
+            Cuenta: {{user.username}}
+          </div>
+          <div class="row">
+            <div class="col">   
+              <form action="{% url 'base_post' %}" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="Cerrar Sesion" name="CerrarSesion" class="float-end btn btn-danger m-3 p-2">
+              </form>   
+            </div>
+          </div>
+        {% else %}
           <form action="{% url 'base_post' %}" method="POST">
             {% csrf_token %}
-            <input type="submit" value="Cerrar Sesion" name="CerrarSesion" class="float-end btn btn-danger m-3 p-2">
-          </form>   
-      </div>
-      </div>
-        
-      {% else %}
-        <form action="{% url 'base_post' %}" method="POST">
-          {% csrf_token %}
-          <div class="form-floating mb-3">
-            <input type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username" maxlength="150" required="" class="form-control" id="floatingInput" placeholder="Ususario">
-            <label for="floatingInput">Usuario</label>
-          </div>
-          <div class="form-floating">
-            <input type="password" name="password" autocomplete="current-password" required="" class="form-control" id="floatingPassword" placeholder="Password">
-            <label for="floatingPassword">Password</label>
-          </div>
-          <input type="reset"  class="float-start btn btn-warning m-3" value="Cancelar" data-bs-dismiss="offcanvas" aria-label="Close">
-          <input type="submit" class="float-end btn btn-success m-3" name="Inicar_Sesion"value="Ingresar">
-          
-        </form>
-      {% endif %}
-      
-    </div>
-  </div>  
-  <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <div class="container-fluid">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-        <a class="navbar-brand" href="#">Stiker</a>
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="mx-3 nav-link {% if '/Home' in request.path %}active{% endif %}" aria-current="page" href="{% url 'home'%}">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="mx-3 nav-link {% if '/Almacen' in request.path %}active{% endif %}" href="{% url 'almacen'%}">Almacen</a>
-            </li>
-            <li class="nav-item">
-              <a class="mx-3 nav-link {% if '/Productos' in request.path %}active{% endif %}" href="{% url 'productos'%}">Productos</a>
-            </li>
-            {% if user.is_authenticated %}
-              <li class="nav-item">
-                <a class="nav-link {% if '/Transacciones' in request.path%}active{% endif %}" href="{% url 'transacciones'%}">Transacciones </a>
-              </li> 
-            {% endif %}
-        </ul>
-        {% if user.is_authenticated %}
-          <a class="btn btn-warning p-2 mx-5" type="button" {% if "Administradores" in Groups %} href="{% url 'caja' %}"{% endif %} style="border-radius: 60px;" >
-            <p class="h6 pt-1">
-              Dinero en Caja:
-            <span class="text-success">
-                {{registe_cash.money}}$ 
-              </span>
-            </p>
-          </a>
-        {% endif %}
-        <div style="border-radius: 60px;" class="bg-success  h6 text-light border border-success m-2 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-          {% if user.is_authenticated %}
-            @{{user.username}}
-          {% else %}
-            Ingresar 
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  </nav>
-  {% for message in messages %}
-    <div class="continer-fluid">
-      <div class="d-flex justify-content-center">
-        <div class="p-3 px-5 m-3 alert alert-{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show m-2 p-2 text-center" role="alert">
-            <div class="h4">
-                <strong>
-                  {% if message.tags == "error" %}
-                    Error!
-                  {% elif message.tags == "success" %}
-                    Completado!
-                  {% endif %}
-                  </strong>
+            <div class="form-floating mb-3">
+              <input type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username" maxlength="150" required="" class="form-control" id="floatingInput" placeholder="Ususario">
+              <label for="floatingInput">Usuario</label>
             </div>
-            <div class="h6">
-                {{ message }}
-            </div> 
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="form-floating">
+              <input type="password" name="password" autocomplete="current-password" required="" class="form-control" id="floatingPassword" placeholder="Password">
+              <label for="floatingPassword">Password</label>
+            </div>
+            <input type="reset"  class="float-start btn btn-warning m-3" value="Cancelar" data-bs-dismiss="offcanvas" aria-label="Close">
+            <input type="submit" class="float-end btn btn-success m-3" name="Inicar_Sesion"value="Ingresar">
+            
+          </form>
+        {% endif %}
+        
+      </div>
+    </div>  
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse container-sm" id="navbarTogglerDemo01">
+          <a class="navbar-brand" href="#">Stiker</a>
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 sm">
+              <li class="nav-item">
+                <a class="mx-3 nav-link {% if '/Home' in request.path %}active{% endif %}" aria-current="page" href="{% url 'home'%}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="mx-3 nav-link {% if '/Almacen' in request.path %}active{% endif %}" href="{% url 'almacen'%}">Almacen</a>
+              </li>
+              {% if user.is_authenticated %}
+                <li class="nav-item">
+                  <a class="mx-3 nav-link {% if '/Productos' in request.path %}active{% endif %}" href="{% url 'productos'%}">Productos</a>
+                </li>
+              
+                <li class="nav-item">
+                  <a class="nav-link {% if '/Transacciones' in request.path%}active{% endif %}" href="{% url 'transacciones'%}">Transacciones </a>
+                </li> 
+              {% endif %}
+          </ul>
+          <ul class="nav justify-content-end">
+            <li class="nav-item">
+              {% if user.is_authenticated %}
+              <a class="btn btn-warning p-2 mx-5" type="button" {% if "Admin" in Groups %} href="{% url 'caja' %}"{% endif %} style="border-radius: 60px;" >
+                <p class="h6 pt-1">
+                  Dinero en Caja:
+                <span class="text-success">
+                    {{registe_cash.money}}$ 
+                  </span>
+                </p>
+              </a>
+            {% endif %}
+          </li>
+            <li class="nav-item">
+              <div style="border-radius: 60px;" class="bg-success  h6 text-light border border-success m-2 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                {% if user.is_authenticated %}
+                  @{{user.username}}
+                {% else %}
+                  Ingresar 
+                {% endif %}
+              </div>
+            </li>
+           
+          </ul>
         </div>
       </div>
-    </div>
-  {% endfor %}
+    </nav>
+    {% for message in messages %}
+      <div class="continer-fluid">
+        <div class="d-flex justify-content-center">
+          <div class="p-3 px-5 m-3 alert alert-{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show m-2 p-2 text-center" role="alert">
+              <div class="h4">
+                  <strong>
+                    {% if message.tags == "error" %}
+                      Error!
+                    {% elif message.tags == "success" %}
+                      Completado!
+                    {% endif %}
+                    </strong>
+              </div>
+              <div class="h6">
+                  {{ message }}
+              </div> 
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
 
-  {% block contenido %}
-  {% endblock  %}
+    {% block contenido %}
+    {% endblock  %}
+  </div>
 
     <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}" ></script>
     <script type="text/javascript" src="{% static 'js/index.js' %}" ></script>

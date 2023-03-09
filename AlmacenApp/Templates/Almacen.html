@@ -2,19 +2,6 @@
 {% load static %}
 {% block contenido %}
 
-  <div class="container mx-3 mt-2" style="text-align: right;">
-    {% comment %} {% if user.is_authenticated %}
-      <a type="button" {% if "Administradores" in Groups %} href="{% url 'caja' %}"{% endif %} style="border-radius: 60px;" class="btn btn-warning">
-        <p class="h4">
-          Dinero en Caja:
-          <span class="text-success">
-              {{registe_cash.money}}$ 
-            </span>
-          </p>
-        </a>
-      
-    {% endif %} {% endcomment %}
-  </div>
   <div class="container-md">    
     {% if products %}       
       <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -23,14 +10,17 @@
                 <div class="col-3 ">
                     <div class="card h-100 p-3 my-3 ">
                         {% if product.image %}
-                            <img src="{{product.image.url}}" style="width:70%; align-self:center" class="card-img-top" alt="...">
+                            <img src="{{product.image.url}}" width="200" height="400" class="card-img-top" alt="...">
                         {% else %}
-                            <img src="" style="width:70%; align-self:center" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
+                            <img src="" width="200" height="400" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
                         {% endif %}
                         <div class="card-body">
                             <h3 class="card-title">{{product.name}}</h3>
                             <h5 class="card-title">{{product.price}}$</h5>
-                            <h6 class="card-title">Almacenado : {{product.stored}}</h6>
+                            
+                            {% if user.is_authenticated %}
+                              <h6 class="card-title">Almacenado : {{product.stored}}</h6>
+                            {% endif %} 
                             {% comment %} <h6 class="card-title">Total Vendido  : {{product.sold}}</h6> {% endcomment %}
                             <p class="card-text"><small class="text-muted">{{product.description}}</small></p>
                         </div>
