@@ -2,8 +2,8 @@ db.sqlite3
 manage.py
 Almacen/
 media/
-staic/bootstrap/
-AlmcenApp/__pycache__/
-AlmcenApp/migrations/
+static/bootstrap/
+AlmacenApp/__pycache__/
+AlmacenApp/migrations/
 
 
