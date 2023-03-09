@@ -3,6 +3,7 @@ manage.py
 Almacen/
 media/
 static/bootstrap/
+static/admin/
 AlmacenApp/__pycache__/
 AlmacenApp/migrations/
 
