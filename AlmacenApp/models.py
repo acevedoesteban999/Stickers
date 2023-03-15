@@ -22,7 +22,7 @@ class Category(models.Model):
     name=models.CharField(max_length=10) 
     stored=models.IntegerField(default=0)
     sold=models.IntegerField(default=0)
-    image=models.ImageField(blank=True,null=True,upload_to='categorías', height_field=None, width_field=None, max_length=None)
+    image=models.ImageField(blank=True,null=True,upload_to='categorias', height_field=None, width_field=None, max_length=None)
     product=models.ForeignKey(Product, on_delete=models.CASCADE) 
     @classmethod
     def create(cls,product,name,stored=0,sold=0):
