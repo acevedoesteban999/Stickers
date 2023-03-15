@@ -55,128 +55,15 @@
                     </div>
                     <div class="col-md-8">
                         <div class="card-body float-center ">
-                            <h2 class="card-title my-2"><strong>{{product.name}}</strong></h2>
-                            <h3 class="card-text my-1">{{product.price}}$</h3>
-                            <h6 class="card-title">Almacenados: {{product.stored}}</h6>
-                            <h6 class="card-title">  Vendidos : {{product.sold}}</h6>
+                            <h2 class="card-title my-5"><strong>{{product.name}}</strong></h2>
+                            <h3 class="card-text mt-2">{{product.price}}$</h3>
+                            <h6 class="card-title mt-2">Almacenados: {{product.stored}}</h6>
+                            <h6 class="card-title mt-2">  Vendidos : {{product.sold}}</h6>
                             <div class="row">
                                 <p class="card-text"><small class="text-muted">{{product.description}}</small></p>
                             </div>      
                         </div>            
                     </div>
-                    <!--
-                    {% comment %}=================================== COLPASE =================================  {% endcomment %}
-                    <div class="col-md-4 ">
-                        {% comment %} =========== ADD =============== {% endcomment %}
-                        {% if "Admin" in Groups %}
-                            <div class="continer m-3 pt-5">
-                                <div class="collapse" id="collapseAdd">
-                                    <form method="POST" action="">
-                                        {% csrf_token %}
-                                        <div class="row">
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text">Agregar</span>
-                                                <div class="form-floating">
-                                                    <input required value="1" type="number" required min="1" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                                    <label for="floatingInput">Cantidad de {{product.name}}</label>        
-                                                </div>
-                                            </div>
-                                        </div>        
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd">         
-                                            </div>
-                                            <div class="col-6">
-                                                <input type="submit"  name="AddProduct" class="btn btn-info float-end mx-2" value="Agregar">
-                                            </div>
-                                        </div>       
-                                    </form>  
-                                </div>
-                            </div>
-                        {% endif %}
-                        {% comment %} ======== SELL =========== {% endcomment %}
-                        {% if product.stored != 0 %}
-                            <div class="continer m-3 ">
-                                <div class="collapse" id="collapseSell">
-                                    <form method="POST" action="">
-                                        {% csrf_token %}
-                                        <div class="row">
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text">Vender</span>
-                                                <div class="form-floating">
-                                                    <input required type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                                    <label for="floatingInput">Cantidad</label>       
-                                                </div>
-                                            </div>
-                                        </div>        
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseSell" role="button" aria-expanded="false" aria-controls="collapseSell">         
-                                            </div>
-                                            <div class="col-6">
-                                                <input type="submit"  name="SellProduct" class="btn btn-success float-end mx-2" value="Vender">
-                                            </div>
-                                        </div>       
-                                    </form>  
-                                </div>
-                            </div>
-                        {% endif %}
-                        {% comment %} ======== SUBB =========== {% endcomment %}
-                        {% if product.stored != 0 %}
-                            <div class="continer m-3 ">
-                                <div class="collapse" id="collapseSub">
-                                    <form method="POST" action="">
-                                        {% csrf_token %}
-                                        <div class="row">
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text">Quitar</span>
-                                                <div class="form-floating">
-                                                    <input required type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                                    <label for="floatingInput">Cantidad</label>       
-                                                </div>
-                                            </div>
-                                        </div>        
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseSub" role="button" aria-expanded="false" aria-controls="collapseSub">         
-                                            </div>
-                                            <div class="col-6">
-                                                <input type="submit"  name="SubProduct" class="btn btn-danger float-end mx-2" value="Quitar">
-                                            </div>
-                                        </div>       
-                                    </form>  
-                                </div>
-                            </div>
-                        {% endif %}
-                        {% comment %} ======== REFUND =========== {% endcomment %}
-                        {% if product.sold != 0 %}
-                            <div class="continer m-3 ">
-                                <div class="collapse" id="collapseRefund">
-                                    <form method="POST" action="">
-                                        {% csrf_token %}
-                                        <div class="row">
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text">Reembolsar</span>
-                                                <div class="form-floating">
-                                                    <input required type="number" value="1" min="1" max="{{product.sold}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                                    <label for="floatingInput">Cantidad</label>       
-                                                </div>
-                                            </div>
-                                        </div>        
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseRefund" role="button" aria-expanded="false" aria-controls="collapseRefund">         
-                                            </div>
-                                            <div class="col-6">
-                                                <input type="submit"  name="RefundProduct" style="background-color: orangered; color: white;" class="btn float-end mx-2" value="Reembolsar">
-                                            </div>
-                                        </div>       
-                                    </form>  
-                                </div>
-                            </div>
-                        {% endif %}
-                    </div>
-                    -->
                 </div>
                 
                 {% comment %} =============== BUTTONS ======================== {% endcomment %}
