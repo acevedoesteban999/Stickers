@@ -203,21 +203,25 @@ class Movement(models.Model):
     @classmethod
     def AddCategory(cls,product,category_name,image):
         categorys=Category.objects.filter(product__id=product.id)
+        category_nc=None
         if categorys:
             for cat_name in categorys:
                 if cat_name.__str__() == category_name.__str__():
                     return None
         else:
             category_nc=Category.create(product=product,name="Sin Categoría",stored=product.stored,sold=product.sold)
-            category_nc.save()  
+            
         category=Category.create(product=product,name=category_name)
         if category:
             if image:
                 category.image=image
-        movement=cls(type="AC",product=product,extra_info=category_name.__str__()[:25])
-        category.save()
-        movement.save()
-        return True
+            movement=cls(type="AC",product=product,extra_info=category_name.__str__()[:25])
+            category.save()
+            if category_nc:
+                category_nc.save()  
+            movement.save()
+            return True
+        return False
     @classmethod
     def RemoveCategory(cls,id,p_id):
         category=Category.objects.get(id=id)
