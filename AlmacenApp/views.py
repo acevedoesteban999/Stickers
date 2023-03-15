@@ -76,10 +76,10 @@ def CajaView(request):
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
 
-def AlmacenView(request):
+def TiendaView(request):
     try:
         products = Product.objects.exclude(removed=True).filter(stored__gt=0).order_by('name')
-        return render(request,"Almacen.html",{'products':products})
+        return render(request,"Tienda.html",{'products':products})
     except:
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
@@ -102,7 +102,8 @@ def ProductosView(request):
                             categorys=Category.objects.filter(product__id=product.id).order_by("name")
                             movements=Movement.objects.filter(product_id=product.id).order_by('-date')[:50]
                             messages.success(request,"Se ha creado  el objeto %s correctamente"%name)
-                            return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys}) 
+                            #return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys}) 
+                            return redirect("/Producto/{}".format(product.id))
                     except IntegrityError:
                         messages.error(request,"Nose ha podido  crear, ya existe un objeto de nombre %s"% name)
                         return render(request,"Productos.html",{'products':products})

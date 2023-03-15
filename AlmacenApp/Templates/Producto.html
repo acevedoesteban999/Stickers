@@ -182,32 +182,44 @@
                 {% comment %} =============== BUTTONS ======================== {% endcomment %}
                 <div class="card-footer">
                     <div class="d-flex my-3 justify-content-around">
-                        {% if "Admin" in Groups %}
-                            {% comment %} <a class="btn btn-info" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd"> {% endcomment %}
-                            <a type="button" class=" btn btn-info" data-bs-toggle="modal" data-bs-target="#AddModal" data-bs-whatever="1">
-                                Agregar
-                            </a>      
-                        {% endif %}
-                        {% if product.stored != 0 %}
-                            <a type="button" class=" btn btn-success" data-bs-toggle="modal" data-bs-target="#SellModal" data-bs-whatever="1">
-                                Vender
-                            </a>  
-                        {% endif %}
-                        {% if "Admin" in Groups %}
-                            <button type="button" class=" btn btn-warning" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">
-                                Editar
-                            </button> 
-                        {% endif %}
-                        {% if product.sold != 0 %}
-                            <a type="button" style="background-color: orangered; color: white;" class=" btn " data-bs-toggle="modal" data-bs-target="#RefundModal" data-bs-whatever="1">
-                                Reembolsar
-                            </a>  
-                        {% endif %}
-                        {% if "Admin" in Groups and product.stored != 0 %}
-                        <a type="button" class=" btn btn-danger" data-bs-toggle="modal" data-bs-target="#SubModal" data-bs-whatever="1">
-                            Quitar
-                            </a>  
-                        {% endif %}
+                        <div class="row cols-2 ">
+                            <div class="col">
+                                {% if "Admin" in Groups %}
+                                    {% comment %} <a class="btn btn-info" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd"> {% endcomment %}
+                                    <a type="button" class=" btn btn-info" data-bs-toggle="modal" data-bs-target="#AddModal" data-bs-whatever="1">
+                                        Agregar
+                                    </a>      
+                                {% endif %}
+                            </div>
+                            <div class="col">
+                                {% if product.stored != 0 %}
+                                    <a type="button" class=" btn btn-success" data-bs-toggle="modal" data-bs-target="#SellModal" data-bs-whatever="1">
+                                        Vender
+                                    </a>  
+                                {% endif %}
+                            </div>
+                            <div class="col">
+                                {% if "Admin" in Groups %}
+                                    <button type="button" class=" btn btn-warning" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">
+                                        Editar
+                                    </button> 
+                                {% endif %}
+                            </div>
+                            <div class="col">
+                                {% if product.sold != 0 %}
+                                    <a type="button" style="background-color: orangered; color: white;" class=" btn " data-bs-toggle="modal" data-bs-target="#RefundModal" data-bs-whatever="1">
+                                        Reembolsar
+                                    </a>  
+                                {% endif %}
+                            </div>
+                            <div class="col">
+                                {% if "Admin" in Groups and product.stored != 0 %}
+                                <a type="button" class=" btn btn-danger" data-bs-toggle="modal" data-bs-target="#SubModal" data-bs-whatever="1">
+                                    Quitar
+                                    </a>  
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 </div>            
             </div>   

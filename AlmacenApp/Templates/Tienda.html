@@ -7,21 +7,20 @@
       <div class="row cols-1 cols-md-2 cols-lg-3 cols-xl-4">
         {% for product in products %}
           {% if product.stored != 0 %}
-            <div class="col-12 m-3 col-md-6 col-lg-4 col-xl-3">
-                <div class="card h-100 p-3 m-3 ">
+            <div class="col-11 col-md-5 col-lg-4 col-xl-3 mb-3">
+                <div class="card h-100 p-3 my-3 ">
                     {% if product.image %}
-                        <img src="{{product.image.url}}" max-width="200" max-height="400" class="card-img-top" alt="...">
+                        <img src="{{product.image.url}}" max-width="150" max-height="350" class="card-img-top" alt="...">
                     {% else %}
                         <img src="" max-width="200" max-height="400" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
                     {% endif %}
                     <div class="card-body">
                         <h3 class="card-title">{{product.name}}</h3>
-                        <h5 class="card-title">{{product.price}}$</h5>
+                        <h5 class="card-text">{{product.price}}$</h5>
                         
                         {% if user.is_authenticated %}
-                          <h6 class="card-title">Almacenado : {{product.stored}}</h6>
+                          <h6 class="card-text">Almacenado : {{product.stored}}</h6>
                         {% endif %} 
-                        {% comment %} <h6 class="card-title">Total Vendido  : {{product.sold}}</h6> {% endcomment %}
                         <p class="card-text"><small class="text-muted">{{product.description}}</small></p>
                     </div>
                     

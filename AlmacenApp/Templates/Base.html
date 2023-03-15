@@ -3,7 +3,7 @@
 <head >
   </body>
     {% load static %}
-
+     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="{% static 'bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
     <link href="{% static 'css/styles.css'%}" rel="stylesheet">
 </head>
@@ -64,7 +64,7 @@
                 <a class="mx-3 nav-link {% if '/Home' in request.path %}active{% endif %}" aria-current="page" href="{% url 'home'%}">Home</a>
               </li>
               <li class="nav-item">
-                <a class="mx-3 nav-link {% if '/Almacen' in request.path %}active{% endif %}" href="{% url 'almacen'%}">Almacen</a>
+                <a class="mx-3 nav-link {% if '/Tienda' in request.path %}active{% endif %}" href="{% url 'tienda'%}">Tienda</a>
               </li>
               {% if user.is_authenticated %}
                 <li class="nav-item">
@@ -75,34 +75,32 @@
                   <a class="nav-link {% if '/Transacciones' in request.path%}active{% endif %}" href="{% url 'transacciones'%}">Transacciones </a>
                 </li> 
               {% endif %}
-          </ul>
-          <ul class="nav justify-content-end">
-            <li class="nav-item">
-              {% if user.is_authenticated %}
-              <a class="btn btn-warning p-2 mx-5" type="button" {% if "Admin" in Groups %} href="{% url 'caja' %}"{% endif %} style="border-radius: 60px;" >
-                <p class="h6 pt-1">
-                  Dinero en Caja:
-                <span class="text-success">
-                    {{registe_cash.money}}$ 
-                  </span>
-                </p>
-              </a>
-            {% endif %}
-          </li>
-            <li class="nav-item">
-              <div style="border-radius: 60px;" class="bg-success  h6 text-light border border-success m-2 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-                {% if user.is_authenticated %}
-                  @{{user.username}}
-                {% else %}
-                  Ingresar 
-                {% endif %}
-              </div>
-            </li>
-           
-          </ul>
+          </ul> 
         </div>
       </div>
     </nav>
+    <div class="continer-fluid mt-3">
+      <div class="d-flex flex-row-reverse  ">         
+          <div style="border-radius: 60px;" class=" bg-success  h6 text-light border border-success mx-5 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+            {% if user.is_authenticated %}
+              @{{user.username}}
+            {% else %}
+              Ingresar 
+            {% endif %}
+          </div>
+          {% if user.is_authenticated %}
+                    <a class="btn btn-warning mx-5 mb-2 pt-2" type="button" {% if "Admin" in Groups %} href="{% url 'caja' %}"{% endif %} style="border-radius: 60px;" >
+                      <p class="h6">
+                        Dinero:
+                      <span class="text-success">
+                          {{registe_cash.money}}$ 
+                        </span>
+                      </p>
+                    </a>
+          {% endif %}
+          
+        </div> 
+      </div>
     {% for message in messages %}
       <div class="continer-fluid">
         <div class="d-flex justify-content-center">

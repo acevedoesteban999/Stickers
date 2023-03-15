@@ -2,117 +2,100 @@
 {% load static %}
 {% block contenido %}
     {% if user.is_authenticated %}
-        <div class="container-md">
+        <div class="container">
             {% if user.is_authenticated and "Admin" in Groups %}
-            <div class="container m-4"style="text-align: center;">
-                <div class="d-grid gap-2 col-6 mx-auto">
-                    <button type="button" class="btn btn-success " data-bs-toggle="modal" data-bs-target="#CrearModal" data-bs-whatever="@mdo">Crear Producto</button>      
+                <div class="container m-4"style="text-align: center;">
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <button type="button" class="btn btn-success " data-bs-toggle="modal" data-bs-target="#CrearModal" data-bs-whatever="@mdo">Crear Producto</button>      
+                    </div>
                 </div>
-            </div>
-            <div class="modal fade" data-bs-backdrop="static" id="CrearModal" tabindex="-1" aria-labelledby="CrearModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="CrearModalLabel">Nuevo Producto</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form method="POST" action="" enctype=multipart/form-data>
-                                {% csrf_token %}
-                                <div class="modal-body">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" required name="name" id="floatingInput" placeholder="Nombre">
-                                        <label for="floatingInput">Nombre</label>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <input min="1" type="number" class="form-control" required name="precio"id="floatingInput" placeholder="Precio">
-                                        <label for="floatingInput">Precio</label>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <textarea  type="text" class="form-control" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;"></textarea >
-                                        <label for="floatingInput">Descripcion</label>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <div class="row m-2">
-                                            Imagen
+                <div class="modal fade" data-bs-backdrop="static" id="CrearModal" tabindex="-1" aria-labelledby="CrearModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="CrearModalLabel">Nuevo Producto</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" action="" enctype=multipart/form-data>
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" required name="name" id="floatingInput" placeholder="Nombre">
+                                            <label for="floatingInput">Nombre</label>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-9" id="ImgDiv">
-                                                <div id="divid">
-                                                    <input onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Imagen">
-                                                </div>
-                                            </div> 
-                                            <div class="col-3">
-                                                <a style="display: none;" class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
-                                            </div>    
+                                        <div class="form-floating mb-3">
+                                            <input min="1" type="number" class="form-control" required name="precio"id="floatingInput" placeholder="Precio">
+                                            <label for="floatingInput">Precio</label>
                                         </div>
-                                        <div class="d-flex justify-content-center m-3">
-                                            <img id="imgPre" src="" alt=" ">
+                                        <div class="form-floating mb-3">
+                                            <textarea  type="text" class="form-control" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;"></textarea >
+                                            <label for="floatingInput">Descripcion</label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <div class="row m-2">
+                                                Imagen
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-9" id="ImgDiv">
+                                                    <div id="divid">
+                                                        <input onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Imagen">
+                                                    </div>
+                                                </div> 
+                                                <div class="col-3">
+                                                    <a style="display: none;" class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
+                                                </div>    
+                                            </div>
+                                            <div class="d-flex justify-content-center m-3">
+                                                <img id="imgPre" src="" alt=" ">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <input class="btn btn-success" type="submit" name="CrearProducto" value="Crear">
-                                </div>
-                            </form>
+                                    <div class="modal-footer">
+                                        <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <input class="btn btn-success" type="submit" name="CrearProducto" value="Crear">
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             {% endif %}
             {% if  products %}
-                <div class="continer-md my-2 mx-5 w-3">
-                    <table class="table table-dark centrado shadow p-3 mb-5 bg-body-tertiary rounded">
-                        <thead>
-                        <tr>
-                            <th scope="col" class="h3">Imagen</th>
-                            <th scope="col" class="h3">Nombre</th>
-                            <th scope="col" class="h3">Precio</th>
-                            <th scope="col" class="h3">Almacenado</th>
-                            <th scope="col" class="h3">Vendido</th>
-                            <th scope="col" class="h3">Descripcion</th>
-                        </tr>
-                        </thead>   
-                        <tbody>  
+                <div class="continer ">
+                    <div class="row cols-1 cols-md-2 cols-lg-3 cols-xl-4"> 
+                        <div class="card-group">
                             {% for product in products %}
-                                <tr>
-                                    <td>
-                                        <img src="{{product.image.url}}" width="75" height="75" class="w-50 card-img-top" alt="...">
-                                    </td>
-                                <td >
-                                    <a class="link-light h4" style=" text-decoration: none;" {% if user.is_authenticated %} href="{% url 'producto' product.id %}" {% endif %}>
-                                        <span class="badge bg-secondary w-100 ">
-                                            {{product.name}}
-                                        </span>
-                                    </a>
-                                </td>
-                                <td>
-                                    {{product.price}}$
-                                </td>
-                                <td>
-                                    {{product.stored}}
-                                </td>
-                                <td>
-                                    {% if user.is_authenticated %}
-                                        {{product.sold}}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if product.description %}
-                                        {{product.description}}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                    
-                                </td>
-                                </tr>
-                            {% endfor %}
-            
-                        </tbody>
-                    </table>
+                                <div class="col-11 col-md-5 col-lg-4 col-xl-3 mb-5">
+                                    <div class="card m-1 p-3  ">
+                                        <div class="row cols-2">
+                                            <div class="d-flex align-items-center justify-content-center">
+
+                                                <div class="col-3 m-3">
+                                                    <img src="{{product.image.url}}" width="100" height="120" class="" alt="...">
+                                                </div>
+                                                <div class="col-4 m-3">
+                                                    <a class="link-light h4 card-title" style=" text-decoration: none;" {% if user.is_authenticated %} href="{% url 'producto' product.id %}" {% endif %}>
+                                                        <span class="badge bg-secondary w-100 ">
+                                                            {{product.name}}
+                                                        </span>
+                                                    </a>
+                                                    <div class="row  cols-3">
+                                                        <p class="col m-2">Precio: {{product.price}}$</p>
+                                                        <p class="col m-2">Almacenado: {{product.stored}}</p>
+                                                        <p class="col m-2">
+                                                        {% if user.is_authenticated %}
+                                                            Vendidos: {{product.sold}}
+                                                        {% endif %}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}  
+                        </div>    
+                    </div>
                 </div>
             {% else %}
             <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay productos creados para mostrar<h2></div>
