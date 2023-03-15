@@ -42,6 +42,7 @@ MChoise = [
     ("AC","Agregado de Categoría"),
     ("RC","Removido de Categoría"),
     ]
+
 class Movement(models.Model):
     type=models.CharField(max_length=2,choices=MChoise)
     date=models.DateTimeField(default=datetime.now,blank=True)
