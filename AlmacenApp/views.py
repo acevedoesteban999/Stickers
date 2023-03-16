@@ -106,10 +106,10 @@ def ProductosView(request):
                             return redirect("/Producto/{}".format(product.id))
                     except IntegrityError:
                         messages.error(request,"Nose ha podido  crear, ya existe un objeto de nombre %s"% name)
-                        return render(request,"Productos.html",{'products':products})
+                        return render(request,"Productos.html",{"button_money":True,'products':products})
             messages.error(request,"Ha ocurrido un error  insesperado")
-            return render(request,"Productos.html",{'products':products})
-        return render(request,"Productos.html",{'products':products})
+            return render(request,"Productos.html",{"button_money":True,'products':products})
+        return render(request,"Productos.html",{"button_money":True,'products':products})
     except:
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
@@ -126,16 +126,15 @@ def ProductoView(request,productoID):
 
             movements=Movement.objects.filter(product_id=product.id).order_by('-date')[:50]
             def NormalPageProduct():
-                return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
+                return render(request,"Producto.html",{"button_money":True,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
             def ErrorProduct(text):
                 messages.error(request,text)
-                return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
+                return render(request,"Producto.html",{"button_money":True,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
             def SuccessProduct(text):
                 messages.success(request,text)
-                return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)})
+                return render(request,"Producto.html",{"button_money":True,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)})
             def WarningProduct(text):
                 messages.warning(request,text)
-                # return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys})
                 return redirect('home') 
             if request.method == "POST":
                 #Form Editar

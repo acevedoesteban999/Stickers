@@ -3,11 +3,11 @@
 {% block contenido %}
 {% if user.is_authenticated and product.removed == False %}
 
-    <div class="container-md p-5 m-6 ">
+    <div class="container ">
         {% if product %}
-            <div class="card mb-3 justify-content-center" style="max-width: auto;">
-                <div class="row g-0">
-                    <div class="col-md-4">
+            <div class="card mb-3" style="max-width: auto;">
+                <div class="row justify-content-center cols-1 cols-md-2 cols-lg-2 cols-xl-2">
+                    <div class="col-auto  mb-3">
                         {% if product.image %}
                             <div id="carouselExampleIndicators" class="carousel slide carousel-dark">
                                 
@@ -53,60 +53,59 @@
                         <img src="" width="200" height="400" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
                         {% endif %}
                     </div>
-                    <div class="col-md-8">
-                        <div class="card-body float-center ">
-                            <h2 class="card-title my-5"><strong>{{product.name}}</strong></h2>
-                            <h3 class="card-text mt-2">{{product.price}}$</h3>
-                            <h6 class="card-title mt-2">Almacenados: {{product.stored}}</h6>
-                            <h6 class="card-title mt-2">  Vendidos : {{product.sold}}</h6>
+                    <div class="col">
+                        <div class="row h-100 justify-content-center align-content-center">
+                            <div class="h2 p-3 w-50 border-bottom border-dark text-center" ><strong>{{product.name}}</strong></div>
+                            <div class="h3 p-1 text-center">{{product.price}}$</div>
+                            <div class="h4 text-center" >Almacenados: {{product.stored}}</div>
+                            <div class="h4 text-center" >  Vendidos : {{product.sold}}</div>
                             <div class="row">
-                                <p class="card-text"><small class="text-muted">{{product.description}}</small></p>
-                            </div>      
-                        </div>            
+                                <p class="h6 p-1 text-center"><small class="text-muted">{{product.description}}</small></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
                 {% comment %} =============== BUTTONS ======================== {% endcomment %}
                 <div class="card-footer">
-                    <div class="d-flex my-3 justify-content-around">
-                        <div class="row cols-2 ">
-                            <div class="col">
-                                {% if "Admin" in Groups %}
-                                    {% comment %} <a class="btn btn-info" data-bs-toggle="collapse" href="#collapseAdd" role="button" aria-expanded="false" aria-controls="collapseAdd"> {% endcomment %}
-                                    <a type="button" class=" btn btn-info" data-bs-toggle="modal" data-bs-target="#AddModal" data-bs-whatever="1">
-                                        Agregar
-                                    </a>      
-                                {% endif %}
+                    <div class="row cols-1 my-3 justify-content-around">
+                        
+                        {% if "Admin" in Groups %}
+                            <div class="col-auto m-1">
+                                <a type="button" class=" btn btn-info" data-bs-toggle="modal" data-bs-target="#AddModal" data-bs-whatever="1">
+                                    Agregar
+                                </a>      
                             </div>
-                            <div class="col">
-                                {% if product.stored != 0 %}
-                                    <a type="button" class=" btn btn-success" data-bs-toggle="modal" data-bs-target="#SellModal" data-bs-whatever="1">
-                                        Vender
-                                    </a>  
-                                {% endif %}
+                        {% endif %}
+                        {% if product.stored != 0 %}
+                            <div class="col-auto m-1">
+                            
+                                <a type="button" class=" btn btn-success" data-bs-toggle="modal" data-bs-target="#SellModal" data-bs-whatever="1">
+                                    Vender
+                                </a>  
                             </div>
-                            <div class="col">
-                                {% if "Admin" in Groups %}
-                                    <button type="button" class=" btn btn-warning" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">
-                                        Editar
-                                    </button> 
-                                {% endif %}
+                        {% endif %}
+                        {% if "Admin" in Groups %}
+                            <div class="col-auto m-1">
+                                <button type="button" class=" btn btn-warning" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">
+                                    Editar
+                                </button> 
                             </div>
-                            <div class="col">
-                                {% if product.sold != 0 %}
-                                    <a type="button" style="background-color: orangered; color: white;" class=" btn " data-bs-toggle="modal" data-bs-target="#RefundModal" data-bs-whatever="1">
-                                        Reembolsar
-                                    </a>  
-                                {% endif %}
+                        {% endif %}
+                        {% if product.sold != 0 %}
+                            <div class="col-auto m-1">
+                                <a type="button" style="background-color: orangered; color: white;" class=" btn " data-bs-toggle="modal" data-bs-target="#RefundModal" data-bs-whatever="1">
+                                    Reembolsar
+                                </a>  
                             </div>
-                            <div class="col">
-                                {% if "Admin" in Groups and product.stored != 0 %}
+                        {% endif %}
+                        {% if "Admin" in Groups and product.stored != 0 %}
+                            <div class="col-auto m-1">
                                 <a type="button" class=" btn btn-danger" data-bs-toggle="modal" data-bs-target="#SubModal" data-bs-whatever="1">
                                     Quitar
-                                    </a>  
-                                {% endif %}
+                                </a>  
                             </div>
-                        </div>
+                        {% endif %}    
                     </div>
                 </div>            
             </div>   

@@ -74,20 +74,26 @@
                                             </span>
                                         </a>
                                         
-                                        <div class="d-flex row cols-2 align-items-center justify-content-center">
-                                            <div class="col-4">
+                                        <div class="row cols-2 align-items-start justify-content-around">
+                                            <div class="col-4 gx-2 ">
                                                 <img src="{{product.image.url}}" width="75" height="100" class="" alt="...">
                                             </div>
-                                            <div class="col-8">
-
-                                                <p class="p-2">{{product.price}}$</p>
-                                                {% if product.stored != 0 %}
-                                                    <p class="p-2">Almacenado:{{product.stored}}</p>
-                                                {% else %}
-                                                    <span class="text-danger h6">
-                                                        AGOTADO
-                                                    </span>
-                                                {% endif %}
+                                            <div class="col-6">
+                                                <div class="row">
+                                                    {% if product.stored != 0 %}
+                                                        {% comment %} <div class="row-auto  text-success h4 mt-3">
+                                                            {{product.price}}$
+                                                        </div> {% endcomment %}
+                                                        <div class="text-dark text-center h3 p-1 mt-3 border-top border-bottom border-dark">
+                                                            {{product.stored}}
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="border border-danger p-2 mt-3 text-center text-danger h5">
+                                                            AGOTADO
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                
                                             </div>
                                         </div>
                                     </div>
