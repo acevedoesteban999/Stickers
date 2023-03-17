@@ -68,10 +68,10 @@ def CajaView(request):
                 if lot_retire >= 0:
                     if Movement.Retire(lot=lot_retire):
                         messages.success(request,"Se ha retirado {}$ correctamente".format(lot_retire))
-                        return render(request,"Caja.html",{"movements":movements})
+                        return render(request,"Caja.html",{"button_money":True,"movements":movements})
             messages.error(request,"No se han podido retirar {}$".format(lot_retire))
-            return render(request,"Caja.html",{"movements":movements})
-        return render(request,"Caja.html",{"movements":movements})
+            return render(request,"Caja.html",{"button_money":True,"movements":movements})
+        return render(request,"Caja.html",{"button_money":True,"movements":movements})
     except:
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
@@ -99,8 +99,8 @@ def ProductosView(request):
                         if Movement.Create(name,price,description,image):
                             crear_form=FormProduc()
                             product=Product.objects.exclude(removed=True).get(name=name)
-                            categorys=Category.objects.filter(product__id=product.id).order_by("name")
-                            movements=Movement.objects.filter(product_id=product.id).order_by('-date')[:50]
+                            #categorys=Category.objects.filter(product__id=product.id).order_by("name")
+                            #movements=Movement.objects.filter(product_id=product.id).order_by('-date')[:50]
                             messages.success(request,"Se ha creado  el objeto %s correctamente"%name)
                             #return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys}) 
                             return redirect("/Producto/{}".format(product.id))
@@ -126,11 +126,19 @@ def ProductoView(request,productoID):
 
             movements=Movement.objects.filter(product_id=product.id).order_by('-date')[:50]
             def NormalPageProduct():
+                product=Product.objects.get(id=productoID)
+                categorys=Category.objects.filter(product__id=product.id).order_by("name")
                 return render(request,"Producto.html",{"button_money":True,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
             def ErrorProduct(text):
                 messages.error(request,text)
+                product=Product.objects.get(id=productoID)
+                categorys=Category.objects.filter(product__id=product.id).order_by("name")
                 return render(request,"Producto.html",{"button_money":True,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
             def SuccessProduct(text):
+                #print(product.sold)
+                product=Product.objects.get(id=productoID)
+                categorys=Category.objects.filter(product__id=product.id).order_by("name")
+                print(product.sold)
                 messages.success(request,text)
                 return render(request,"Producto.html",{"button_money":True,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)})
             def WarningProduct(text):

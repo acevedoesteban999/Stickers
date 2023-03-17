@@ -17,8 +17,8 @@
       <div class="display-1 m-3 ">Hoy</div>
       <hr></hr>
     </div>
-    <div class="row cols-1 cols-md-2 cols-lg-3">
-      <div class="col mx-5 w-3 txt-center">
+    <div class="row justify-content-around cols-1 cols-md-2 cols-lg-3 cols-xl-3">
+      <div class="col-auto mx-5 w-3 txt-center">
         <table class="table table-dark centrado shadow p-3 mb-5 bg-body-tertiary rounded">
           <thead>
             <tr>
@@ -30,7 +30,7 @@
               <tr>
                   <td>
                     <a class="link-light h4" style=" text-decoration: none;" {% if user.is_authenticated %} href="{% url 'producto' product.id %}" {% endif %}>
-                      <span {% if user.is_authenticated %} class="badge bg-info w-100" {% endif %}>
+                      <span {% if user.is_authenticated %} class="badge bg-info w-75 text-break" {% endif %}>
                           {{product.name}}
                       </span>
                   </a>
@@ -48,7 +48,7 @@
           </tbody>
         </table>
       </div>
-      <div class="col mx-5 w-3 txt-center">
+      <div class="col-auto mx-5 w-3 txt-center">
         <table class="table table-dark centrado shadow p-3 mb-5 bg-body-tertiary rounded">
             <thead>
             <tr>
@@ -62,7 +62,7 @@
                       
                       
                       <a class="link-light h4" style=" text-decoration: none;" {% if user.is_authenticated %} href="{% url 'producto' product.id %}" {% endif %}>
-                        <span {% if user.is_authenticated %} class="badge bg-success w-100" {% endif %}>
+                        <span {% if user.is_authenticated %} class="badge bg-success w-75 text-break" {% endif %}>
                             {{product.name}}
                         </span>
                       </a>            
@@ -81,7 +81,7 @@
         </table>
       </div>
       {% if user.is_authenticated %}
-        <div class="col mx-5 w-3 txt-center">
+        <div class="col-auto mx-5 w-3 txt-center">
           <table class="table table-dark centrado shadow p-3 mb-5 bg-body-tertiary rounded">
               <thead>
                 <tr>
@@ -101,19 +101,19 @@
                             <a class="link-light h4" style=" text-decoration: none;" {% if movement.type != "RP" %} href="{% url 'producto' movement.product.id %}"{% endif %} >
                               <span  
                               {% if movement.type == "VP" %}
-                                    class="badge bg-success w-100"
+                                    class="badge bg-success w-75 text-break"
                                 {% elif movement.type == "eP" %}
-                                    class="badge bg-warning w-100"
+                                    class="badge bg-warning w-75 text-break"
                                 {% elif movement.type == "EP" %}
-                                    class="badge bg-info w-100"
+                                    class="badge bg-info w-75 text-break"
                                 {% elif movement.type == "rP" %}
-                                    class="badge w-100" style="background-color: orangered; color: white;"
+                                    class="badge w-75 text-break" style="background-color: orangered; color: white;"
                                 {% elif movement.type == "RP" %}
-                                    class="badge bg-danger  w-100"
+                                    class="badge bg-danger  w-75 text-break"
                                 {% elif movement.type == "CP" %}
-                                    class="badge bg-primary w-100"
+                                    class="badge bg-primary w-75 text-break"
                                 {% else %}
-                                    class="badge bg-secondary"
+                                    class="badge bg-secondary w-75 text-break"
                                 {% endif %}
                                 >
                                 {% if movement.type == "RP" %}
