@@ -7,7 +7,7 @@
         {% if product %}
             <div class="card mb-3" style="max-width: auto;">
                 <div class="row justify-content-center cols-1 cols-md-2 cols-lg-2 cols-xl-2">
-                    <div class="col-auto  mb-3">
+                    <div class="col-12  col-md-4 col-lg-4 col-xl-4  mb-3 ">
                         {% if product.image %}
                             <div id="carouselExampleIndicators" class="carousel slide carousel-dark">
                                 
@@ -53,14 +53,14 @@
                         <img src="" width="200" height="400" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
                         {% endif %}
                     </div>
-                    <div class="col">
+                    <div class="col-6">
                         <div class="row h-100 justify-content-center align-content-center">
                             <div class="h2 p-3 w-50 border-bottom border-dark text-center" ><strong>{{product.name}}</strong></div>
                             <div class="h3 p-1 text-center">{{product.price}}$</div>
                             <div class="h4 text-center" >Almacenados: {{product.stored}}</div>
                             <div class="h4 text-center" >  Vendidos : {{product.sold}}</div>
                             <div class="row">
-                                <p class="h6 p-1 text-center"><small class="text-muted">{{product.description}}</small></p>
+                                <p class="h6 p-1 text-center text-break"><small class="text-muted">{{product.description}}</small></p>
                             </div>
                         </div>
                     </div>
