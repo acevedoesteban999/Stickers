@@ -1,4 +1,5 @@
 from django import forms
+
 class FormProduc(forms.Form):
     name=forms.CharField( max_length=20, required=True)
     precio=forms.IntegerField(required=True)

@@ -38,24 +38,24 @@ def BasePost(request):
     return redirect('productos')
 
 def HomeView(request):
-    try:
-        date=datetime.now() 
-        movEP=Movement.objects.select_related('product').filter(date__day=date.day,type="EP").values_list('product__id',flat=True)
-        movVP=Movement.objects.select_related('product').filter(date__day=date.day,type="VP").values_list('product__id',flat=True)
-        movM=Movement.objects.filter(date__day=date.day).order_by('-date')[:5]
-        idsEP=[]
-        idsVP=[]
-        if movEP:
-            for id in movEP:
-                idsEP.append(id)
-        if movVP:
-            for id in movVP:
-                idsVP.append(id)
-        productsEP=Product.objects.filter(pk__in=idsEP).values('name','id').order_by('name')
-        productsVP=Product.objects.filter(pk__in=idsVP).values('name','id').order_by('name')
-        return render(request,"Home.html",{"productsEP":productsEP,"productsVP":productsVP,"movM":movM})
-    except :
-        pass
+    #try:
+    date=datetime.now() 
+    movEP=Movement.objects.select_related('product').filter(date__day=date.day,type="EP").values_list('product__id',flat=True)
+    movVP=Movement.objects.select_related('product').filter(date__day=date.day,type="VP").values_list('product__id',flat=True)
+    movM=Movement.objects.filter(date__day=date.day).order_by('-date')[:5]
+    idsEP=[]
+    idsVP=[]
+    if movEP:
+        for id in movEP:
+            idsEP.append(id)
+    if movVP:
+        for id in movVP:
+            idsVP.append(id)
+    productsEP=Product.objects.filter(pk__in=idsEP).values('name','id').order_by('name')
+    productsVP=Product.objects.filter(pk__in=idsVP).values('name','id').order_by('name')
+    return render(request,"Home.html",{"productsEP":productsEP,"productsVP":productsVP,"movM":movM})
+    #except :
+    #    pass
     return HttpResponse("Ha ocurrido un error insesperado , contacte con los administradores")
 
 def CajaView(request):

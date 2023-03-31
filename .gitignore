@@ -1,10 +1,10 @@
 db.sqlite3
 manage.py
-Almacen/
+Stickers/
 media/
 static/bootstrap/
 static/admin/
-AlmacenApp/__pycache__/
-AlmacenApp/migrations/
+StickersApp/__pycache__/
+StickersApp/migrations/
 
 
