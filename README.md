@@ -1,2 +1,2 @@
-## Debian-Apache-Django-Python 
+## Stickers Store Page 
 
