@@ -4,11 +4,13 @@
     {% if user.is_authenticated %}
         <div class="container">
             {% if user.is_authenticated and "Admin" in Groups %}
-                <div class="container m-4"style="text-align: center;">
+                <div class="container my-4"style="text-align: center;">
                     <div class="d-grid gap-2 col-6 mx-auto">
                         <button type="button" class="btn btn-success " data-bs-toggle="modal" data-bs-target="#CrearModal" data-bs-whatever="@mdo">Crear Producto</button>      
                     </div>
                 </div>
+                
+                {% comment %}MODAL CreateProduct{% endcomment %}
                 <div class="modal fade" data-bs-backdrop="static" id="CrearModal" tabindex="-1" aria-labelledby="CrearModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
@@ -62,7 +64,9 @@
                 </div>
             {% endif %}
             {% if  products %}
-                <div class="continer ">
+                <div class="continer">
+                    
+                
                     <div class="row cols-1 cols-md-2 cols-lg-3 cols-xl-4"> 
                         <div class="card-group">
                             {% for product in products %}
@@ -76,7 +80,7 @@
                                         
                                         <div class="row cols-2 align-items-start justify-content-around">
                                             <div class="col-4 gx-2 ">
-                                                <img src="{{product.image.url}}" width="75" height="100" class="" alt="...">
+                                                <img src="{{product.image.url}}" class="img-fluid img-thumbnail border border-0" alt="...">
                                             </div>
                                             <div class="col-6">
                                                 <div class="row">

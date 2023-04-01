@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect,HttpResponse
+from django.http import JsonResponse
 from .models import Product,RegisteCash,Movement,Category,MChoise
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import FormProduc,FormLot,FormImg
@@ -8,12 +9,14 @@ from django.contrib.auth import authenticate,login,logout
 from django.db import IntegrityError
 from django.contrib import messages
 from django.db.models import Q
-
+import json
 def RedirectHomeView(request):
     return redirect("home")
 
 def BasePost(request):
     try:
+        
+        
         if request.method == "POST":
             if "Inicar_Sesion" in request.POST:
                 formlogin=AuthenticationForm(request,data=request.POST)
@@ -32,6 +35,21 @@ def BasePost(request):
                 logout(request)
                 messages.success(request,"La cuenta %s se ha cerrado correctamente" % user)    
                 return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+            
+            is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+            if is_ajax:
+                data = json.load(request)
+                search_value = data.get('SearchValue')  
+                try:
+                    if search_value:
+                        products=Product.objects.filter(removed=False,name__contains=search_value).order_by('name')[:5]
+                        print(products)
+                        if products:
+                            return render(None,"SearchProducts.html",{"products": products})
+                except:
+                    pass
+                return HttpResponse("NoProducts")
+             
         return render(request,"Home.html")
     except:
         messages.error(request,"Algo ha salido mal")    
