@@ -1,4 +1,14 @@
-
+function isSmallDevice()
+{
+  if (this.screenBreakPoint == Breakpoints.Medium ||
+      this.screenBreakPoint == Breakpoints.Large || 
+      this.screenBreakPoint == Breakpoints.XLarge)
+  {
+    return false;
+  }
+  
+  return true;
+}    
 
 
 var SearchBool=false
