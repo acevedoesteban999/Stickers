@@ -1,7 +1,17 @@
-.bodycolor{
+.ColorWorker{
     background: #667db6;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);  /* Chrome 10-25, Safari 5.1-6 */
     background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+.ColorNoAuthenticated
+{
+    background: rgb(34,193,195);
+    background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(98,253,45,1) 100%); 
+}
+.ColorAdmin
+{
+    background: rgb(58,91,180);
+    background: linear-gradient(90deg, rgba(58,91,180,1) 0%, rgba(29,210,253,1) 50%, rgba(153,252,69,1) 100%); 
 }
 .centrado{
     text-align: center;

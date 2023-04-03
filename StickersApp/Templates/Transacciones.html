@@ -2,7 +2,7 @@
 {% load static %}
 {% block contenido %}
 {% if user.is_authenticated %}
-    <div class="container md ">
+    {% comment %} <div class="container md ">
         {% if movements or date_filter != "NF" or type_filter != "NF" or product_filter != "NF" %}
             <div class="container m-4"style="text-align: center;">
                 <div class="d-grid gap-2 col-6 mx-auto m-2">
@@ -202,7 +202,7 @@
         {% else %}
         <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay transacciones para mostrar<h2></div>
         {% endif %}
-    </div>
+    </div> {% endcomment %}
 {% else %}
     <meta http-equiv="Refresh" content="0; url='{% url 'home' %}'" />
 {% endif %}               

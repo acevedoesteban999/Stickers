@@ -86,10 +86,10 @@ def CajaView(request):
                 if lot_retire >= 0:
                     if Movement.Retire(lot=lot_retire):
                         messages.success(request,"Se ha retirado {}$ correctamente".format(lot_retire))
-                        return render(request,"Caja.html",{"button_money":True,"movements":movements})
+                        return render(request,"Caja.html",{"movements":movements})
             messages.error(request,"No se han podido retirar {}$".format(lot_retire))
-            return render(request,"Caja.html",{"button_money":True,"movements":movements})
-        return render(request,"Caja.html",{"button_money":True,"movements":movements})
+            return render(request,"Caja.html",{"movements":movements})
+        return render(request,"Caja.html",{"movements":movements})
     except:
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
@@ -124,10 +124,10 @@ def ProductosView(request):
                             return redirect("/Producto/{}".format(product.id))
                     except IntegrityError:
                         messages.error(request,"Nose ha podido  crear, ya existe un objeto de nombre %s"% name)
-                        return render(request,"Productos.html",{"button_money":True,'products':products})
+                        return render(request,"Productos.html",{'products':products})
             messages.error(request,"Ha ocurrido un error  insesperado")
-            return render(request,"Productos.html",{"button_money":True,'products':products})
-        return render(request,"Productos.html",{"button_money":True,'products':products})
+            return render(request,"Productos.html",{'products':products})
+        return render(request,"Productos.html",{'products':products})
     except:
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
@@ -143,25 +143,26 @@ def ProductoView(request,productoID):
                     i+=1
 
             movements=Movement.objects.filter(product_id=product.id).order_by('-date')[:50]
+            MovementsConfirm=Movement.objects.filter(product_id=product.id,type="EP",extra_info_bool=False).order_by('date')
             def NormalPageProduct():
                 product=Product.objects.get(id=productoID)
                 categorys=Category.objects.filter(product__id=product.id).order_by("name")
-                return render(request,"Producto.html",{"button_money":True,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
+                return render(request,"Producto.html",{'MovementsConfirm':MovementsConfirm,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
             def ErrorProduct(text):
                 messages.error(request,text)
                 product=Product.objects.get(id=productoID)
                 categorys=Category.objects.filter(product__id=product.id).order_by("name")
-                return render(request,"Producto.html",{"button_money":True,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
+                return render(request,"Producto.html",{'MovementsConfirm':MovementsConfirm,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
             def SuccessProduct(text):
-                #print(product.sold)
-                product=Product.objects.get(id=productoID)
-                categorys=Category.objects.filter(product__id=product.id).order_by("name")
-                print(product.sold)
+                #product=Product.objects.get(id=productoID)
+                #categorys=Category.objects.filter(product__id=product.id).order_by("name")
                 messages.success(request,text)
-                return render(request,"Producto.html",{"button_money":True,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)})
+                return redirect('home')
+                #return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)})
             def WarningProduct(text):
                 messages.warning(request,text)
                 return redirect('home') 
+            
             if request.method == "POST":
                 #Form Editar
                 if "EditProduct" in request.POST:
@@ -203,10 +204,35 @@ def ProductoView(request,productoID):
                     add_product=request.POST.dict()
                     lot_add=int(add_product.get("cantidad"))
                     category_id=add_product.get("CategorySelect")
+                    category_add=None
+                    if category_id:
+                        category_add=Category.objects.get(id=category_id)
                     if lot_add >= 0:
-                        if Movement.Add(product,lot=lot_add,category_id=category_id):
-                            return SuccessProduct("Se han agregado {} {} correctamente".format(lot_add,product.name))
+                        if Movement.Add(product,lot=lot_add,category=category_add):
+                            return SuccessProduct("Se ha peido agregar {} {}, esperando a ser confirmado".format(lot_add,product.name))
                     return ErrorProduct("No se han podido insertar {} {}".format(lot_add,product.name))
+                #Form Confirmar Agregar
+                elif "ConfirmAddProduct" in request.POST:
+                    confirm_product=request.POST.dict()
+                    lot_confirm=int(confirm_product.get("cantidad"))
+                    id_movement=int(confirm_product.get("MovimientoID"))
+                    if id_movement:
+                        movement_to_confirm=Movement.objects.get(id=id_movement)
+                        print("A")
+                        if movement_to_confirm:
+                            print("A")
+                            if Movement.ConfirmAdd(movement=movement_to_confirm,lot=lot_confirm):
+                                try:
+                                    print("A")
+                                    for movementConfirm in MovementsConfirm:
+                                        if movementConfirm.extra_info_bool == False:
+                                            raise (Exception())
+                                    return SuccessProduct("Se han agregado {} {} correctamente".format(lot_confirm,movement_to_confirm.product.name))
+                                except:
+                                    movement_to_confirm.product.confirm=False
+                                    movement_to_confirm.product.save()
+                                    return WarningProduct("Se han agregado {} {} correctamente, pero aun quedan confirmaciones".format(movement_to_confirm.lot,movement_to_confirm.product.name))
+                    return ErrorProduct("No se han podido confirmar")
                 #Form Quitar
                 elif "SubProduct" in request.POST:
                     sub_product=request.POST.dict()

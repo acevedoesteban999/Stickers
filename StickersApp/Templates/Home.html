@@ -4,12 +4,29 @@
 
   <div class="container">
     {% if not user.is_authenticated %}
-        <div class="card text-center m-4">
-          <div class="card-body bg-dark text-warning m-3 ">
-            <h4 class="card-title">Inicio de Sesion</h4>
-            <p class="card-text">No se ha iniciado sesion , puse <span style="border-radius: 60px;" class="badge bg-success p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">Ingresar</span> para iniciar la sesion</p>
-          </div>
-        </div>
+    <div class="d-flex justify-content-center">
+      <div class="p-3 px-5 m-3 alert alert-warning alert-dismissible fade show m-2 p-2 text-center" role="alert">
+        <div class="h4">
+          <strong>
+            Inicio de Sesion
+          </strong>
+      </div>
+      <div class="h5">
+        No se ha iniciado sesion , pulse <br>
+         <span style="border-radius: 60px;" class="mx-auto my-auto badge bg-success p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+          <svg  width="18" height="18" fill="currentColor" class="h6 d-block mx-auto bi bi-person-circle" viewBox="0 0 16 16">
+            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+          </svg>
+            Ingresar
+        </span>
+        <br>
+         para iniciar la sesion
+      </div> 
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </div>
+        
     {% endif %}
   </div>
 <div class="continer">

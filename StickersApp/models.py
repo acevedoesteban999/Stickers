@@ -15,6 +15,7 @@ class Product(models.Model):
     sold=models.IntegerField(blank=True,default=0)
     description=models.CharField(max_length=100,blank=True)
     removed=models.BooleanField(default=False)
+    confirm=models.BooleanField(default=True)
     def __str__(self):
         return self.name
     
@@ -41,15 +42,18 @@ MChoise = [
     ("RP","Removido de Producto"),
     ("AC","Agregado de Categoría"),
     ("RC","Removido de Categoría"),
+    ("cP","Confirmado de Producto"),
     ]
 
 class Movement(models.Model):
     type=models.CharField(max_length=2,choices=MChoise)
     date=models.DateTimeField(default=datetime.now,blank=True)
-    price=models.IntegerField(default=0)
     lot=models.IntegerField(default=0)
-    extra_info=models.CharField(max_length=25,null=True,blank=True)
+    extra_info_str=models.CharField(max_length=25,null=True,blank=True)
+    extra_info_int=models.IntegerField(default=0)
+    extra_info_bool=models.BooleanField(default=False)
     product=models.ForeignKey(Product, on_delete=models.CASCADE,null=True,blank=True,related_name="RN_product")
+    category=models.ForeignKey(Category, on_delete=models.CASCADE,null=True,blank=True)
     def __str__(self):
         return "M"+self.id.__str__()+"-"+self.date.date().__str__()
 
@@ -88,7 +92,7 @@ class Movement(models.Model):
                     product.sold += lot
                     amount=lot * product.price
                     r_box.money += amount
-                    movement=cls(type="VP",product=product,lot=lot,price=product.price)
+                    movement=cls(type="VP",product=product,lot=lot,extra_info_int=product.price)
                     if movement:
                         if category_id:
                             category=Category.objects.get(id=category_id)
@@ -98,7 +102,7 @@ class Movement(models.Model):
                                 category.stored = diff
                                 category.sold += lot
                                 category.save()
-                                movement.extra_info=category.name
+                                movement.category=category
                             else:
                                 return None
                         movement.save()
@@ -114,7 +118,7 @@ class Movement(models.Model):
             product.description=description
             if image:
                 product.image=image
-            movement=cls(type="eP",product=product,price=price)
+            movement=cls(type="eP",product=product,extra_info_int=price)
             
             if movement:
                 movement.save()
@@ -122,19 +126,34 @@ class Movement(models.Model):
                 return True
         return False 
     @classmethod
-    def Add(cls,product,lot,category_id):
+    def Add(cls,product,lot,category):
         if product and lot > 0:
-            product.stored += lot 
             movement=cls(type="EP",product=product,lot=lot)
             if movement:
-                if category_id:
-                    category=Category.objects.get(id=category_id)
-                    category.stored += lot
-                    category.save()
-                    movement.extra_info=category.name
+                if category:
+                    movement.category=category
+                movement.extra_info_bool=False
                 movement.save()
+                product.confirm=False
                 product.save()
                 return True
+        return False
+    @classmethod
+    def ConfirmAdd(cls,movement,lot):
+        if movement.product.confirm == False and movement:
+            if movement.product and movement.lot >= lot:
+                movement_confirm=cls(type="cP",product=movement.product,lot=lot,category=movement.category)
+                if movement_confirm:
+                    movement_confirm.product.stored += lot
+                    if movement.category:
+                        movement_confirm.category.stored += lot
+                        movement_confirm.category.save()
+                    movement_confirm.product.confirm=True
+                    movement.extra_info_bool=True
+                    movement.save()
+                    movement_confirm.save()
+                    movement_confirm.product.save()
+                    return True
         return False
     @classmethod
     def Sub(cls,product,lot,category_id):
@@ -169,7 +188,7 @@ class Movement(models.Model):
                         if r_box.money >= 0:
                             product.sold = diff
                             product.stored += lot
-                            movement=cls(type="rP",product=product,lot=lot,price=product.price)
+                            movement=cls(type="rP",product=product,lot=lot,extra_info_int=product.price)
                             if movement:
                                 if category_id:
                                     category=Category.objects.get(id=category_id)
@@ -216,7 +235,7 @@ class Movement(models.Model):
         if category:
             if image:
                 category.image=image
-            movement=cls(type="AC",product=product,extra_info=category_name.__str__()[:25])
+            movement=cls(type="AC",product=product,category=category)
             category.save()
             if category_nc:
                 category_nc.save()  
@@ -231,7 +250,7 @@ class Movement(models.Model):
             if categorys.count() == 2:
                 for category_d in categorys:
                     category_d.delete()
-            movement=cls(type="RC",product=category.product,extra_info=category.name.__str__()[:25])
+            movement=cls(type="RC",product=category.product,extra_info_str=category.name)
             category.delete()
             movement.save()
             
