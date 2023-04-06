@@ -8,7 +8,7 @@
             {% comment %}=================================== Product Info =================================  {% endcomment %}
             <div class="card my-3" style="max-width: auto;">
                 <div class="row justify-content-center cols-1 cols-md-2 cols-lg-2 cols-xl-2">
-                    <div class="col-12 col-md-4 col-lg-4 col-xl-4 mb-3 ">
+                    <div class="col-12 col-md-4 col-lg-4 col-xl-4 mb-1 ">
                         {% if product.image %}
                             <div id="carouselExampleIndicators" class="carousel slide carousel-dark">
                                 
@@ -21,10 +21,10 @@
                                     </div>
                                 {% endif %}
                                 <div class="row justify-content-center">
-                                    <div class="col-6 col-md-12 col-lg-12 col-xl-12">
-                                        <div class="carousel-inner">
-                                            <div class="carousel-item active">
-                                                <img src="{{product.image.url}}"  class="img-fluid img-thumbnail border border-0 card-img-top" alt="...">
+                                    <div class="col-6 col-md-12 col-lg-12 col-xl-12 text-center">
+                                        <div class="carousel-inner border border-1 m-2 px-1">
+                                            <div class="carousel-item active" >
+                                                <img src="{{product.image.url}}" style="max-width: 320px;max-height: 280px;"  class="mx-auto my-auto img-fluid img-thumbnail border border-0 card-img-top" alt="...">
                                             </div> 
                                             {% for category in categorys %}
                                                 {% if category.image %}
@@ -53,27 +53,125 @@
                     </div>
                     <div class="col">
                         <div class="continer text-center">
-                            <div class="row ">
-                                <div class="mt-2  pt-5">
-                                    <strong class="h1">
+                            <div class="row justify-content-center">
+                                <div class="m-2 mt-md-5">
+                                    <strong class="h1 border border-dark border-3 px-4">
                                         {{product.name}}
                                     </strong>
                                 </div>
-                            
-                                {% if product.confirm %}
-                                    <div class="h3 mt-2 pt-1">{{product.price}}$</div>
-                                    <div class="h4 mt-2 pt-1" >Almacenados: {{product.stored}}</div>
-                                    <div class="h4 mt-2 pt-1" >  Vendidos : {{product.sold}}</div>
-                                    <div class="row">
-                                        <p class="h6 my-2 py-1 text-break"><small class="text-muted">{{product.description}}</small></p>
+                                <div class="m-2">
+                                    <div class="px-4">
+                                            {% if product.pair %}
+                                            <span class="h1 m-1">
+                                                {{product.pair_price}}$
+                                            </span>
+                                            <span>
+                                                <small class="text-muted pl-2">
+                                                    el Par
+                                                </small>
+                                            </span>
+                                            <div class="row justify-content-center mt-3">
+                                                <fieldset class="border w-auto">
+                                                    <legend class="float-none">Pares Almacenadas</legend>
+                                                    <div class="h3">
+                                                        {{product.unit_stored}}
+                                                    </div>
+                                                </fieldset>
+                                            </div>                                            
+                                        {% else %}
+                                            <span class="h1 m-1">
+                                                {{product.unit_price}}$
+                                            </span>
+                                            <span>
+                                                <small class="text-muted pl-2">
+                                                    la Unidad
+                                                </small>
+                                            </span>
+                                            <div class="row justify-content-center mt-3">
+                                                <fieldset class="border w-auto">
+                                                    <legend class="float-none">Unidades Almacenadas</legend>
+                                                    <div class="h3">
+                                                        {{product.unit_stored}}
+                                                        
+                                                    </div>
+                                                </fieldset>
+                                            </div>                      
+                                            
+                                            
+                                        {% endif %}
+                                        
                                     </div>
+                                </div>
+                                {% if product.confirm %}
+                                    <p class=" m-2 my-2 py-1 w-75 text-center text-break"><small class="text-muted">{{product.description}}</small></p>
+                                    <br>
+                                    <button class="btn m-2  btn-sm btn-outline-secondary w-auto" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
+                                        <span class="h-1"> Informacion Adicional </span>
+                                    </button>
+
+                                     <div class="collapse" id="collapseMoreInfo">
+                                        <div class="row justify-content-center">
+                                            <table class="w-50 border border-1 p-2 m-2 table table-ligth table-borderless">
+                                                 
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col h3"></th>
+                                                        {% if product.pair %}
+                                                            <th scope="col  h3">Por Par</th>
+                                                        {% endif %}
+                                                        <th scope="col h3">Por Unidad</th>
+                                                    
+                                                    </tr>
+                                                    <tbody>
+                                                        
+                                                        <th scope="row h3">Precio</th>
+                                                        {% if product.pair %}
+                                                                <td class="h3">{{product.pair_price}}$</td>
+                                                        {% endif %}
+                                                        <td class="h3">{{product.unit_price}}$</td>
+                                                        
+                                                        
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row h3">Ganancia</th>
+                                                                {% if product.pair %}
+                                                                        <td class="h3">{{product.pair_profit_worker}}$</td>
+                                                                {% endif %}
+                                                                <td class="h3">{{product.unit_profit_worker}}$</td>
+                                                            </tr>
+                                                        <tr>
+                                                            <th scope="row h3">Almacendao</th>
+                                                            {% if product.pair %}
+                                                                <td class="h3">{{product.pair_stored}}</td>
+                                                            {% endif %}
+                                                            <td class="h3">{{product.unit_stored}}</td>
+                                                            
+                                                            
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row h3">Vendido</th>
+                                                            {% if product.pair %}
+                                                                <td class="h3">{{product.pair_sold}}</td>
+                                                            {% endif %}
+                                                            <td class="h3">{{product.unit_sold}}</td>
+                                                            
+                                                        </tr>
+                                                        
+                                                    </tbody>
+                                                    
+                                                </thead>
+                                                
+                                            </table>
+                                        </div>
+                                    </div> 
                                 {% else %}
                                     <div class="p-1 col-12">
                                         <a type="button" class="m-5 p-2 btn btn-info" data-bs-toggle="modal" data-bs-target="#ConfirmAddModal" data-bs-whatever="1">
-                                        <span class="h2">Realizar Confirmaciones</span>
+                                            <span class="h2">Realizar Confirmaciones</span>
                                         </a>      
                                     </div>
                                 {% endif %}
+
                             </div>
                         </div>
                     </div>
@@ -90,9 +188,8 @@
                                     </a>      
                                 </div>
                             {% endif %}
-                            {% if product.stored != 0 %}
+                            {% if product.unit_stored > 0 or product.pair_stored > 0 %}
                                 <div class="col-auto m-1">
-                                
                                     <a type="button" class=" btn btn-success" data-bs-toggle="modal" data-bs-target="#SellModal" data-bs-whatever="1">
                                         Vender
                                     </a>  
@@ -105,19 +202,21 @@
                                     </button> 
                                 </div>
                             {% endif %}
-                            {% if product.sold != 0 %}
+                            {% if product.unit_sold > 0 or product.pair_sold > 0 %}
                                 <div class="col-auto m-1">
                                     <a type="button" style="background-color: orangered; color: white;" class=" btn " data-bs-toggle="modal" data-bs-target="#RefundModal" data-bs-whatever="1">
                                         Reembolsar
                                     </a>  
                                 </div>
                             {% endif %}
-                            {% if "Admin" in Groups and product.stored != 0 %}
-                                <div class="col-auto m-1">
-                                    <a type="button" class=" btn btn-danger" data-bs-toggle="modal" data-bs-target="#SubModal" data-bs-whatever="1">
-                                        Quitar
-                                    </a>  
-                                </div>
+                            {% if "Admin" in Groups %}
+                                {% if product.unit_sold > 0 or product.pair_sold > 0 %}
+                                    <div class="col-auto m-1">
+                                        <a type="button" class=" btn btn-danger" data-bs-toggle="modal" data-bs-target="#SubModal" data-bs-whatever="1">
+                                            Quitar
+                                        </a>  
+                                    </div>
+                                {% endif %}
                             {% endif %}    
                         </div>
                     {% endif %}
@@ -140,7 +239,7 @@
                                         <div class="input-group mb-3">
                                             <span class="input-group-text">Categoría</span>
                                             <div class="form-floating">
-                                                <input required type="text" required  name="name" class="form-control" id="floatingInput" placeholder="Nombre de Categoría">
+                                                <input required type="text" maxlength="20" required  name="name" class="form-control" id="floatingInput" placeholder="Nombre de Categoría">
                                                 <label for="floatingInput">Nombre de Categoría</label>        
                                             </div>
                                         </div>
@@ -215,16 +314,6 @@
                                 </div>
                                 <form method="POST" action="">
                                     {% csrf_token %}
-                                    {% if categorys %}
-                                        <div class="input-group mb-3">
-                                            <label class="input-group-text" for="inputGroupSelect01">Categoría</label>    
-                                            <select name="CategorySelect" class="form-select" aria-label="Default select example">  
-                                                {% for category in categorys %}
-                                                    <option {% if category.name == "Sin Categoría" %} selected {% endif %}  value="{{category.id}}">{{category.name}}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    {% endif %}
                                     <div class="row">
                                         <div class="input-group mb-3">
                                             <span class="input-group-text">Agregar</span>
@@ -233,7 +322,26 @@
                                                 <label for="floatingInput">Cantidad de {{product.name}}</label>        
                                             </div>
                                         </div>
-                                    </div>        
+                                    </div>
+                                    {% if product.pair %}
+                                        <div class="form-check form-switch mb-3 m-1">
+                                            <input type="checkbox" class="form-check-input" name="AccionPar" checked >
+                                            <label class="form-check-label">                   
+                                                Venta por Pares
+                                            </label>
+                                        </div>
+                                    {% endif %}
+                                    {% if categorys %}
+                                        <div class="input-group mb-3">
+                                            <label class="input-group-text" for="inputGroupSelect01">Categoría</label>    
+                                            <select required name="CategorySelect" class="form-select" aria-label="Default select example">  
+                                                <option placeholder="Seleccionar Categoria" value=""></option>
+                                                {% for category in categorys %}
+                                                    <option   value="{{category.id}}">{{category.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% endif %}        
                                     <div class="row">
                                         <div class="col-6">
                                             <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
@@ -283,7 +391,7 @@
                                             <label for="floatingInput">Nombre</label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <input required type="number" min="1" class="form-control" name="precio"id="floatingInput" placeholder="Precio" value="{{product.price}}">
+                                            <input required type="number" min="1" class="form-control" name="precio"id="floatingInput" placeholder="Precio" value="{{product.unit_price}}">
                                             <label for="floatingInput">Precio</label>
                                         </div>
                                         <div class="form-floating mb-3">
@@ -319,128 +427,166 @@
                     </div>   
                 {% endif %}
                 {% comment %} ========================= SELL ===============    {% endcomment %}
-                <div class="modal fade" data-bs-backdrop="static" id="SellModal" tabindex="-1" aria-labelledby="SellModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content p-3 m-2">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="SellModalLabel">Vender</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <form method="POST" action="">
-                                {% csrf_token %}
-                                {% if categorys %}
-                                    <div class="input-group mb-3">
-                                        <label class="input-group-text" for="inputGroupSelect01">Categoría</label>    
-                                        <select name="CategorySelect" class="form-select" aria-label="Default select example">  
-                                            {% for category in categorys %}
-                                                <option {% if category.name == "Sin Categoría" %}selected {% endif %}  value="{{category.id}}">{{category.name}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                {% endif %}
-                                <div class="row">
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">Vender</span>
-                                        <div class="form-floating">
-                                            <input required type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                            <label for="floatingInput">Cantidad</label>       
+                {% if product.unit_stored > 0 or product.pair_stored > 0 %}
+                    <div class="modal fade" data-bs-backdrop="static" id="SellModal" tabindex="-1" aria-labelledby="SellModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content p-3 m-2">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="SellModalLabel">Vender</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="POST"  action="">
+                                    {% csrf_token %}
+                                    
+                                    <div class="row">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">Vender</span>
+                                            <div class="form-floating">
+                                                <input required type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                <label for="floatingInput">Cantidad</label>       
+                                            </div>
                                         </div>
                                     </div>
-                                </div>        
-                                <div class="row">
-                                    <div class="col-6">
-                                        <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="submit"  name="SellProduct" class="btn btn-success float-end mx-2" value="Vender">
-                                    </div>
-                                </div>       
-                            </form>
+                                    {% if product.pair %}
+                                        <div class="form-check form-switch mb-3 m-1">
+                                            <input type="checkbox" class="form-check-input" name="AccionPar" checked >
+                                            <label class="form-check-label">                   
+                                                Venta por Pares
+                                            </label>
+                                        </div>
+                                    {% endif %}        
+                                    {% if categorys %}
+                                        <div class="input-group mb-3">
+                                            <label class="input-group-text" for="inputGroupSelect01">Categoría</label>    
+                                            <select required name="CategorySelect" class="form-select" aria-label="Default select example">  
+                                                <option value=""></option>
+                                                {% for category in categorys %}
+                                                    <option value="{{category.id}}">{{category.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% endif %}
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="submit"  name="SellProduct" class="btn btn-success float-end mx-2" value="Vender">
+                                        </div>
+                                    </div>       
+                                </form>
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
                 {% comment %} ========================= REFUND ===============    {% endcomment %}
-                <div class="modal fade" data-bs-backdrop="static" id="RefundModal" tabindex="-1" aria-labelledby="RefundModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content p-3 m-2">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="RefundModalLabel">Reembolsar</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <form method="POST" action="">
-                                {% csrf_token %}
-                                {% if categorys %}
-                                    <div class="input-group mb-3">
-                                        <label class="input-group-text" for="inputGroupSelect01">Categoría</label>    
-                                        <select name="CategorySelect" class="form-select" aria-label="Default select example">  
-                                            {% for category in categorys %}
-                                                <option {% if category.name == "Sin Categoría" %}selected {% endif %}  value="{{category.id}}">{{category.name}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                {% endif %}
-                                <div class="row">
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">Reembolsar</span>
-                                        <div class="form-floating">
-                                            <input required type="number" value="1" min="1" max="{{product.sold}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                            <label for="floatingInput">Cantidad</label>       
+                {% if product.unit_sold > 0 or product.pair_sold > 0 %}
+                    <div class="modal fade" data-bs-backdrop="static" id="RefundModal" tabindex="-1" aria-labelledby="RefundModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content p-3 m-2">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="RefundModalLabel">Reembolsar</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form method="POST" action="">
+                                    {% csrf_token %}
+                                    
+                                    <div class="row">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text">Reembolsar</span>
+                                            <div class="form-floating">
+                                                <input required type="number" value="1" min="1" max="{{product.sold}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                <label for="floatingInput">Cantidad</label>       
+                                            </div>
                                         </div>
                                     </div>
-                                </div>        
-                                <div class="row">
-                                    <div class="col-6">
-                                        <input type="reset" class="btn btn-warning float-start" data-bs-dismiss="modal" value="Cancelar">         
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="submit"  name="RefundProduct" style="background-color: orangered; color: white;" class="btn float-end mx-2" value="Reembolsar">
-                                    </div>
-                                </div>       
-                            </form>  
+                                    {% if product.pair %}
+                                        <div class="form-check form-switch mb-3 m-1">
+                                            <input type="checkbox" class="form-check-input" name="AccionPar" checked >
+                                            <label class="form-check-label">                   
+                                                Reembolso por Pares
+                                            </label>
+                                        </div>
+                                    {% endif %}
+                                    {% if categorys %}
+                                        <div class="input-group mb-3">
+                                            <label class="input-group-text" for="inputGroupSelect01">Categoría</label>    
+                                            <select required name="CategorySelect" class="form-select" aria-label="Default select example">  
+                                                <option value=""></option>
+                                                {% for category in categorys %}
+                                                    <option   value="{{category.id}}">{{category.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    {% endif %}        
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="reset" class="btn btn-warning float-start" data-bs-dismiss="modal" value="Cancelar">         
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="submit"  name="RefundProduct" style="background-color: orangered; color: white;" class="btn float-end mx-2" value="Reembolsar">
+                                        </div>
+                                    </div>       
+                                </form>  
+                            </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
                 {% comment %} ========================= SUB ===============    {% endcomment %}
-                <div class="modal fade" data-bs-backdrop="static" id="SubModal" tabindex="-1" aria-labelledby="SubModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content p-3 m-2">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="SubModalLabel">Quitar</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                {% if "Admin" in Groups %}
+                    {% if product.unit_stored > 0 or product.pair_stored > 0 %}
+                        <div class="modal fade" data-bs-backdrop="static" id="SubModal" tabindex="-1" aria-labelledby="SubModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content p-3 m-2">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="SubModalLabel">Quitar</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form method="POST" action="">
+                                        {% csrf_token %}
+                                        
+                                        <div class="row">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">Quitar</span>
+                                                <div class="form-floating">
+                                                    <input required type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                    <label for="floatingInput">Cantidad</label>       
+                                                </div>
+                                            </div>
+                                        </div>  
+                                        {% if product.pair %}
+                                            <div class="form-check form-switch mb-3 m-1">
+                                                <input type="checkbox" class="form-check-input" name="AccionPar" checked >
+                                                <label class="form-check-label">                   
+                                                    Quitado por Pares
+                                                </label>
+                                            </div>
+                                        {% endif %}
+                                        {% if categorys %}
+                                            <div class="input-group mb-3">
+                                                <label class="input-group-text" for="inputGroupSelect01">Categoría</label>    
+                                                <select required name="CategorySelect" class="form-select" aria-label="Default select example">  
+                                                    <option value=""></option>
+                                                    {% for category in categorys %}
+                                                        <option   value="{{category.id}}">{{category.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        {% endif %}      
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <input type="reset" class="btn btn-secondary float-start" data-bs-dismiss="modal" value="Cancelar">   
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="submit"  name="SubProduct" class="btn btn-danger float-end mx-2" value="Quitar">
+                                            </div>
+                                        </div>       
+                                    </form>   
+                                </div>
                             </div>
-                            <form method="POST" action="">
-                                {% csrf_token %}
-                                {% if categorys %}
-                                    <div class="input-group mb-3">
-                                        <label class="input-group-text" for="inputGroupSelect01">Categoría</label>    
-                                        <select name="CategorySelect" class="form-select" aria-label="Default select example">  
-                                            {% for category in categorys %}
-                                                <option {% if category.name == "Sin Categoría" %}selected {% endif %}  value="{{category.id}}">{{category.name}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                {% endif %}
-                                <div class="row">
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">Quitar</span>
-                                        <div class="form-floating">
-                                            <input required type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                            <label for="floatingInput">Cantidad</label>       
-                                        </div>
-                                    </div>
-                                </div>        
-                                <div class="row">
-                                    <div class="col-6">
-                                        <input type="reset" class="btn btn-secondary float-start" data-bs-dismiss="modal" value="Cancelar">   
-                                    </div>
-                                    <div class="col-6">
-                                        <input type="submit"  name="SubProduct" class="btn btn-danger float-end mx-2" value="Quitar">
-                                    </div>
-                                </div>       
-                            </form>   
                         </div>
-                    </div>
-                </div>
+                    {% endif %}
+                {% endif %}
             {% else %}
             {% comment %} =================  CONFIRM  ==================== {% endcomment %}         
             <div class="modal fade" data-bs-backdrop="static" id="ConfirmAddModal" tabindex="-1" aria-labelledby="ConfirmAddModalLabel" aria-hidden="true">
@@ -457,13 +603,10 @@
                                     {% csrf_token %}
                                         <div class="row border m-2">
                                             <h4>Producto: {{movement.product.name}}</h5>
-                                            {% if movement.category %}
-                                                <h6>Total Almacenada({{movement.category.name}}): {{movement.category.stored}}</h6>
-                                            {% else %}
-                                                <h6>Total Almacenada({{movement.product.name}}): {{movement.product.stored}}</h6>
-                                            {% endif %}
-                                            {% comment %} <h6>Total Almacenado({{movement.product.name}}):{{movement.product.stored}}</h6> {% endcomment %}
                                             <h6>Cantidad a Ingresar:{{movement.lot}}</h6>
+                                            {% if movement.category %}
+                                                <h6>Categoria: {{movement.category.name}}</h6>
+                                            {% endif %}
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text">Rectificar</span>
                                                 <div class="form-floating">
@@ -492,26 +635,65 @@
                     <table class="table table-ligth centrado shadow p-3 mb-0 bg-body-tertiary rounded">
                         <thead>
                         <tr> 
-                            <th scope="col" class="h6">Nombre</th>
+                            {% comment %} <th scope="col" class="h6">Nombre</th>
                             <th scope="col" class="h6">Almacenados</th>
-                            <th scope="col" class="h6">Vendidos</th>
+                            <th scope="col" class="h6">Vendidos</th> {% endcomment %}
+                            <th scope="col" class="h6"></th>
                         </tr>
                         </thead>   
                         <tbody> 
-                            {% for category in categorys %}
+                            {% for category in categorys %}      
                                 <tr>
-                                    <th scope="row">
-                                        {% if category.name == "Sin Categoría" %}
-                                        {{product.name}}({{category.name}})
-                                        {% else %}
-                                        {{category.name}}
-                                        {% endif %}
-                                    </th>
-                                    <th scope="row">
-                                        {{category.stored}}
-                                    </th>
-                                    <th scope="row">
-                                        {{category.sold}}
+                                    <th scope="row h-auto">
+                                        <a style="text-decoration: none;" class="text-dark  w-100" data-bs-toggle="collapse" href="#collapseCategory{{category.id}}" role="button" aria-expanded="false" aria-controls="collapseCategory{{category.id}}">
+                                           <div class="row justify-content-center h4"> 
+                                                {{category.name}}
+                                            </div>
+                                        </a>
+
+                                        <div class="collapse" id="collapseCategory{{category.id}}">
+                                            {% comment %} <button type="button" class="btn-close" aria-label="Close"></button> {% endcomment %}
+                                            <div class="card card-body m-3">
+                                                <div class="row justify-content-center">
+                                                    Categoria: <span class="h3">{{category.name}}</span>
+                                                    <table class="w-50 border border-1 p-2 m-2 table table-ligth table-borderless">
+                                                            
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col h3"></th>
+                                                                {% if product.pair %}
+                                                                    <th scope="col  h3">Por Par</th>
+                                                                {% endif %}
+                                                                <th scope="col h3">Por Unidad</th>
+                                                            
+                                                            </tr>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <th scope="row h3">Almacendao</th>
+                                                                    {% if product.pair %}
+                                                                        <td class="h3">{{category.pair_stored}}</td>
+                                                                    {% endif %}
+                                                                    <td class="h3">{{category.unit_stored}}</td>
+                                                                    
+                                                                    
+                                                                </tr>
+                                                                <tr>
+                                                                    <th scope="row h3">Vendido</th>
+                                                                    {% if product.pair %}
+                                                                        <td class="h3">{{category.pair_sold}}</td>
+                                                                    {% endif %}
+                                                                    <td class="h3">{{category.unit_sold}}</td>
+                                                                    
+                                                                </tr>
+                                                                
+                                                            </tbody>
+                                                            
+                                                        </thead>
+                                                        
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </th>
                                 </tr>
                             {% endfor %}
@@ -522,7 +704,7 @@
                         Sin Categorías
                     </div>
                 {% endif %}  
-                <div class="row ">
+                <div class="row">
                     <div class="col">
                         {% if "Admin" in Groups %}
                         <div class="d-flex justify-content-around">
@@ -543,59 +725,266 @@
                 <table class="table table-dark centrado shadow p-3 mb-0 bg-body-tertiary rounded">
                     <thead>
                     <tr>   
-                        <th scope="col" class="h6">Tipo</th>
-                        <th scope="col" class="h6">Cantidad</th>
-                        <th scope="col" class="h6">Precio</th>
-                        {% comment %} <th scope="col" class="h6">Importe</th> {% endcomment %}
+                        <th scope="col"></th>
+                        {% comment %}<th scope="col" class="h6">Info</th>
+                         <th scope="col" class="h6">Precio</th>
+                        {% comment %} <th scope="col" class="h6">Importe</th> 
                         <th scope="col" class="h6">Categoria</th>
-                        <th scope="col" class="h6">Fecha</th>
+                        <th scope="col" class="h6">Fecha</th> {% endcomment %}
                     </tr>
                     </thead>   
                     <tbody>  
                         {% for movement in movements %}
-                            <tr>
+                            <tr >
                                 <th scope="row">
-                                    {{movement.get_type_display}}
+                                    <a style="text-decoration: none;" class="text-light" data-bs-toggle="collapse" href="#collapseMovement{{movement.id}}" role="button" aria-expanded="false" aria-controls="collapseMovement{{movement.id}}">
+                                        <div class="row justify-content-center">
+                                            <div class="col-8 h6">
+                                                {{movement.get_type_display}}
+                                            </div>
+                                            <div class="col-4 h6">  
+                                                {{movement.lot}}
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <div class="collapse" id="collapseMovement{{movement.id}}">
+                                        <div class="card card-body m-1 ">
+                                            <div class="continer text-dark">
+                                                
+                                                
+                                                <div class="row justify-content-center">
+                                                    <div class="col-4 m-2 h5">
+                                                        Transaccion: 
+                                                    </div>
+                                                    <div class="col-4 m-2 h5">
+                                                        {{movement.get_type_display}}
+                                                    </div>
+                                                    <div class="col-4 m-2 h5">
+                                                        ID: 
+                                                    </div>
+                                                    <div class="col-4 m-2 h5">
+                                                        {{movement.id}}
+                                                    </div>
+                                                    {% if movement.type == "EP" %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Cantidad Agregada: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.lot}}
+                                                        </div>
+                                                        {% if movement.category %}
+                                                            <div class="col-4 m-2 h5">
+                                                                Categoria: 
+                                                            </div>
+                                                            <div class="col-4 m-2 h5">
+                                                                {{movement.category.name}}
+                                                            </div>
+                                                        {% endif %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Confirmado: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {% if movement.extra_info_bool == True %}
+                                                                <span class="text-success h5">Si</span> 
+                                                            {% else %}
+                                                                <span class="text-warning h5">No</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    {% elif movement.type == "CP" %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Nombre: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.product.name}}
+                                                        </div>
+                                                        {% if movement.product.pair %}
+                                                            <div class="col-4 m-2 h5">
+                                                                Precio por Par: 
+                                                            </div>
+                                                            <div class="col-4 m-2 h5">
+                                                                {{movement.product.pair_price}}$
+                                                            </div>
+                                                            <div class="col-4 m-2 h5">
+                                                                Ganancia por Par: 
+                                                            </div>
+                                                            <div class="col-4 m-2 h5">
+                                                                {{movement.product.pair_profit_worker}}$
+                                                            </div>
+                                                        {% endif %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Precio por Unidad: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.product.unit_price}}$
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            Ganancia por Unidad: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.product.unit_profit_worker}}$
+                                                        </div>
+                                                        
+                                                    {% elif movement.type == "SP" %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Cantidad Quitada: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.lot}}
+                                                        </div>
+                                                        {% if movement.category %}
+                                                            <div class="col-4 m-2 h5">
+                                                                Categoria: 
+                                                            </div>
+                                                            <div class="col-4 m-2 h5">
+                                                                {{movement.category.name}}
+                                                            </div>
+                                                        {% endif %}
+                                                    {% elif movement.type == "RD" %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Cantidad Retirada: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.lot}}
+                                                        </div>
+                                                    {% elif movement.type == "eP" %}            
+                                                    {% elif movement.type == "VP" %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Tipo Venta
+                                                        </div>
+                                                        {% if movement.product.pair %}
+                                                            <div class="col-4 m-2 h5">
+                                                                Por Pares  
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="col-4 m-2 h5">
+                                                                Por Unidad  
+                                                            </div>
+                                                        {% endif %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Cantidad Vendida: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.lot}}
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            Precio por 
+                                                            {% if movement.extra_info_bool %}
+                                                            Par
+                                                            {% else %}
+                                                            Unidad
+                                                            {% endif %}
+                                                            : 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.extra_info_int}}$
+                                                        </div>
+                                                        
+                                                        {% if movement.category %}
+                                                            <div class="col-4 m-2 h5">
+                                                                Categoria: 
+                                                            </div>
+                                                            <div class="col-4 m-2 h5">
+                                                                {{movement.category.name}}
+                                                            </div>
+                                                        {% endif %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Importe: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {% widthratio movement.extra_info_int 1 movement.lot %}$
+                                                        </div>
+                                                    {% elif movement.type == "rP" %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Tipo Reembolso 
+                                                        </div>
+                                                        {% if movement.product.pair %}
+                                                            <div class="col-4 m-2 h5">
+                                                                Por Pares  
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="col-4 m-2 h5">
+                                                                Por Unidad  
+                                                            </div>
+                                                        {% endif %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Cantidad Reembolsada: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.lot}}
+                                                        </div>
+                                                        
+                                                        <div class="col-4 m-2 h5">
+                                                            Precio por 
+                                                            {% if movement.extra_info_bool %}
+                                                            Par
+                                                            {% else %}
+                                                            Unidad
+                                                            {% endif %}
+                                                            : 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.extra_info_int}}$
+                                                        </div>
+                                                        {% if movement.category %}
+                                                            <div class="col-4 m-2 h5">
+                                                                Categoria: 
+                                                            </div>
+                                                            <div class="col-4 m-2 h5">
+                                                                {{movement.category.name}}
+                                                            </div>
+                                                        {% endif %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Importe Reembolsado: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {% widthratio movement.extra_info_int 1 movement.lot %}$
+                                                        </div>
+                                                    {% elif movement.type == "RP" %}
+                                                    {% elif movement.type == "AC" %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Nombre Categoria: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.category.name}}
+                                                        </div>
+                                                    {% elif movement.type == "RC" %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Nombre Categoria Eliminada: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.category.name}}
+                                                        </div>
+                                                    {% elif movement.type == "cP" %}
+                                                        <div class="col-4 m-2 h5">
+                                                            Proucto Confirmado 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.product.name}}
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            Cantidad a Confirmar: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.extra_info_int}}
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            Cantidad Confirmada: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h5">
+                                                            {{movement.lot}}
+                                                        </div>
+                                                    {% endif %}
+                                                    <div class="col-4 m-2 h5">
+                                                        Fecha: 
+                                                    </div>
+                                                    <div class="col-4 m-2 h5">
+                                                        {{movement.date}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </th>
-                                <th scope="row">
-                                    {{movement.lot}}
-                                </th>
-                                <th scope="row">
-                                    {{movement.price}}
-                                </th>
-                                <th scope="row">
-                                    {{movement.category.name}}
-                                </th>
-                                <th scope="row">
-                                    {{movement.date}}
-                                </th>
-                                {% comment %} {% if movement.type == "VP" or movement.type == "rP" %}
-                                    <td>{{movement.lot}}</td>
-                                    <td>{{movement.price}}$</td>
-                                    <td>{% widthratio movement.price 1 movement.lot %}$</td>
-                                {% elif movement.type == "RD" %}
-                                    <td>{{movement.lot}}</td>
-                                    <td>-</td>
-                                    <td>-</td> 
-                                {% elif movement.type == "EP" or movement.type == "SP" %}
-                                    <td>{{movement.lot}}</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                {% elif movement.type == "eP" %}
-                                    <td>-</td>
-                                    <td>{{movement.price}}$</td>
-                                    <td>-</td>
-                                {% elif movement.type == "CP" or movement.type == "RP" or movement.type == "AC" or movement.type == "RC" %}
-                                    <td>-</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                {% endif %}
-                                <th scope="row">
-                                    {% firstof movement.extra_info "-" %}
-                                </th>
-                                <th scope="row">
-                                    {{movement.date}}
-                                </th> {% endcomment %}
                             </tr>
                             {% empty %}
                             <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay transacciones para mostrar<h2></div>     

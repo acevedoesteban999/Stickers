@@ -107,58 +107,66 @@ def ProductosView(request):
         products = Product.objects.exclude(removed=True).order_by('name')   
         if request.method == "POST":
             if "CrearProducto" in request.POST:
-                crear_form=FormProduc(request.POST,request.FILES)
-                if crear_form.is_valid():
-                    name=crear_form.cleaned_data.get("name").__str__().capitalize()
-                    price=crear_form.cleaned_data.get("precio") 
-                    image=crear_form.cleaned_data.get("imagen")
-                    description=crear_form.cleaned_data.get("descripcion")
-                    try:
-                        if Movement.Create(name,price,description,image):
-                            crear_form=FormProduc()
-                            product=Product.objects.exclude(removed=True).get(name=name)
-                            #categorys=Category.objects.filter(product__id=product.id).order_by("name")
-                            #movements=Movement.objects.filter(product_id=product.id).order_by('-date')[:50]
-                            messages.success(request,"Se ha creado  el objeto %s correctamente"%name)
-                            #return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys}) 
-                            return redirect("/Producto/{}".format(product.id))
-                    except IntegrityError:
-                        messages.error(request,"Nose ha podido  crear, ya existe un objeto de nombre %s"% name)
-                        return render(request,"Productos.html",{'products':products})
+                crear_form=request.POST.dict()
+                files=FormImg(request.POST,request.FILES)
+                files.is_valid()
+                name=crear_form.get("name").__str__().capitalize()
+                pair=crear_form.get("VentasPares")
+                if pair == "1":
+                    pair=True
+                else:
+                    pair=False
+                
+                unit_price=int(crear_form.get("precio unitario") )
+                unit_profit_worker=int(crear_form.get("ganancia unitaria") )
+                pair_price=None
+                pair_profit_worker=None
+                if pair == True:
+                    pair_price=int(crear_form.get("precio pares"))
+                    pair_profit_worker=int(crear_form.get("ganancia pares")) 
+                image=files.cleaned_data.get("imagen")
+                description=crear_form.get("descripcion")
+                result=Movement.Create(name,pair,unit_price,unit_profit_worker,pair_price,pair_profit_worker,description,image)
+                if result==True:
+                    crear_form=FormProduc()
+                    product=Product.objects.exclude(removed=True).get(name=name)
+                    messages.success(request,"Se ha creado  el objeto {} correctamente".format(name))
+                    #return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys}) 
+                    return redirect("/Producto/{}".format(product.id))
+                elif result=="E0":
+                    messages.error(request,"Nose ha podido  crear, ya existe un objeto de nombre %s"% name)
+                    return render(request,"Productos.html",{'products':products})
             messages.error(request,"Ha ocurrido un error  insesperado")
             return render(request,"Productos.html",{'products':products})
         return render(request,"Productos.html",{'products':products})
-    except:
-        messages.error(request,"Algo ha salido mal")    
+    except Exception as e:
+        messages.error(request,"Algo ha salido mal, Codigo Error:{}".format(e))    
     return redirect('home')
 
 def ProductoView(request,productoID):
     try:
         product=Product.objects.exclude(removed=True).get(id=productoID)
         if product:
+            movements_confirm=Movement.objects.filter(product_id=product.id,type="EP",extra_info_bool=False).order_by('date')
+            movements=Movement.objects.filter(product_id=product.id).order_by('-date')[:50]
             categorys=Category.objects.filter(product__id=product.id).order_by("name")
             i=0
             for categ in categorys:
                 if(categ.image):
-                    i+=1
-
-            movements=Movement.objects.filter(product_id=product.id).order_by('-date')[:50]
-            MovementsConfirm=Movement.objects.filter(product_id=product.id,type="EP",extra_info_bool=False).order_by('date')
+                    i += 1
+          
             def NormalPageProduct():
-                product=Product.objects.get(id=productoID)
-                categorys=Category.objects.filter(product__id=product.id).order_by("name")
-                return render(request,"Producto.html",{'MovementsConfirm':MovementsConfirm,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
+                return render(request,"Producto.html",{'MovementsConfirm':movements_confirm,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
+            
             def ErrorProduct(text):
                 messages.error(request,text)
-                product=Product.objects.get(id=productoID)
-                categorys=Category.objects.filter(product__id=product.id).order_by("name")
-                return render(request,"Producto.html",{'MovementsConfirm':MovementsConfirm,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
+                return render(request,"Producto.html",{'MovementsConfirm':movements_confirm,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
+            
             def SuccessProduct(text):
-                #product=Product.objects.get(id=productoID)
-                #categorys=Category.objects.filter(product__id=product.id).order_by("name")
+                #Eliminar si se redirecciona a 'home'
                 messages.success(request,text)
-                return redirect('home')
-                #return render(request,"Producto.html",{'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)})
+                return render(request,"Producto.html",{'MovementsConfirm':movements_confirm,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
+            
             def WarningProduct(text):
                 messages.warning(request,text)
                 return redirect('home') 
@@ -166,33 +174,40 @@ def ProductoView(request,productoID):
             if request.method == "POST":
                 #Form Editar
                 if "EditProduct" in request.POST:
-                    edit_product=FormProduc(request.POST, request.FILES)
-                    if edit_product.is_valid():
-                        name=edit_product.cleaned_data.get("name")
-                        price=edit_product.cleaned_data.get("precio")
-                        description=edit_product.cleaned_data.get("descripcion")
-                        image=edit_product.cleaned_data.get("imagen")
-                        print(image)
-                        try:
-                            if Movement.Edit(product,name,price,description,image):
-                                return SuccessProduct("Se ha editado el producto %s correctamente" %name)
-                        except IntegrityError:
-                            product=Product.objects.exclude(removed=True).get(id=productoID)
-                            return ErrorProduct("No se ha podido editar, ya existe un objeto de nombre %s" %name)
-                    return ErrorProduct("Ha ocurrido un errpr inescperado")    
+                    edit_product=request.POST.dict()
+                    name=edit_product.get("name")
+                    price=edit_product.get("precio")
+                    description=edit_product.get("descripcion")
+                    image=edit_product.eaned_data.get("imagen")
+                    result=Movement.Edit(product,name,price,description,image) 
+                    if result == True:
+                        return SuccessProduct("Se ha editado el producto {} correctamente".format(name))
+                    elif result == "E0":
+                        return ErrorProduct("No se ha podido editar, ya existe un objeto de nombre {}".format(name))    
                 #Form Vender
                 elif "SellProduct" in request.POST:
                     sell_product=request.POST.dict()
                     lot_sell=int(sell_product.get("cantidad"))
                     category_id=sell_product.get("CategorySelect")
-                    ms=Movement.Sell(product,lot_sell,category_id)
-                    if ms==True:
-                        return SuccessProduct("Se han vendido {} {} con un importe de {}$".format(lot_sell,product.name,product.price*lot_sell))
-                    elif ms==None:
-                        category=Category.objects.get(id=category_id) 
-                        return ErrorProduct("No se ha podido vender, en la categoría {} solo quedan {} productos almacenados".format(category.name,category.stored))
-                    return ErrorProduct("No se ha podido vender {}, solo quedan {} productos almacenados".format(lot_sell,product.stored))  
-                    #return ErrorProduct("Ha ocurrido un errpr inescperado")   
+                    pair_action=sell_product.get("AccionPar")
+                    #if pair_action:
+                        #pair_action=True
+                    category=None
+                    if category_id:
+                        category=categorys.get(id=category_id)
+                    if pair_action:
+                        result=Movement.Pair_Sell(product,lot_sell,category)
+                    else:
+                        result=Movement.Unit_Sell(product,lot_sell,category)
+                    
+                    if result == True:
+                        if category_id:
+                            categorys=Category.objects.filter(product__id=product.id).order_by("name")
+                        return SuccessProduct("Se han vendido {} {} {} con un importe de {}$".format(lot_sell,product.name,"pares de" if pair_action == True else "unidades de",product.pair_price*lot_sell if pair_action == True else product.unit_price*lot_sell))
+                    elif result == 'E0':
+                        return ErrorProduct("No se ha podido vender {} productos, en la categoría {} solo quedan {} {} productos almacenados".format(lot_sell,category.name,category.pair_stored.__str__() +" pares de" if pair_action == True else category.unit_stored.__str__() +" unidades de"))
+                    elif result == 'E1':
+                        return ErrorProduct("No se ha podido vender {}, solo quedan {} {} productos almacenados".format(lot_sell,category.name,category.pair_stored.__str__() +" pares de" if pair_action == True else category.unit_stored.__str__() +" unidades de"))       
                 #Form Eliminar
                 elif "RemoveProduct" in request.POST:
                     name=product.name
@@ -204,12 +219,12 @@ def ProductoView(request,productoID):
                     add_product=request.POST.dict()
                     lot_add=int(add_product.get("cantidad"))
                     category_id=add_product.get("CategorySelect")
+                    pair_action=add_product.get("AccionPar")
                     category_add=None
                     if category_id:
                         category_add=Category.objects.get(id=category_id)
-                    if lot_add >= 0:
-                        if Movement.Add(product,lot=lot_add,category=category_add):
-                            return SuccessProduct("Se ha peido agregar {} {}, esperando a ser confirmado".format(lot_add,product.name))
+                    if Movement.Add(product,lot=lot_add,category=category_add,pair_action=pair_action):
+                        return SuccessProduct("Se ha agregado {} {} {}, esperando a ser confirmado".format(lot_add,"pares de " if pair_action else "unidades de ",product.name))
                     return ErrorProduct("No se han podido insertar {} {}".format(lot_add,product.name))
                 #Form Confirmar Agregar
                 elif "ConfirmAddProduct" in request.POST:
@@ -218,15 +233,14 @@ def ProductoView(request,productoID):
                     id_movement=int(confirm_product.get("MovimientoID"))
                     if id_movement:
                         movement_to_confirm=Movement.objects.get(id=id_movement)
-                        print("A")
                         if movement_to_confirm:
-                            print("A")
                             if Movement.ConfirmAdd(movement=movement_to_confirm,lot=lot_confirm):
                                 try:
-                                    print("A")
-                                    for movementConfirm in MovementsConfirm:
+                                    for movementConfirm in movements_confirm:
                                         if movementConfirm.extra_info_bool == False:
                                             raise (Exception())
+                                    categorys=Category.objects.filter(product__id=product.id).order_by("name")
+                                    product=Product.objects.get(id=product.id)
                                     return SuccessProduct("Se han agregado {} {} correctamente".format(lot_confirm,movement_to_confirm.product.name))
                                 except:
                                     movement_to_confirm.product.confirm=False
@@ -238,46 +252,64 @@ def ProductoView(request,productoID):
                     sub_product=request.POST.dict()
                     lot_sub=int(sub_product.get("cantidad"))
                     category_id=sub_product.get("CategorySelect")
-                    if lot_sub >= 0:
-                        ms=Movement.Sub(product,lot=lot_sub,category_id=category_id)
-                        if ms == True:
-                            return SuccessProduct("Se han quitado {} {} correctamente".format(lot_sub,product.name))
-                        elif ms==None:
-                            category=Category.objects.get(id=category_id) 
-                            return ErrorProduct("No se han podido quitar, la categoría {} solo tiene {} productos almcenados".format(category.name,category.stored))
-                    return ErrorProduct("No se han podido quitar {} {}".format(lot_sub,product.name))
+                    pair_action=sub_product.get("AccionPar")
+                    category=None
+                    if category_id:
+                        category=Category.objects.get(id=category_id)
+                    if pair_action:
+                        result=Movement.Pair_Sub(product,lot=lot_sub,category=category)
+                    else:
+                        result=Movement.Unit_Sub(product,lot=lot_sub,category=category)
+                    if result == True:
+                        if category_id:
+                            categorys=Category.objects.filter(product__id=product.id).order_by("name")
+                        return SuccessProduct("Se han quitado {} {} correctamente".format(lot_sub,product.name))
+                    elif result == "E1":
+                        return ErrorProduct("No se han podido quitar, la categoría {} solo tiene {} productos almcenados".format(category.name,category.stored))
+                    elif result == "E0":
+                        return ErrorProduct("No se han podido quitar {} {}".format(lot_sub,product.name))
                 #Form Reembolsar
                 elif "RefundProduct" in request.POST: 
                     refund_product=request.POST.dict()
                     lot_refund=int(refund_product.get("cantidad"))
                     category_id=refund_product.get("CategorySelect")
+                    pair_action=refund_product.get("AccionPar")
+                    category=None
+                    if category_id:
+                        category=Category.objects.get(id=category_id)
                     if lot_refund > 0:
-                        rf=Movement.Refund(product,lot=lot_refund,category_id=category_id)
-                        if rf == True:
+                        if pair_action:
+                            result=Movement.Pair_Refund(product,lot=lot_refund,category=category)
+                        else:
+                            result=Movement.Unit_Refund(product,lot=lot_refund,category=category)
+                        if result == True:
+                            if category_id:
+                                categorys=Category.objects.filter(product__id=product.id).order_by("name")  
                             return SuccessProduct("Se han reembolsado {} {} con un importe de {}$".format(lot_refund,product.name,lot_refund*product.price))
-                        elif rf == None:
+                        elif result == "E0":
+                            return ErrorProduct("No se han podido reembolsar {} {}".format(lot_refund,product.name))
+                        elif result == "E1":
                             return ErrorProduct("No hay suficiente dinero en caja para reembolsar {} {}".format(lot_refund,product.name))
-                        elif "None" in rf:
-                            category=Category.objects.get(id=category_id) 
-                            return ErrorProduct("No se ha podido  reembolsar, la categoría {} solo tiene {} productos vendidos".format(category.name,category.sold))
-                    return ErrorProduct("No se han podido reembolsar {} {}".format(lot_refund,product.name))
+                        elif result == "E2":
+                            return ErrorProduct("No se ha podido  reembolsar, la categoría {} solo tiene {} productos vendidos".format(category.name,category.sold))                 
                 #Form Agregar Categoría
                 elif "AddCategory" in request.POST: 
-                    add_category=FormImg(request.POST,request.FILES)
-                    if add_category.is_valid():
-                        name=add_category.cleaned_data.get("name")         
-                        image=add_category.cleaned_data.get("imagen")
-                        rf=Movement.AddCategory(product,name,image)
-                        if rf == True:
-                            categorys=Category.objects.filter(product__id=product.id).order_by("name")
-                            i=0
-                            for categ in categorys:
-                                if(categ.image):
-                                    i+=1
-                            return SuccessProduct("Se ha creado la categoría {} correctamente".format(name))
-                        elif rf == None:
-                            return ErrorProduct("Ya existe la categoría {}".format(name))
-                    return ErrorProduct("No se ha podido  crear la categoría {}".format(name))     
+                    add_category=request.POST.dict()
+                    files=FormImg(request.POST,request.FILES)
+                    files.is_valid()
+                    name=add_category.get("name").__str__().capitalize()        
+                    image=files.cleaned_data.get("imagen")
+                    result=Movement.AddCategory(product,name,image)
+                    if result == True:
+                        categorys=Category.objects.filter(product__id=product.id).order_by("name")
+                        i=0
+                        for categ in categorys:
+                            if(categ.image):
+                                i+=1
+                        return SuccessProduct("Se ha creado la categoría {} correctamente".format(name))
+                    elif result == "E0":
+                        return ErrorProduct("Ya existe la categoría {}".format(name))
+                    #return ErrorProduct("No se ha podido  crear la categoría {}".format(name))     
                 #Form Eliminar Categoría
                 elif "RemoveCategory" in request.POST: 
                     remove_category=request.POST.dict()
@@ -292,7 +324,9 @@ def ProductoView(request,productoID):
                                 i+=1
                         return SuccessProduct("Se ha eliminado la categoría {} correctamente".format(category.name))
                     return ErrorProduct("No se ha podido eliminar la categoría {}".format(category.name))
-            return NormalPageProduct()
+                
+                return ErrorProduct("Ha ocurrido un error inesperado")    
+        return NormalPageProduct()
     except ObjectDoesNotExist:
         messages.error(request,"Error, producto inexistente")
     

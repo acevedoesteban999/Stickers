@@ -7,7 +7,7 @@
       <link href="{% static 'css/styles.css'%}" rel="stylesheet">
   </head>
   <body class='{% if not user.is_authenticated %} ColorNoAuthenticated {% elif 'Admin' in Groups %} ColorAdmin {% else %} ColorWorker {% endif %}'>
-    <nav  class="navbar bg-dark navbar-dark navbar-expand-md ">
+    <nav  class="navbar bg-dark navbar-dark navbar-expand-md sticky-top ">
       <div class="container-fluid">
         <a class="navbar-brand"><span class="h3 text-light"> Stickers </span></a>
         <div class="navbar-brand d-flex justify-content-start flex-grow-1 pe-3 d-block d-md-none">

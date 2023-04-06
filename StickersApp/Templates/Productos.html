@@ -23,15 +23,53 @@
                                     {% csrf_token %}
                                     <div class="modal-body">
                                         <div class="form-floating mb-3">
-                                            <input type="text" class="form-control" required name="name" id="floatingInput" placeholder="Nombre">
+                                            <input type="text" class="form-control" maxlength="30" required name="name" id="floatingInput" placeholder="Nombre">
                                             <label for="floatingInput">Nombre</label>
                                         </div>
-                                        <div class="form-floating mb-3">
-                                            <input min="1" type="number" class="form-control" required name="precio"id="floatingInput" placeholder="Precio">
-                                            <label for="floatingInput">Precio</label>
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Venta</legend> 
+                                            <div class="form-check">
+                                                <input class="form-check-input" value="0" onclick="VentasParesFunction(false)" checked type="radio" name="VentasPares">
+                                                <label class="form-check-label" for="flexRadioDefault1">
+                                                Venta por Unidad
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" value="1" onclick="VentasParesFunction(true)" type="radio" name="VentasPares" >
+                                                <label class="form-check-label" for="flexRadioDefault2">
+                                                Venta Por Pares
+                                                </label>
+                                            </div>
+                                        </fieldset>
+                                        <div style="display: none;" id="ParesDivId">
+
+                                            <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Por Pares</legend> 
+                                        
+                                                <div class="form-floating mb-3">
+                                                    <input min="1" type="number"  class="form-control"  name="precio pares"id="ParesPrecio" placeholder="Precio">
+                                                    <label for="floatingInput">Precio por Par </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input min="1" type="number"  class="form-control"  name="ganancia pares" id="ParesGanancia" placeholder="Ganancia por Venta">
+                                                    <label for="floatingInput">Ganancia por Par para Trabajador</label>
+                                                </div>
+                                            </fieldset>
                                         </div>
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Por Unidad</legend>    
+                                            <div class="form-floating mb-3">
+                                                <input min="1" type="number"  class="form-control" required name="precio unitario"id="floatingInput" placeholder="Precio">
+                                                <label for="floatingInput">Precio por Unidad </label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input min="1" type="number"  class="form-control" required name="ganancia unitaria" id="floatingInput" placeholder="Ganancia por Venta">
+                                                <label for="floatingInput">Ganancia por Unidad para Trabajador</label>
+                                            </div>
+                                        </fieldset>
+                                        
                                         <div class="form-floating mb-3">
-                                            <textarea  type="text" class="form-control" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;"></textarea >
+                                            <textarea  type="text" class="form-control" maxlength="100" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;"></textarea >
                                             <label for="floatingInput">Descripcion</label>
                                         </div>
                                         <div class="form-floating mb-3">
@@ -65,8 +103,6 @@
             {% endif %}
             {% if  products %}
                 <div class="continer">
-                    
-                
                     <div class="row cols-1 cols-md-2 cols-lg-3 cols-xl-4"> 
                         <div class="card-group">
                             {% for product in products %}
@@ -77,7 +113,6 @@
                                                 {{product.name}}
                                             </span>
                                         </a>
-                                        
                                         <div class="row cols-2 align-items-start justify-content-around">
                                             <div class="col-4 gx-2 ">
                                                 <img src="{{product.image.url}}" class="img-fluid img-thumbnail border border-0" alt="...">
@@ -86,7 +121,7 @@
                                                 <div class="row">
                                                     {% if product.stored != 0 %}
                                                         {% comment %} <div class="row-auto  text-success h4 mt-3">
-                                                            {{product.price}}$
+                                                            {{product.unit_price}}$
                                                         </div> {% endcomment %}
                                                         <div class="text-dark text-center h3 p-1 mt-3 border-top border-bottom border-dark">
                                                             {{product.stored}}
@@ -114,4 +149,5 @@
     {% else %}
         <meta http-equiv="Refresh" content="0; url='{% url 'home' %}'" />
     {% endif %}
+    
 {% endblock  %}

@@ -1,16 +1,3 @@
-function isSmallDevice()
-{
-  if (this.screenBreakPoint == Breakpoints.Medium ||
-      this.screenBreakPoint == Breakpoints.Large || 
-      this.screenBreakPoint == Breakpoints.XLarge)
-  {
-    return false;
-  }
-  
-  return true;
-}    
-
-
 var SearchBool=false
 function SearchProduct(addr)
 {
@@ -86,7 +73,6 @@ function RemImg()
     div.appendChild(input)
 }
 
-    
 function FilterTime(choiseFilterTime) 
 {
     var RD=document.getElementById("RD")
@@ -128,4 +114,22 @@ function FilterTime(choiseFilterTime)
     }
 }
 
-   
+function VentasParesFunction(VentasParesBool)
+{
+    paredId=document.getElementById("ParesDivId");
+    paresPrecio=document.getElementById("ParesPrecio");
+    presGanancia=document.getElementById("ParesGanancia");
+    console.log(VentasParesBool)
+    if(VentasParesBool==false)
+    {
+        paredId.setAttribute("style","display:none;");
+        paresPrecio.require=false;
+        presGanancia.required=false;
+    }
+    else
+    {
+        paredId.removeAttribute("style");
+        paresPrecio.require=true;
+        presGanancia.required=true;
+    }
+}
