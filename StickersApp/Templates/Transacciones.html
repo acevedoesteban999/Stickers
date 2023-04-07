@@ -203,6 +203,368 @@
         <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay transacciones para mostrar<h2></div>
         {% endif %}
     </div> {% endcomment %}
+    <div class="display-2 my-3 text-center">  Transacciones </div>
+    {% comment %} =================  TABLE MOVEMENTS ==================== {% endcomment %}
+    <div class="container justify-content-center mb-3">
+        <div class="row w-auto justify-content-end">  
+            <div class="w-auto my-2 mx-4">
+                <a class="btn btn-light px-5" data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">
+                <span class="h3">Filtro</span>
+                </a>
+            </div>
+        </div>
+        <div class="collapse" id="collapseFilter">
+            <div class="card ">
+                <div class="card-body w-auto">
+                    <p class="card-text">
+                        <form method="POST" action="">
+                            {% csrf_token %}
+                            <div class="row m-3">
+                                <div class="col-4">
+                                    <div class="h4">
+                                        Tipo 
+                                    </div>
+                                    <select name="TypeFilter" class="form-select" aria-label="Default select example">  
+                                        <option {% if type_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
+                                        {% for value,value_text in MChoise  %}
+                                            <option {% if type_filter == "value" %} selected {% endif %} value="{{value}}">{{value_text}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-4">
+                                    <div class="h4">
+                                        Producto
+                                    </div>
+                                    <select name="ProductFilter" class="form-select" aria-label="Default select example">  
+                                        <option {% if product_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
+                                        {% for product in products %}
+                                            <option {% if product_filter == product.id %} selected {% endif %} value="{{product.id}}">{{product.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-4">
+                                    <div class="row">
+                                        <div class="col-6 text-start">
+                                            <fieldset>
+                                                <div class="h4">
+                                                    Fecha:
+                                                </div>
+                                                <div>
+                                                    <input onClick="FilterTime('NF')" type="radio"  name="FilterDate" value="NF" {% if date_filter == "NF" %}checked{% endif %} >
+                                                    <label for="NF">Sin Filtro</label>
+                                                </div>
+                                                <div>
+                                                    <input onClick="FilterTime('DD')" type="radio"  name="FilterDate" value="DD" {% if date_filter == "DD" %}checked{% endif %}>
+                                                    <label for="FD">Dia</label>
+                                                </div>
+                                                <div>
+                                                    <input onClick="FilterTime('RD')" type="radio"  name="FilterDate" value="RD" {% if date_filter == "RD" %}checked{% endif %}>
+                                                    <label for="FD">Rango</label>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-6" >
+                                            <div {% if date_filter != "DD" %} style="display: none" {% endif %} id="DD">
+                                            <label for="filter__day">Fecha:</label>
+                                                <input {% if date_filter == "DD" %}required{% endif %} type="date" id="filter__day" value="{{date_day_filter}}" max="{{date_today_max}}" name="FilterDateDay" ></input>
+                                            </div>
+                                            
+                                            <div {% if date_filter != "RD" %} style="display: none" {% endif %} id="RD">
+                                                <label for="filter__start">Fecha Incial:</label>
+                                                <input {% if date_filter == "RD" %}required{% endif %} type="date" id="filter__start" max="{{date_today_max}}" value="{{date_start_filter}}"  name="FilterDateStart">
+                                                <label for="filter__end">Fecha Final:</label>
+                                                <input {% if date_filter == "RD" %}required{% endif %} type="date" id="filter__end" name="FilterDateEnd" value="{{date_end_filter}}"  max="{{date_today_max}}">
+                                            </div>
+                                            
+                                        </div>
+                                    </div>           
+                                </div>       
+                            </div>       
+                            <div class="row">
+                                <hr></hr>
+                                <div class="col-4">
+                                    <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">         
+                                </div>
+                                <div class="col-4">
+                                    <input type="submit"  name="FilterRemoveMovement" class="btn btn-danger float-end mx-2" value="Eliminar Filtros">
+                                </div>
+                                <div class="col-4">
+                                    <input type="submit"  name="FilterMovement" class="btn btn-info float-end mx-2" value="Filtrar">
+                                </div>
+                            </div>       
+                        </form>        
+                    </p>
+                </div>
+            </div>
+        </div>     
+    </div>
+    <div class="container">
+        <div class="card bg-dark" style="max-width: auto;">
+        <table class="table table-dark centrado shadow p-3 mb-0 bg-body-tertiary rounded">
+            <thead>
+            <tr>   
+                <th scope="col"></th>
+            </tr>
+            </thead>   
+            <tbody>  
+                {% for movement in movements %}
+                    <tr >
+                        <th scope="row">
+                            <a style="text-decoration: none;" class="text-light" data-bs-toggle="collapse" href="#collapseMovement{{movement.id}}" role="button" aria-expanded="false" aria-controls="collapseMovement{{movement.id}}">
+                                <div class="row justify-content-center">
+                                    <div class="col-8 h6">
+                                        {{movement.get_type_display}}
+                                    </div>
+                                    <div class="col-4 h6">  
+                                        {% if movement.type == "CP" or movement.type == "RP" %}
+                                            {{movement.product.name}}
+                                        {% elif movement.type == "eP" %}
+                                            -
+                                        {% elif movement.type == "AC" or movement.type == "RC" %}
+                                            {{movement.category.name}}
+                                        {% else %}
+                                            {{movement.lot}}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="collapse" id="collapseMovement{{movement.id}}">
+                                <div class="card card-body m-1 ">
+                                    <div class="continer text-dark">
+                                        
+                                        
+                                        <div class="row justify-content-center">
+                                            <div class="col-4 m-2 h6">
+                                                Transaccion: 
+                                            </div>
+                                            <div class="col-4 m-2 h6">
+                                                {{movement.get_type_display}}
+                                            </div>
+                                            <div class="col-4 m-2 h6">
+                                                ID: 
+                                            </div>
+                                            <div class="col-4 m-2 h6">
+                                                {{movement.id}}
+                                            </div>
+                                            {% if movement.type == "EP" %}
+                                                <div class="col-4 m-2 h6">
+                                                    Cantidad Agregada: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.lot}}
+                                                </div>
+                                                {% if movement.category %}
+                                                    <div class="col-4 m-2 h6">
+                                                        Categoria: 
+                                                    </div>
+                                                    <div class="col-4 m-2 h6">
+                                                        {{movement.category.name}}
+                                                    </div>
+                                                {% endif %}
+                                                <div class="col-4 m-2 h6">
+                                                    Confirmado: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {% if movement.extra_info_bool == True %}
+                                                        <span class="text-success h6">Si</span> 
+                                                    {% else %}
+                                                        <span class="text-warning h6">No</span>
+                                                    {% endif %}
+                                                </div>
+                                            {% elif movement.type == "CP" %}
+                                                <div class="col-4 m-2 h6">
+                                                    Nombre: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.product.name}}
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    Informacion: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {% autoescape off %}
+                                                        {{movement.extra_info_str}}
+                                                    {% endautoescape %}
+                                                </div>
+                                                
+                                                
+                                            {% elif movement.type == "SP" %}
+                                                <div class="col-4 m-2 h6">
+                                                    Cantidad Quitada: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.lot}}
+                                                </div>
+                                                {% if movement.category %}
+                                                    <div class="col-4 m-2 h6">
+                                                        Categoria: 
+                                                    </div>
+                                                    <div class="col-4 m-2 h6">
+                                                        {{movement.category.name}}
+                                                    </div>
+                                                {% endif %}
+                                            {% elif movement.type == "RD" %}
+                                                <div class="col-4 m-2 h6">
+                                                    Cantidad Retirada: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.lot}}
+                                                </div>
+                                            {% elif movement.type == "eP" %}    
+                                                <div class="col-4 m-2 h6">
+                                                    Cambios: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {% autoescape off %}
+                                                        {{movement.extra_info_str}}
+                                                    {% endautoescape %}
+                                                </div>   
+                                            {% elif movement.type == "VP" %}
+                                                <div class="col-4 m-2 h6">
+                                                    Tipo Venta
+                                                </div>
+                                                {% if movement.product.pair %}
+                                                    <div class="col-4 m-2 h6">
+                                                        Por Pares  
+                                                    </div>
+                                                {% else %}
+                                                    <div class="col-4 m-2 h6">
+                                                        Por Unidad  
+                                                    </div>
+                                                {% endif %}
+                                                <div class="col-4 m-2 h6">
+                                                    Cantidad Vendida: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.lot}}
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    Precio por 
+                                                    {% if movement.extra_info_bool %}
+                                                    Par
+                                                    {% else %}
+                                                    Unidad
+                                                    {% endif %}
+                                                    : 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.extra_info_int}}$
+                                                </div>
+                                                
+                                                {% if movement.category %}
+                                                    <div class="col-4 m-2 h6">
+                                                        Categoria: 
+                                                    </div>
+                                                    <div class="col-4 m-2 h6">
+                                                        {{movement.category.name}}
+                                                    </div>
+                                                {% endif %}
+                                                <div class="col-4 m-2 h6">
+                                                    Importe: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {% widthratio movement.extra_info_int 1 movement.lot %}$
+                                                </div>
+                                            {% elif movement.type == "rP" %}
+                                                <div class="col-4 m-2 h6">
+                                                    Tipo Reembolso 
+                                                </div>
+                                                {% if movement.product.pair %}
+                                                    <div class="col-4 m-2 h6">
+                                                        Por Pares  
+                                                    </div>
+                                                {% else %}
+                                                    <div class="col-4 m-2 h6">
+                                                        Por Unidad  
+                                                    </div>
+                                                {% endif %}
+                                                <div class="col-4 m-2 h6">
+                                                    Cantidad Reembolsada: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.lot}}
+                                                </div>
+                                                
+                                                <div class="col-4 m-2 h6">
+                                                    Precio por 
+                                                    {% if movement.extra_info_bool %}
+                                                    Par
+                                                    {% else %}
+                                                    Unidad
+                                                    {% endif %}
+                                                    : 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.extra_info_int}}$
+                                                </div>
+                                                {% if movement.category %}
+                                                    <div class="col-4 m-2 h6">
+                                                        Categoria: 
+                                                    </div>
+                                                    <div class="col-4 m-2 h6">
+                                                        {{movement.category.name}}
+                                                    </div>
+                                                {% endif %}
+                                                <div class="col-4 m-2 h6">
+                                                    Importe Reembolsado: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {% widthratio movement.extra_info_int 1 movement.lot %}$
+                                                </div>
+                                            {% elif movement.type == "RP" %}
+                                            {% elif movement.type == "AC" %}
+                                                <div class="col-4 m-2 h6">
+                                                    Nombre Categoria: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.category.name}}
+                                                </div>
+                                            {% elif movement.type == "RC" %}
+                                                <div class="col-4 m-2 h6">
+                                                    Nombre Categoria Eliminada: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.category.name}}
+                                                </div>
+                                            {% elif movement.type == "cP" %}
+                                                <div class="col-4 m-2 h6">
+                                                    Proucto Confirmado 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.product.name}}
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    Cantidad a Confirmar: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.extra_info_int}}
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    Cantidad Confirmada: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.lot}}
+                                                </div>
+                                            {% endif %}
+                                            <div class="col-4 m-2 h6">
+                                                Fecha: 
+                                            </div>
+                                            <div class="col-4 m-2 h6">
+                                                {{movement.date}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                    {% empty %}
+                    <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay transacciones para mostrar<h2></div>     
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>     
+    </div>
 {% else %}
     <meta http-equiv="Refresh" content="0; url='{% url 'home' %}'" />
 {% endif %}               

@@ -99,7 +99,8 @@ def TiendaView(request):
         q=Q(pair_stored__gt=0) | Q(unit_stored__gt=0)
         products = Product.objects.exclude(removed=True).filter(q).order_by('name')
         return render(request,"Tienda.html",{'products':products})
-    except:
+    except Exception as e:
+        print(e)
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
 
@@ -141,7 +142,8 @@ def ProductosView(request):
             return render(request,"Productos.html",{'products':products})
         return render(request,"Productos.html",{'products':products})
     except Exception as e:
-        messages.error(request,"Algo ha salido mal, Codigo Error:{}".format(e))    
+        print(e)
+        messages.error(request,"Algo ha salido mal")    
     return redirect('home')
 
 def ProductoView(request,productoID):
@@ -358,7 +360,9 @@ def ProductoView(request,productoID):
         return NormalPageProduct()
     except ObjectDoesNotExist:
         messages.error(request,"Error, producto inexistente")
-    
+    except Exception as e:
+        print(e)
+        messages.error(request,"Algo ha salido mal")    
     return redirect('productos')        
 
 def TransaccionesView(request):
@@ -391,10 +395,11 @@ def TransaccionesView(request):
                     product_filter=int(product_filter)
                 if type_filter != "NF":
                     q = q & Q(type=type_filter)
-        movements=Movement.objects.filter(q).order_by('-date')[:50] 
+        movements=Movement.objects.filter(q).order_by('-date')[:20] 
         products=Product.objects.all().exclude(removed=True).values("id","name")
         date_today_max =datetime.today() + timedelta(days=1)
         return render(request,"Transacciones.html",{"MChoise":MChoise,"date_end_filter":date_end_filter,"date_start_filter":date_start_filter,"date_day_filter":date_day_filter,"date_today":datetime.today().strftime("%Y-%m-%d"),"date_today_max":date_today_max.strftime("%Y-%m-%d"),"movements":movements,"product_filter":product_filter,"type_filter":type_filter,"date_filter":date_filter,"products":products})
-    except:
+    except Exception as e:
+        print(e)
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')

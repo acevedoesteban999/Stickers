@@ -1,50 +1,142 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
-
-  <div class="container">    
-    {% if products %}       
-      <div class="row cols-1 cols-md-2 cols-lg-3 cols-xl-4">
-        <div class="card-group">  
-          {% for product in products %}
-            {% if product.stored != 0 %}
-              <div class="col-11 col-md-5 col-lg-4 col-xl-3 mb-3">
-                <div class="card h-100 text-center p-3 m-1 mb-3 ">
-                  <div class="row align-items-center ">
-                    {% if product.image %}
-                        <img src="{{product.image.url}}" width="150" height="250" class="card-img-top" alt="...">
-                    {% else %}
-                        <img src="" max-width="200" max-height="400" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
-                    {% endif %}  
-                  </div>
-                  <div class="row align-self-center">
-                    {% if user.is_authenticated %}
-                      <div class="card-footer bg-ligth">
-                        <div class="d-grid gap-2">
-                          <a type="button" href="{% url 'producto' product.id %}" class="btn btn-outline-secondary " >Ver {{product.name}}</a>
-                        </div> 
+  <div class="display-2 my-2 my-3 mx-2 text-center">  Productos en Venta </div>
+  
+  {% if products %}   
+    <div class="d-block d-md-none ">
+      <div class="card-group">
+        <div class="row cols-1 cols-md-2 cols-lg-3 cols-xl-4 justify-content-center align-items-center">
+            {% for product in products %}  
+              <div class="col-11 col-md-5 col-lg-4 col-xl-3 my-1">
+                <a type="button" href="{% url 'producto' product.id %}" style="text-decoration:none;" class="text-dark" >
+                  <div class="card h-100 text-center p-2 m-1 ">
+                    <div class="row justify-content-around align-items-center">
+                      <div class="col-3 m-0 p-0 col-md-11 ">
+                        {% if product.image %}
+                            <img src="{{product.image.url}}"  class="img-fluid w-auto h-auto" alt="...">
+                        {% else %}
+                            <img src="" max-width="200" max-height="400" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
+                        {% endif %}  
                       </div>
-                    {% else %}
-                      <hr></hr>
-                    {% endif %}
-                    <div class="card-body">
-                        <h3 class="card-title">{{product.name}}</h3>
-                        <h5 class="card-text">{{product.price}}$</h5>
-                        {% if user.is_authenticated %}
-                          <h6 class="card-text">Almacenado : {{product.stored}}</h6>
-                        {% endif %} 
-                        <p class=" h6 p-1 text-center text-muted text-break" ><small >{{product.description}}</small></p>
+                      <div class="col-4 col-md-11 my-md-2 pt-md-3">
+                        <span class="h4"><strong>{{product.name}}</strong></span>
+                      </div>
+                      <div class="col-4 col-md-11 my-md-2 ">
+                        {% if product.pair %}
+                          <span class="h5 m-1">
+                              {{product.pair_price}}$
+                          </span>
+                          <span>
+                              <small class="text-muted pl-2">
+                                  el Par
+                              </small>
+                          </span>                                      
+                        {% else %}
+                            <span class="h5 m-1">
+                                {{product.unit_price}}$
+                            </span>
+                            <span>
+                                <small class="text-muted pl-2">
+                                    la Unidad
+                                </small>
+                            </span>
+                        {% endif %}
+                      </div>
                     </div>
-                         
                   </div>
-                </div>
+                </a>
               </div> 
-            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+    </div>
+    <div class="d-none d-md-block  ">
+      <div class="row cols-1 cols-md-2 cols-lg-3 cols-xl-4 justify-content-around align-items-start">
+        <div class="card-group">  
+          {% for product in products %}  
+            <div class="col-11 col-md-5 col-lg-4 col-xl-3 my-2">
+              <a type="button" href="{% url 'producto' product.id %}" style="text-decoration:none;" class="text-dark" >
+                <div class="card h-100 text-center p-2 m-2 ">
+                  <div class="row h-100 justify-content-around ">
+                    <div class="col-3 m-0 p-0 col-md-11 ">
+                      {% if product.image %}
+                          <img src="{{product.image.url}}"  class="img-fluid w-auto h-auto" alt="...">
+                      {% else %}
+                          <img src="" max-width="200" max-height="400" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
+                      {% endif %}  
+                    </div>
+                    <div class="align-self-end col-4 col-md-11 my-md-2 pt-md-3">
+                      <span class="h4"><strong>{{product.name}}</strong></span>
+                    </div>
+                    <div class="align-self-end col-4 col-md-11 my-md-2 ">
+                      {% if product.pair %}
+                        <span class="h5 m-1">
+                            {{product.pair_price}}$
+                        </span>
+                        <span>
+                            <small class="text-muted pl-2">
+                                el Par
+                            </small>
+                        </span>                                      
+                      {% else %}
+                          <span class="h5 m-1">
+                              {{product.unit_price}}$
+                          </span>
+                          <span>
+                              <small class="text-muted pl-2">
+                                  la Unidad
+                              </small>
+                          </span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  
+                </div>
+              </a>
+            </div> 
           {% endfor %}
+
+          {% comment %} {% for product in products %}
+            <div class="col-11 col-md-5 col-lg-4 col-xl-3 mb-3">
+              <div class="card h-100 text-center p-3 m-1 mb-3 ">
+                <div class="row align-items-center justify-content-center">
+                  {% if product.image %}
+                      {% comment %} <img src="{{product.image.url}}" width="150" height="250" class="card-img-top" alt="..."> {% endcomment %}
+                      {% comment %} <img src="{{product.image.url}}"  style="max-width: 320px;max-height: 280px;" class="img-fluid img-thumbnail border border-0 " alt="...">
+                      
+                  {% else %}
+                      <img src="" max-width="200" max-height="400" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
+                  {% endif %}   {% endcomment %}
+                {% comment %} </div> 
+                <div class="row align-self-center">
+                  {% if user.is_authenticated %}
+                    <div class="card-footer bg-ligth">
+                      <div class="d-grid gap-2">
+                        <a type="button" href="{% url 'producto' product.id %}" class="btn btn-outline-secondary " >Ver {{product.name}}</a>
+                      </div> 
+                    </div>
+                  {% else %}
+                    <hr></hr>
+                  {% endif %}
+                  <div class="card-body">
+                      <h3 class="card-title">{{product.name}}</h3>
+                      <h5 class="card-text">{{product.price}}$</h5>
+                      {% if user.is_authenticated %}
+                        <h6 class="card-text">Almacenado : {{product.stored}}</h6>
+                      {% endif %} 
+                      <p class=" h6 p-1 text-center text-muted text-break" ><small >{{product.description}}</small></p>
+                  </div>
+                        
+                </div>
+              </div>
+            </div> 
+          {% endfor %} {% endcomment %}
         </div>
       </div>
-    {% else %}
-      <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay productos almacenados para mostrar<h2></div>
-    {% endif %}
-  </div>
+    </div>
+  {% else %}
+    <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay productos almacenados para mostrar<h2></div>
+  {% endif %}
+ 
 {% endblock  %}

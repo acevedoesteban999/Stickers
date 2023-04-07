@@ -119,14 +119,19 @@
                                             </div>
                                             <div class="col-6">
                                                 <div class="row">
-                                                    {% if product.stored != 0 %}
-                                                        {% comment %} <div class="row-auto  text-success h4 mt-3">
-                                                            {{product.unit_price}}$
-                                                        </div> {% endcomment %}
+                                                    {% if product.pair %}
+                                                        {% if product.pair_stored != 0 %}
+                                                            <div class="text-dark text-center h3 p-1 mt-3 border-top border-bottom border-dark">
+                                                                {{product.pair_stored}}Pares
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    {% if product.unit_stored != 0 %}
                                                         <div class="text-dark text-center h3 p-1 mt-3 border-top border-bottom border-dark">
-                                                            {{product.stored}}
+                                                            {{product.unit_stored}}Unidad
                                                         </div>
-                                                    {% else %}
+                                                    {% endif %}
+                                                    {% if product.pair and product.pair_stored == 0 and product.unit_stored == 0 or not product.pair and product.unit_stored == 0 %}
                                                         <div class="border border-danger p-2 mt-3 text-center text-danger h5">
                                                             AGOTADO
                                                         </div>
