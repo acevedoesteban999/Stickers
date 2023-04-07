@@ -21,7 +21,7 @@
                                     </div>
                                 {% endif %}
                                 <div class="row justify-content-center">
-                                    <div class="col-6 col-md-12 col-lg-12 col-xl-12 text-center">
+                                    <div class="col-8 col-md-12 col-lg-12 col-xl-12 text-center">
                                         <div class="carousel-inner border border-1 m-2 px-1">
                                             <div class="carousel-item active" >
                                                 <img src="{{product.image.url}}" style="max-width: 320px;max-height: 280px;"  class="mx-auto my-auto img-fluid img-thumbnail border border-0 card-img-top" alt="...">
@@ -54,14 +54,20 @@
                     <div class="col">
                         <div class="continer text-center">
                             <div class="row justify-content-center">
-                                <div class="m-2 mt-md-5">
-                                    <strong class="h1 border border-dark border-3 px-4">
+                                <div class="my-2 px-4 mt-md-5 border border-dark border-3 w-auto">
+                                    <strong class="h1 px-1 ">
                                         {{product.name}}
                                     </strong>
+                                <span>
+                                    <small class="text-muted pl-2">
+                                        Id: {{product.id}}
+                                    </small>
+                                </span>
                                 </div>
+                                
                                 <div class="m-2">
                                     <div class="px-4">
-                                            {% if product.pair %}
+                                        {% if product.pair %}
                                             <span class="h1 m-1">
                                                 {{product.pair_price}}$
                                             </span>
@@ -74,7 +80,7 @@
                                                 <fieldset class="border w-auto">
                                                     <legend class="float-none">Pares Almacenadas</legend>
                                                     <div class="h3">
-                                                        {{product.unit_stored}}
+                                                        {{product.pair_stored}}
                                                     </div>
                                                 </fieldset>
                                             </div>                                            
@@ -102,7 +108,7 @@
                                         
                                     </div>
                                 </div>
-                                {% if product.confirm %}
+                                {% if product.confirm or 'Admin' in Groups %}
                                     <p class=" m-2 my-2 py-1 w-75 text-center text-break"><small class="text-muted">{{product.description}}</small></p>
                                     <br>
                                     <button class="btn m-2  btn-sm btn-outline-secondary w-auto" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
@@ -111,8 +117,7 @@
 
                                      <div class="collapse" id="collapseMoreInfo">
                                         <div class="row justify-content-center">
-                                            <table class="w-50 border border-1 p-2 m-2 table table-ligth table-borderless">
-                                                 
+                                            <table class="w-50 border border-1 p-2 m-2 table table-ligth table-borderless">  
                                                 <thead>
                                                     <tr>
                                                         <th scope="col h3"></th>
@@ -120,17 +125,13 @@
                                                             <th scope="col  h3">Por Par</th>
                                                         {% endif %}
                                                         <th scope="col h3">Por Unidad</th>
-                                                    
                                                     </tr>
                                                     <tbody>
-                                                        
                                                         <th scope="row h3">Precio</th>
                                                         {% if product.pair %}
                                                                 <td class="h3">{{product.pair_price}}$</td>
                                                         {% endif %}
                                                         <td class="h3">{{product.unit_price}}$</td>
-                                                        
-                                                        
                                                         </tr>
                                                         <tr>
                                                             <th scope="row h3">Ganancia</th>
@@ -139,17 +140,32 @@
                                                                 {% endif %}
                                                                 <td class="h3">{{product.unit_profit_worker}}$</td>
                                                             </tr>
+                                                        {% for category in categorys %}
+                                                            {% if product.pair %}
+                                                                {% if category.pair_stored > 0 %}
+                                                                
+                                                                    <tr>
+                                                                        <th scope="row h3">Almacenado {{category.name}}</th>
+                                                                        <td class="h3">{{category.pair_stored}}</td>
+                                                                    </tr>
+                                                                {% endif %}
+                                                            {% endif %}
+                                                            {% if category.unit_stored > 0 %}
+                                                                <tr>
+                                                                    <th scope="row h3">Almacenado {{category.name}}</th>
+                                                                    <td class="h3">{{category.unit_stored}}</td>
+                                                                </tr>
+                                                            {% endif %}
+                                                        {% endfor %}
                                                         <tr>
-                                                            <th scope="row h3">Almacendao</th>
+                                                            <th scope="row h5">Total Almacenado</th>
                                                             {% if product.pair %}
                                                                 <td class="h3">{{product.pair_stored}}</td>
                                                             {% endif %}
                                                             <td class="h3">{{product.unit_stored}}</td>
-                                                            
-                                                            
                                                         </tr>
                                                         <tr>
-                                                            <th scope="row h3">Vendido</th>
+                                                            <th scope="row h3">Total Vendido</th>
                                                             {% if product.pair %}
                                                                 <td class="h3">{{product.pair_sold}}</td>
                                                             {% endif %}
@@ -164,7 +180,8 @@
                                             </table>
                                         </div>
                                     </div> 
-                                {% else %}
+                                {% endif %}
+                                {% if not product.confirm %}
                                     <div class="p-1 col-12">
                                         <a type="button" class="m-5 p-2 btn btn-info" data-bs-toggle="modal" data-bs-target="#ConfirmAddModal" data-bs-whatever="1">
                                             <span class="h2">Realizar Confirmaciones</span>
@@ -178,7 +195,8 @@
                 </div>
                 {% comment %} =============== BUTTONS ======================== {% endcomment %}
                 <div class="card-footer">
-                    {% if product.confirm %}        
+            
+                    {% if product.confirm or "Admin" in Groups %}        
                         <div class="row cols-1 my-3 justify-content-around">
                             
                             {% if "Admin" in Groups %}
@@ -222,8 +240,8 @@
                     {% endif %}
                 </div>            
             </div>   
-            {% if product.confirm %}
-                {% comment %}=================================== MODALS =================================  {% endcomment %}
+            {% comment %}=================================== MODALS =================================  {% endcomment %}
+            {% if product.confirm or "Admin" in Groups  %}
                 {% if "Admin" in Groups %}
                     {% comment %} ========================= ADD CATEGORY ===============    {% endcomment %}
                     <div class="modal fade" data-bs-backdrop="static" id="AddCategoryModal" tabindex="-1" aria-labelledby="AddCategoryModalLabel" aria-hidden="true">
@@ -327,7 +345,7 @@
                                         <div class="form-check form-switch mb-3 m-1">
                                             <input type="checkbox" class="form-check-input" name="AccionPar" checked >
                                             <label class="form-check-label">                   
-                                                Venta por Pares
+                                                Agregar por Pares
                                             </label>
                                         </div>
                                     {% endif %}
@@ -390,10 +408,46 @@
                                             <input required type="text" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{product.name}}">
                                             <label for="floatingInput">Nombre</label>
                                         </div>
-                                        <div class="form-floating mb-3">
-                                            <input required type="number" min="1" class="form-control" name="precio"id="floatingInput" placeholder="Precio" value="{{product.unit_price}}">
-                                            <label for="floatingInput">Precio</label>
-                                        </div>
+                                        {% if product.pair %}
+                                            <fieldset class="border p-2 m-1">
+                                                <legend  class="float-none w-auto">Por Pares</legend> 
+                                                    <div class="form-floating mb-3">
+                                                        <input required min="0" type="number" value="{{product.pair_stored}}"  class="form-control"  name="almacenado pares" placeholder="Precio">
+                                                        <label for="floatingInput">Pares Almacenados </label>
+                                                    </div>
+                                                    <div class="form-floating mb-3">
+                                                        <input required min="0" type="number" value="{{product.pair_sold}}"  class="form-control"  name="vendido pares" placeholder="Precio">
+                                                        <label for="floatingInput">Pares Vendidos </label>
+                                                    </div>
+                                                    <div class="form-floating mb-3">
+                                                        <input required min="0" type="number" value="{{product.pair_price}}" class="form-control"  name="precio pares" placeholder="Precio">
+                                                        <label for="floatingInput">Precio por Par </label>
+                                                    </div>
+                                                    <div class="form-floating mb-3">
+                                                        <input required min="0" type="number" value="{{product.pair_profit_worker}}"  class="form-control"  name="ganancia pares" id="ParesGanancia" placeholder="Ganancia por Venta">
+                                                        <label for="floatingInput">Ganancia por Par para Trabajador</label>
+                                                    </div>
+                                                </fieldset>
+                                        {% endif %}
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Por Unidad</legend> 
+                                                <div class="form-floating mb-3">
+                                                    <input required min="0" type="number" value="{{product.unit_stored}}"  class="form-control"  name="almacenado unitario" placeholder="Precio">
+                                                    <label for="floatingInput">Unidades Almacenadas  </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input required min="0" type="number" value="{{product.unit_sold}}"  class="form-control"  name="vendido unitario" placeholder="Precio">
+                                                    <label for="floatingInput">Unidades Vendidas </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input required min="0" type="number" value="{{product.unit_price}}" class="form-control"  name="precio unitario" placeholder="Precio">
+                                                    <label for="floatingInput">Precio por Unidad </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input required min="0" type="number" value="{{product.unit_profit_worker}}"  class="form-control"  name="ganancia unitario" id="ParesGanancia" placeholder="Ganancia por Venta">
+                                                    <label for="floatingInput">Ganancia por Unidad para Trabajador</label>
+                                                </div>
+                                            </fieldset>
                                         <div class="form-floating mb-3">
                                             <textarea  type="text" class="form-control" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;">{{product.description}}</textarea >
                                             <label for="floatingInput">Descripcion</label>
@@ -587,47 +641,49 @@
                         </div>
                     {% endif %}
                 {% endif %}
-            {% else %}
-            {% comment %} =================  CONFIRM  ==================== {% endcomment %}         
-            <div class="modal fade" data-bs-backdrop="static" id="ConfirmAddModal" tabindex="-1" aria-labelledby="ConfirmAddModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content p-3 m-2">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="ConfirmAddModalLabel">Confirmar Entradas</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        {% for movement in MovementsConfirm %}
-                            <div class="row justify-content-center">
-                                
-                                <form method="POST" action=""  enctype=multipart/form-data>
-                                    {% csrf_token %}
-                                        <div class="row border m-2">
-                                            <h4>Producto: {{movement.product.name}}</h5>
-                                            <h6>Cantidad a Ingresar:{{movement.lot}}</h6>
-                                            {% if movement.category %}
-                                                <h6>Categoria: {{movement.category.name}}</h6>
-                                            {% endif %}
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text">Rectificar</span>
-                                                <div class="form-floating">
-                                                    <input type="hidden" name="MovimientoID" value="{{movement.id}}">
-                                                    <input required type="number" value="{{movement.lot}}" max="{{movement.lot}}" min="0" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                                    <label for="floatingInput">Cantidad</label>       
+            {% endif %}
+            {% if not product.confirm  %}
+                {% comment %} =================  CONFIRM  ==================== {% endcomment %}         
+                <div class="modal fade" data-bs-backdrop="static" id="ConfirmAddModal" tabindex="-1" aria-labelledby="ConfirmAddModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content p-3 m-2">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="ConfirmAddModalLabel">Confirmar Entradas</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            {% for movement in MovementsConfirm %}
+                                <div class="row justify-content-center">
+                                    
+                                    <form method="POST" action=""  enctype=multipart/form-data>
+                                        {% csrf_token %}
+                                            <div class="row border m-2">
+                                                <h4 class="mb-3">Producto: {{movement.product.name}}</h5>
+                                                <h6 class="mb-3">Cantidad a Ingresar: <strong > {{movement.lot}}</strong></h6>
+                                                {% if movement.category %}
+                                                    <h6>Categoria: {{movement.category.name}}</h6>
+                                                {% endif %}
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text">Rectificar</span>
+                                                    <div class="form-floating">
+                                                        <input type="hidden" name="MovimientoID" value="{{movement.id}}">
+                                                        <input required type="number" value="{{movement.lot}}" max="{{movement.lot}}" min="0" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                        <label for="floatingInput">Cantidad</label>       
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 d-flex justify-content-end  my-auto mx-auto p-2 m-2">
+                                                    <input type="submit"  name="ConfirmAddProduct" class="btn btn-info float-end" value="Confirmar">
                                                 </div>
                                             </div>
-                                            <div class="col-6 d-flex justify-content-end  my-auto mx-auto p-2 m-2">
-                                                <input type="submit"  name="ConfirmAddProduct" class="btn btn-info float-end" value="Confirmar">
-                                            </div>
-                                        </div>
-                                        
-                                    </div>       
-                                </form>
-                            </div>      
-                        {% endfor %}
+                                            
+                                        </div>       
+                                    </form>
+                                </div>      
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
-            </div>
             {% endif %}
+
             {% comment %} =================  TABLE CATEGORYS  ==================== {% endcomment %}             
             <div class="display-2 my-5 text-center">  Categorías </div>
             <div class="card bg-ligth m-3 border border-dark" style="max-width: auto;">
@@ -669,7 +725,7 @@
                                                             </tr>
                                                             <tbody>
                                                                 <tr>
-                                                                    <th scope="row h3">Almacendao</th>
+                                                                    <th scope="row h3">Almacenado</th>
                                                                     {% if product.pair %}
                                                                         <td class="h3">{{category.pair_stored}}</td>
                                                                     {% endif %}
@@ -717,20 +773,14 @@
                     </div>
                 </div>
             </div>
-            <div class="display-2 my-5 text-center">  Transacciones </div>
             
-
+            <div class="display-2 my-5 text-center">  Transacciones </div>
             {% comment %} =================  TABLE MOVEMENTS ==================== {% endcomment %}
             <div class="card bg-dark" style="max-width: auto;">
                 <table class="table table-dark centrado shadow p-3 mb-0 bg-body-tertiary rounded">
                     <thead>
                     <tr>   
                         <th scope="col"></th>
-                        {% comment %}<th scope="col" class="h6">Info</th>
-                         <th scope="col" class="h6">Precio</th>
-                        {% comment %} <th scope="col" class="h6">Importe</th> 
-                        <th scope="col" class="h6">Categoria</th>
-                        <th scope="col" class="h6">Fecha</th> {% endcomment %}
                     </tr>
                     </thead>   
                     <tbody>  
@@ -743,7 +793,15 @@
                                                 {{movement.get_type_display}}
                                             </div>
                                             <div class="col-4 h6">  
-                                                {{movement.lot}}
+                                                {% if movement.type == "CP" or movement.type == "RP" %}
+                                                    {{movement.product.name}}
+                                                {% elif movement.type == "eP" %}
+                                                    -
+                                                {% elif movement.type == "AC" or movement.type == "RC" %}
+                                                    {{movement.category.name}}
+                                                {% else %}
+                                                    {{movement.lot}}
+                                                {% endif %}
                                             </div>
                                         </div>
                                     </a>
@@ -753,120 +811,111 @@
                                                 
                                                 
                                                 <div class="row justify-content-center">
-                                                    <div class="col-4 m-2 h5">
+                                                    <div class="col-4 m-2 h6">
                                                         Transaccion: 
                                                     </div>
-                                                    <div class="col-4 m-2 h5">
+                                                    <div class="col-4 m-2 h6">
                                                         {{movement.get_type_display}}
                                                     </div>
-                                                    <div class="col-4 m-2 h5">
+                                                    <div class="col-4 m-2 h6">
                                                         ID: 
                                                     </div>
-                                                    <div class="col-4 m-2 h5">
+                                                    <div class="col-4 m-2 h6">
                                                         {{movement.id}}
                                                     </div>
                                                     {% if movement.type == "EP" %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Cantidad Agregada: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.lot}}
                                                         </div>
                                                         {% if movement.category %}
-                                                            <div class="col-4 m-2 h5">
+                                                            <div class="col-4 m-2 h6">
                                                                 Categoria: 
                                                             </div>
-                                                            <div class="col-4 m-2 h5">
+                                                            <div class="col-4 m-2 h6">
                                                                 {{movement.category.name}}
                                                             </div>
                                                         {% endif %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Confirmado: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {% if movement.extra_info_bool == True %}
-                                                                <span class="text-success h5">Si</span> 
+                                                                <span class="text-success h6">Si</span> 
                                                             {% else %}
-                                                                <span class="text-warning h5">No</span>
+                                                                <span class="text-warning h6">No</span>
                                                             {% endif %}
                                                         </div>
                                                     {% elif movement.type == "CP" %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Nombre: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.product.name}}
                                                         </div>
-                                                        {% if movement.product.pair %}
-                                                            <div class="col-4 m-2 h5">
-                                                                Precio por Par: 
-                                                            </div>
-                                                            <div class="col-4 m-2 h5">
-                                                                {{movement.product.pair_price}}$
-                                                            </div>
-                                                            <div class="col-4 m-2 h5">
-                                                                Ganancia por Par: 
-                                                            </div>
-                                                            <div class="col-4 m-2 h5">
-                                                                {{movement.product.pair_profit_worker}}$
-                                                            </div>
-                                                        {% endif %}
-                                                        <div class="col-4 m-2 h5">
-                                                            Precio por Unidad: 
+                                                        <div class="col-4 m-2 h6">
+                                                            Informacion: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
-                                                            {{movement.product.unit_price}}$
-                                                        </div>
-                                                        <div class="col-4 m-2 h5">
-                                                            Ganancia por Unidad: 
-                                                        </div>
-                                                        <div class="col-4 m-2 h5">
-                                                            {{movement.product.unit_profit_worker}}$
+                                                        <div class="col-4 m-2 h6">
+                                                            {% autoescape off %}
+                                                                {{movement.extra_info_str}}
+                                                            {% endautoescape %}
                                                         </div>
                                                         
+                                                        
                                                     {% elif movement.type == "SP" %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Cantidad Quitada: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.lot}}
                                                         </div>
                                                         {% if movement.category %}
-                                                            <div class="col-4 m-2 h5">
+                                                            <div class="col-4 m-2 h6">
                                                                 Categoria: 
                                                             </div>
-                                                            <div class="col-4 m-2 h5">
+                                                            <div class="col-4 m-2 h6">
                                                                 {{movement.category.name}}
                                                             </div>
                                                         {% endif %}
                                                     {% elif movement.type == "RD" %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Cantidad Retirada: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.lot}}
                                                         </div>
-                                                    {% elif movement.type == "eP" %}            
+                                                    {% elif movement.type == "eP" %}    
+                                                        <div class="col-4 m-2 h6">
+                                                            Cambios: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h6">
+                                                            {% autoescape off %}
+                                                                {{movement.extra_info_str}}
+                                                            {% endautoescape %}
+                                                        </div>   
                                                     {% elif movement.type == "VP" %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Tipo Venta
                                                         </div>
                                                         {% if movement.product.pair %}
-                                                            <div class="col-4 m-2 h5">
+                                                            <div class="col-4 m-2 h6">
                                                                 Por Pares  
                                                             </div>
                                                         {% else %}
-                                                            <div class="col-4 m-2 h5">
+                                                            <div class="col-4 m-2 h6">
                                                                 Por Unidad  
                                                             </div>
                                                         {% endif %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Cantidad Vendida: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.lot}}
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Precio por 
                                                             {% if movement.extra_info_bool %}
                                                             Par
@@ -875,45 +924,45 @@
                                                             {% endif %}
                                                             : 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.extra_info_int}}$
                                                         </div>
                                                         
                                                         {% if movement.category %}
-                                                            <div class="col-4 m-2 h5">
+                                                            <div class="col-4 m-2 h6">
                                                                 Categoria: 
                                                             </div>
-                                                            <div class="col-4 m-2 h5">
+                                                            <div class="col-4 m-2 h6">
                                                                 {{movement.category.name}}
                                                             </div>
                                                         {% endif %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Importe: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {% widthratio movement.extra_info_int 1 movement.lot %}$
                                                         </div>
                                                     {% elif movement.type == "rP" %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Tipo Reembolso 
                                                         </div>
                                                         {% if movement.product.pair %}
-                                                            <div class="col-4 m-2 h5">
+                                                            <div class="col-4 m-2 h6">
                                                                 Por Pares  
                                                             </div>
                                                         {% else %}
-                                                            <div class="col-4 m-2 h5">
+                                                            <div class="col-4 m-2 h6">
                                                                 Por Unidad  
                                                             </div>
                                                         {% endif %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Cantidad Reembolsada: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.lot}}
                                                         </div>
                                                         
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Precio por 
                                                             {% if movement.extra_info_bool %}
                                                             Par
@@ -922,62 +971,62 @@
                                                             {% endif %}
                                                             : 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.extra_info_int}}$
                                                         </div>
                                                         {% if movement.category %}
-                                                            <div class="col-4 m-2 h5">
+                                                            <div class="col-4 m-2 h6">
                                                                 Categoria: 
                                                             </div>
-                                                            <div class="col-4 m-2 h5">
+                                                            <div class="col-4 m-2 h6">
                                                                 {{movement.category.name}}
                                                             </div>
                                                         {% endif %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Importe Reembolsado: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {% widthratio movement.extra_info_int 1 movement.lot %}$
                                                         </div>
                                                     {% elif movement.type == "RP" %}
                                                     {% elif movement.type == "AC" %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Nombre Categoria: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.category.name}}
                                                         </div>
                                                     {% elif movement.type == "RC" %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Nombre Categoria Eliminada: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.category.name}}
                                                         </div>
                                                     {% elif movement.type == "cP" %}
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Proucto Confirmado 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.product.name}}
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Cantidad a Confirmar: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.extra_info_int}}
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             Cantidad Confirmada: 
                                                         </div>
-                                                        <div class="col-4 m-2 h5">
+                                                        <div class="col-4 m-2 h6">
                                                             {{movement.lot}}
                                                         </div>
                                                     {% endif %}
-                                                    <div class="col-4 m-2 h5">
+                                                    <div class="col-4 m-2 h6">
                                                         Fecha: 
                                                     </div>
-                                                    <div class="col-4 m-2 h5">
+                                                    <div class="col-4 m-2 h6">
                                                         {{movement.date}}
                                                     </div>
                                                 </div>

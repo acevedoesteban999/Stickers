@@ -57,7 +57,7 @@ class Movement(models.Model):
     type=models.CharField(max_length=2,choices=MChoise)
     date=models.DateTimeField(default=datetime.now,blank=True)
     lot=models.IntegerField(default=0)
-    extra_info_str=models.CharField(max_length=25,null=True,blank=True)
+    extra_info_str=models.CharField(max_length=100,null=True,blank=True)
     extra_info_int=models.IntegerField(default=0)
     extra_info_bool=models.BooleanField(default=False)
     product=models.ForeignKey(Product, on_delete=models.CASCADE,null=True,blank=True,related_name="RN_product")
@@ -78,11 +78,21 @@ class Movement(models.Model):
                 unit_profit_worker=unit_profit_worker,
                 pair_price=pair_price,
                 pair_profit_worker=pair_profit_worker,
-                description=description)
+                description=description
+                )
+            str_info="Nombre:{}<br>Por Pares:{}<br>{}{}<br>Descripcion:{}<br>Imagen:{}<br>".format(
+                name,
+                "Si" if pair else "No",
+                "Precio por Par:{}<br>Ganancia por Par:{}<br>".format(pair_price,pair_profit_worker) if pair else "",
+                "Precio por Unidad:{}<br>Ganancia por Unidad:{}".format(unit_price,unit_profit_worker),
+                "{}".format("Si" if len(description.__str__()) > 0 else "No"),
+                "{}".format("Si" if image else "No")
+                )
+            print(str_info)
             if product:
                 if image:
                     product.image=image
-                movement=cls(type="CP",product=product,lot=unit_price)
+                movement=cls(type="CP",product=product,extra_info_str=str_info)
                 if movement:
                     try:
                         product.save()
@@ -115,7 +125,7 @@ class Movement(models.Model):
                         category.unit_stored+=1
                         category.pair_stored-=1
                     else:
-                        return "E1"
+                        return "E2"
                     #return "E0"    
             diff = product.unit_stored - lot 
             if diff >= 0:
@@ -133,13 +143,15 @@ class Movement(models.Model):
                         if category:
                             category.save()
                         r_box.save()
+                        if bool_no_category == True:
+                            return "OK0"    
                         return True
                 return False
             if lot==1 and product.pair_stored > 0 :
-                product.unit_stored+=1
+                product.unit_stored+=2
                 product.pair_stored-=1
-                return Product.Unit_Sell(product,1,category,True)
-            return "E0"                    
+                return Movement.Unit_Sell(product,1,category,True)
+            return "E2"                    
         return False
     @classmethod
     def Pair_Sell(cls,product,lot,category):
@@ -158,7 +170,7 @@ class Movement(models.Model):
                             category.pair_stored = diff
                             category.pair_sold += lot
                         else:
-                            return "E0"
+                            return "E1"
                     movement=cls(type="VP",extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=lot,category=category)
                     if movement:
                         product.save()
@@ -168,17 +180,53 @@ class Movement(models.Model):
                         r_box.save()
                         return True
                 return False
-            return "E1"
+            return "E0"
         return False
     @classmethod
-    def Edit(cls,product,name,unit_price,description,image):
-        if unit_price > 0:
+    def Edit(cls,product,name,pair_stored,pair_sold,pair_price,pair_profit_worker,unit_stored,unit_sold,unit_price,unit_profit_worker,description,image): 
+        
+        str_info=""
+        if product.name!=name:
+            str_info+="Nombre: {} editado a {}<br>".format(product.name,name)
             product.name=name
-            product.unit_price=unit_price
-            product.description=description
+        if product.pair:
+            if pair_stored>0 and pair_sold>0  and pair_price>0  and pair_profit_worker>0:
+                
+                if product.pair_stored != pair_stored:
+                    str_info+="Almacenados por Par: {} editado a {}<br>".format(product.pair_stored,pair_stored)
+                    product.pair_stored=pair_stored
+                if product.pair_sold != pair_sold:
+                    str_info+="Vendidos por Par: {} editado a {}<br>".format(product.pair_sold,pair_sold)
+                    product.pair_sold=pair_sold
+                if product.pair_price != pair_price:
+                    str_info+="Precio por Par: {} editado a {}<br>".format(product.pair_price,pair_price)
+                    product.pair_price=pair_price
+                if product.pair_profit_worker != pair_profit_worker:
+                    str_info+="Ganancia por Par: {} editado a {}<br>".format(product.pair_profit_worker,pair_profit_worker)
+                    product.pair_profit_worker=pair_profit_worker
+            else:
+                return  False    
+        if unit_stored>0 and unit_sold>0  and unit_price>0  and unit_profit_worker>0:
+            if product.unit_stored != unit_stored:
+                str_info+="Almacenados por Unidad: {} editado a {}<br>".format(product.unit_stored,unit_stored)
+                product.unit_stored=unit_stored
+            if product.unit_sold != unit_sold:
+                str_info+="Vendidos por Unidad: {} editado a {}<br>".format(product.unit_sold,unit_sold)
+                product.unit_sold=unit_sold
+            if product.unit_price != unit_price:
+                str_info+="Precio por Unidad:{} editado a {}<br>".format(product.unit_price,unit_price)
+                product.unit_price=unit_price
+            if product.unit_profit_worker != unit_profit_worker:
+                str_info+="Ganancia por Unidad: {} editado a {}<br>".format(product.unit_profit_worker,unit_profit_worker)
+                product.unit_profit_worker=unit_profit_worker
+            
             if image:
-                product.image=image
-            movement=cls(type="eP",product=product,extra_info_str=product.name,extra_info_int=unit_price)
+                str_info+="Imagen Editada<br>"
+                product.image=image 
+            if product.description!= description:
+                str_info+="Descripcion Editada<br>"
+                product.description=description
+            movement=cls(type="eP",product=product,extra_info_str=str_info)
             if movement:
                 try:
                     product.save()
@@ -187,6 +235,7 @@ class Movement(models.Model):
                 except:
                     return "E0"
         return False
+    
     @classmethod
     def Add(cls,product,lot,category,pair_action):
         if product and lot > 0:

@@ -96,7 +96,8 @@ def CajaView(request):
 
 def TiendaView(request):
     try:
-        products = Product.objects.exclude(removed=True).filter(stored__gt=0).order_by('name')
+        q=Q(pair_stored__gt=0) | Q(unit_stored__gt=0)
+        products = Product.objects.exclude(removed=True).filter(q).order_by('name')
         return render(request,"Tienda.html",{'products':products})
     except:
         messages.error(request,"Algo ha salido mal")    
@@ -175,11 +176,37 @@ def ProductoView(request,productoID):
                 #Form Editar
                 if "EditProduct" in request.POST:
                     edit_product=request.POST.dict()
+                    files=FormImg(request.POST,request.FILES)
+                    files.is_valid()
                     name=edit_product.get("name")
-                    price=edit_product.get("precio")
+                    pair_stored=None
+                    pair_sold=None
+                    pair_price=None
+                    pair_profit_worker=None
+                    if product.pair:
+                        pair_stored=int(edit_product.get("almacenado pares"))
+                        pair_sold=int(edit_product.get("vendido pares"))
+                        pair_price=int(edit_product.get("precio pares"))
+                        pair_profit_worker=int(edit_product.get("ganancia pares"))
+                    unit_stored=int(edit_product.get("almacenado unitario"))
+                    unit_sold=int(edit_product.get("vendido unitario"))
+                    unit_price=int(edit_product.get("precio unitario"))
+                    unit_profit_worker=int(edit_product.get("ganancia unitario"))
+                    #price=edit_product.get("precio")
                     description=edit_product.get("descripcion")
-                    image=edit_product.eaned_data.get("imagen")
-                    result=Movement.Edit(product,name,price,description,image) 
+                    image=files.cleaned_data.get("imagen")
+                    result=Movement.Edit(product=product,
+                                        name=name,
+                                        pair_stored=pair_stored,
+                                        pair_sold=pair_sold,
+                                        pair_price=pair_price,
+                                        pair_profit_worker=pair_profit_worker,
+                                        unit_stored=unit_stored,
+                                        unit_sold=unit_sold,
+                                        unit_price=unit_price,
+                                        unit_profit_worker=unit_profit_worker,
+                                        description=description,
+                                        image=image) 
                     if result == True:
                         return SuccessProduct("Se ha editado el producto {} correctamente".format(name))
                     elif result == "E0":
@@ -200,14 +227,16 @@ def ProductoView(request,productoID):
                     else:
                         result=Movement.Unit_Sell(product,lot_sell,category)
                     
-                    if result == True:
+                    if result == True or result== "OK0":
                         if category_id:
                             categorys=Category.objects.filter(product__id=product.id).order_by("name")
-                        return SuccessProduct("Se han vendido {} {} {} con un importe de {}$".format(lot_sell,product.name,"pares de" if pair_action == True else "unidades de",product.pair_price*lot_sell if pair_action == True else product.unit_price*lot_sell))
-                    elif result == 'E0':
-                        return ErrorProduct("No se ha podido vender {} productos, en la categoría {} solo quedan {} {} productos almacenados".format(lot_sell,category.name,category.pair_stored.__str__() +" pares de" if pair_action == True else category.unit_stored.__str__() +" unidades de"))
+                        return SuccessProduct("Se han vendido {} {} {} {},con un importe de {}$".format(lot_sell,"pares de" if pair_action  else "unidades de",product.name,", se ha descontado una unidad de un lote par " if result=="OK0" else "",product.pair_price*lot_sell if pair_action  else product.unit_price*lot_sell))
                     elif result == 'E1':
-                        return ErrorProduct("No se ha podido vender {}, solo quedan {} {} productos almacenados".format(lot_sell,category.name,category.pair_stored.__str__() +" pares de" if pair_action == True else category.unit_stored.__str__() +" unidades de"))       
+                        return ErrorProduct("No se ha podido vender {} productos, en la categoría {} solo quedan {} {} productos almacenados".format(lot_sell,category.name,category.pair_stored.__str__() +" pares de" if pair_action  else category.unit_stored.__str__() +" unidades de"))
+                    elif result == 'E2':
+                        return ErrorProduct("No se ha podido vender {} productos, solo se admite vender 1 unidad cuando ya no exsisten unidades por separado, esta unidad sera descontada de un par".format(lot_sell))
+                    elif result == 'E0':
+                        return ErrorProduct("No se ha podido vender {} {}, solo quedan {} productos almacenados".format(lot_sell,product.name,product.pair_stored.__str__() +" pares de" if pair_action  else product.unit_stored.__str__() +" unidades de"))       
                 #Form Eliminar
                 elif "RemoveProduct" in request.POST:
                     name=product.name
@@ -263,9 +292,9 @@ def ProductoView(request,productoID):
                     if result == True:
                         if category_id:
                             categorys=Category.objects.filter(product__id=product.id).order_by("name")
-                        return SuccessProduct("Se han quitado {} {} correctamente".format(lot_sub,product.name))
+                        return SuccessProduct("Se han quitado {} {} {} correctamente".format(lot_sub,"Pares de " if pair_action else "Unidades de",product.name))
                     elif result == "E1":
-                        return ErrorProduct("No se han podido quitar, la categoría {} solo tiene {} productos almcenados".format(category.name,category.stored))
+                        return ErrorProduct("No se han podido quitar, la categoría {} solo tiene {} {} productos almcenados".format(category.name,category.pair_stored if pair_action else category.unit_stored,"Pares de " if pair_action else "Unidades de"))
                     elif result == "E0":
                         return ErrorProduct("No se han podido quitar {} {}".format(lot_sub,product.name))
                 #Form Reembolsar
@@ -285,13 +314,13 @@ def ProductoView(request,productoID):
                         if result == True:
                             if category_id:
                                 categorys=Category.objects.filter(product__id=product.id).order_by("name")  
-                            return SuccessProduct("Se han reembolsado {} {} con un importe de {}$".format(lot_refund,product.name,lot_refund*product.price))
+                            return SuccessProduct("Se han reembolsado {} {} {} con un importe de {}$".format(lot_refund,"Pares de " if pair_action else "Unidades de ",product.name,lot_refund * (product.pair_price if pair_action else product.unit_price)))
                         elif result == "E0":
                             return ErrorProduct("No se han podido reembolsar {} {}".format(lot_refund,product.name))
                         elif result == "E1":
                             return ErrorProduct("No hay suficiente dinero en caja para reembolsar {} {}".format(lot_refund,product.name))
                         elif result == "E2":
-                            return ErrorProduct("No se ha podido  reembolsar, la categoría {} solo tiene {} productos vendidos".format(category.name,category.sold))                 
+                            return ErrorProduct("No se ha podido  reembolsar, la categoría {} solo tiene {} {} productos vendidos".format(category.name,category.pair_sold if pair_action else category.unit_sold,"Pares de " if pair_action else "Unidades de "))                 
                 #Form Agregar Categoría
                 elif "AddCategory" in request.POST: 
                     add_category=request.POST.dict()
