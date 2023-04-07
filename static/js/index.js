@@ -1,4 +1,34 @@
 var SearchBool=false
+
+function ChangeSellLot(pair,pair_price,unit_price,pair_profit_worker,unit_profit_worker)
+{
+    lot=document.getElementById("idLotatChange").value
+    if(!lot)
+    {
+        document.getElementById("divIdChangeSellLot").innerHTML="0";
+        return
+    }
+    if(pair=="True")
+    {
+        if(pair_price=="None" || unit_price=="None" )
+            return ;
+        if(document.getElementById("VentaPresId").checked==true)
+        {
+            document.getElementById("divIdChangeSellLot").innerHTML= parseInt(pair_price)*lot;
+            document.getElementById("divIdChangeProfitLot").innerHTML=parseInt(pair_profit_worker)*lot;
+            return
+        }
+    }
+    if(pair=="False" || document.getElementById("VentaPresId").checked==false)
+    {
+        if(unit_price=="None")
+            return ;
+        document.getElementById("divIdChangeSellLot").innerHTML= parseInt(unit_price)*lot;
+        document.getElementById("divIdChangeProfitLot").innerHTML=parseInt(unit_profit_worker)*lot;
+    }
+    else
+        document.getElementById("divIdChangeSellLot").innerHTML="-";
+}
 function SearchProduct(addr)
 {
     if (SearchBool == true)

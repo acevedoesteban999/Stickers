@@ -113,7 +113,7 @@ class Movement(models.Model):
             return True
         return False
     @classmethod
-    def Unit_Sell(cls,product,lot,category,bool_no_category=False):
+    def Unit_Sell(cls,product,lot,category,note,bool_no_category=False):
         if product and lot > 0:
             if category and bool_no_category == False:
                 diff = category.unit_stored - lot
@@ -136,7 +136,7 @@ class Movement(models.Model):
                     amount=lot * product.unit_price
                     r_box.money += amount
                     
-                    movement=cls(type="VP",extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=lot,category=category)
+                    movement=cls(type="VP",extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=lot,category=category)
                     if movement:
                         product.save()
                         movement.save()
@@ -150,11 +150,11 @@ class Movement(models.Model):
             if lot==1 and product.pair_stored > 0 :
                 product.unit_stored+=2
                 product.pair_stored-=1
-                return Movement.Unit_Sell(product,1,category,True)
+                return Movement.Unit_Sell(product,1,category,note,True)
             return "E2"                    
         return False
     @classmethod
-    def Pair_Sell(cls,product,lot,category):
+    def Pair_Sell(cls,product,lot,category,note):
         if product and lot > 0:
             diff = product.pair_stored - lot 
             if diff >= 0:
@@ -171,7 +171,7 @@ class Movement(models.Model):
                             category.pair_sold += lot
                         else:
                             return "E1"
-                    movement=cls(type="VP",extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=lot,category=category)
+                    movement=cls(type="VP",extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=lot,category=category)
                     if movement:
                         product.save()
                         movement.save()
@@ -237,7 +237,7 @@ class Movement(models.Model):
         return False
     
     @classmethod
-    def Add(cls,product,lot,category,pair_action):
+    def Add(cls,product,lot,category,pair_action,note):
         if product and lot > 0:
             movement=cls(type="EP",product=product,lot=lot)
             if movement:
@@ -245,16 +245,17 @@ class Movement(models.Model):
                     movement.category=category
                 movement.extra_info_bool=False
                 movement.extra_info_int= (1 if pair_action else 0)
+                movement.extra_info_str=note
                 movement.save()
                 product.confirm=False
                 product.save()
                 return True
         return False
     @classmethod
-    def ConfirmAdd(cls,movement,lot):
+    def ConfirmAdd(cls,movement,lot,note):
         if movement and movement.product.confirm == False:
             if movement.product and movement.lot >= lot:
-                movement_confirm=cls(type="cP",product=movement.product,extra_info_int=movement.lot,lot=lot,category=movement.category)
+                movement_confirm=cls(type="cP",extra_info_str=note,product=movement.product,extra_info_int=movement.lot,lot=lot,category=movement.category)
                 if movement_confirm:
                     if movement_confirm.product.pair and movement.extra_info_int==1:
                         movement_confirm.product.pair_stored += lot
@@ -274,12 +275,12 @@ class Movement(models.Model):
                     return True
         return False
     @classmethod
-    def Unit_Sub(cls,product,lot,category):
+    def Unit_Sub(cls,product,lot,category,note):
         if product and lot > 0:
             diff= product.unit_stored - lot
             if diff >= 0:
                 product.unit_stored = diff
-                movement=cls(type="SP",extra_info_bool=False,product=product,lot=lot,category=category)
+                movement=cls(type="SP",extra_info_str=note,extra_info_bool=False,product=product,lot=lot,category=category)
                 if movement:
                     if category:
                         #category=Category.objects.get(id=category_id)
@@ -297,12 +298,12 @@ class Movement(models.Model):
             return "E0"
         return False
     @classmethod
-    def Pair_Sub(cls,product,lot,category):
+    def Pair_Sub(cls,product,lot,category,note):
         if product and lot > 0:
             diff= product.pair_stored - lot
             if diff >= 0:
                 product.pair_stored = diff
-                movement=cls(type="SP",extra_info_bool=True,product=product,lot=lot,category=category)
+                movement=cls(type="SP",extra_info_str=note,extra_info_bool=True,product=product,lot=lot,category=category)
                 if movement:
                     if category:
                         #category=Category.objects.get(id=category_id)
@@ -320,7 +321,7 @@ class Movement(models.Model):
             return "E0"
         return False
     @classmethod
-    def Unit_Refund(cls,product,lot,category):
+    def Unit_Refund(cls,product,lot,category,note):
         if product and lot > 0:
             diff = product.unit_sold - lot 
             if diff >= 0:
@@ -331,7 +332,7 @@ class Movement(models.Model):
                     if r_box.money >= 0:
                         product.unit_sold = diff
                         product.unit_stored += lot
-                        movement=cls(type="rP",extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=lot,category=category)
+                        movement=cls(type="rP",extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=lot,category=category)
                         if movement:
                             if category:
                                 #category=Category.objects.get(id=category_id)
@@ -354,7 +355,7 @@ class Movement(models.Model):
             return "E0"
         return False
     @classmethod
-    def Pair_Refund(cls,product,lot,category):
+    def Pair_Refund(cls,product,lot,category,note):
         if product and lot > 0:
             diff = product.pair_sold - lot 
             if diff >= 0:
@@ -365,7 +366,7 @@ class Movement(models.Model):
                     if r_box.money >= 0:
                         product.pair_sold = diff
                         product.pair_stored += lot
-                        movement=cls(type="rP",extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=lot,category=category)
+                        movement=cls(type="rP",extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=lot,category=category)
                         if movement:
                             if category:
                                 #category=Category.objects.get(id=category_id)
@@ -387,14 +388,14 @@ class Movement(models.Model):
             return "E0"
         return False
     @classmethod
-    def Retire(cls,lot):
+    def Retire(cls,lot,note):
         if lot > 0:
             r_box=RegisteCash.objects.all().first()
             if r_box:
                 dif= r_box.money - lot
                 if dif >= 0:
                     r_box.money = dif
-                    movement=cls(type="RD",lot=lot)
+                    movement=cls(type="RD",extra_info_str=note,lot=lot)
                     if movement:
                         movement.save()
                         r_box.save()

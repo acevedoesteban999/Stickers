@@ -42,12 +42,12 @@ def BasePost(request):
                 search_value = data.get('SearchValue')  
                 try:
                     if search_value:
-                        products=Product.objects.filter(removed=False,name__contains=search_value).order_by('name')[:5]
-                        print(products)
+                        q=Q(removed=False) & (Q(name__contains=search_value) | Q(id__contains=search_value))
+                        products=Product.objects.filter(q)[:5]
                         if products:
                             return render(None,"SearchProducts.html",{"products": products})
-                except:
-                    pass
+                except Exception as e:
+                    print(e)
                 return HttpResponse("NoProducts")
              
         return render(request,"Home.html")
@@ -80,13 +80,15 @@ def CajaView(request):
     try:
         movements=Movement.objects.filter(Q(type="VP") | Q(type="RD") | Q(type="rP")).order_by('-date')[:50]
         if "RetireProduct" in request.POST:
-            retire_product=FormLot(request.POST)
-            if retire_product.is_valid():
-                lot_retire=retire_product.cleaned_data.get("cantidad")
-                if lot_retire >= 0:
-                    if Movement.Retire(lot=lot_retire):
-                        messages.success(request,"Se ha retirado {}$ correctamente".format(lot_retire))
-                        return render(request,"Caja.html",{"movements":movements})
+            #retire_product=FormLot(request.POST)
+            retire_product=request.POST.dict()
+            #if retire_product.is_valid():
+            lot_retire=retire_product.get("cantidad")
+            note=retire_product.get("nota")
+            if lot_retire >= 0:
+                if Movement.Retire(lot=lot_retire,note=note):
+                    messages.success(request,"Se ha retirado {}$ correctamente".format(lot_retire))
+                    return render(request,"Caja.html",{"movements":movements})
             messages.error(request,"No se han podido retirar {}$".format(lot_retire))
             return render(request,"Caja.html",{"movements":movements})
         return render(request,"Caja.html",{"movements":movements})
@@ -219,15 +221,16 @@ def ProductoView(request,productoID):
                     lot_sell=int(sell_product.get("cantidad"))
                     category_id=sell_product.get("CategorySelect")
                     pair_action=sell_product.get("AccionPar")
+                    note=sell_product.get("nota")
                     #if pair_action:
                         #pair_action=True
                     category=None
                     if category_id:
                         category=categorys.get(id=category_id)
                     if pair_action:
-                        result=Movement.Pair_Sell(product,lot_sell,category)
+                        result=Movement.Pair_Sell(product,lot_sell,category,note)
                     else:
-                        result=Movement.Unit_Sell(product,lot_sell,category)
+                        result=Movement.Unit_Sell(product,lot_sell,category,note)
                     
                     if result == True or result== "OK0":
                         if category_id:
@@ -251,10 +254,11 @@ def ProductoView(request,productoID):
                     lot_add=int(add_product.get("cantidad"))
                     category_id=add_product.get("CategorySelect")
                     pair_action=add_product.get("AccionPar")
+                    note=add_product.get("nota")
                     category_add=None
                     if category_id:
                         category_add=Category.objects.get(id=category_id)
-                    if Movement.Add(product,lot=lot_add,category=category_add,pair_action=pair_action):
+                    if Movement.Add(product,lot=lot_add,category=category_add,pair_action=pair_action,note=note):
                         return SuccessProduct("Se ha agregado {} {} {}, esperando a ser confirmado".format(lot_add,"pares de " if pair_action else "unidades de ",product.name))
                     return ErrorProduct("No se han podido insertar {} {}".format(lot_add,product.name))
                 #Form Confirmar Agregar
@@ -262,10 +266,11 @@ def ProductoView(request,productoID):
                     confirm_product=request.POST.dict()
                     lot_confirm=int(confirm_product.get("cantidad"))
                     id_movement=int(confirm_product.get("MovimientoID"))
+                    note=confirm_product.get("nota")
                     if id_movement:
                         movement_to_confirm=Movement.objects.get(id=id_movement)
                         if movement_to_confirm:
-                            if Movement.ConfirmAdd(movement=movement_to_confirm,lot=lot_confirm):
+                            if Movement.ConfirmAdd(movement=movement_to_confirm,lot=lot_confirm,note=note):
                                 try:
                                     for movementConfirm in movements_confirm:
                                         if movementConfirm.extra_info_bool == False:
@@ -284,13 +289,14 @@ def ProductoView(request,productoID):
                     lot_sub=int(sub_product.get("cantidad"))
                     category_id=sub_product.get("CategorySelect")
                     pair_action=sub_product.get("AccionPar")
+                    note=sub_product.get("nota")
                     category=None
                     if category_id:
                         category=Category.objects.get(id=category_id)
                     if pair_action:
-                        result=Movement.Pair_Sub(product,lot=lot_sub,category=category)
+                        result=Movement.Pair_Sub(product,lot=lot_sub,category=category,note=note)
                     else:
-                        result=Movement.Unit_Sub(product,lot=lot_sub,category=category)
+                        result=Movement.Unit_Sub(product,lot=lot_sub,category=category,note=note)
                     if result == True:
                         if category_id:
                             categorys=Category.objects.filter(product__id=product.id).order_by("name")
@@ -305,14 +311,15 @@ def ProductoView(request,productoID):
                     lot_refund=int(refund_product.get("cantidad"))
                     category_id=refund_product.get("CategorySelect")
                     pair_action=refund_product.get("AccionPar")
+                    note=refund_product.get("nota")
                     category=None
                     if category_id:
                         category=Category.objects.get(id=category_id)
                     if lot_refund > 0:
                         if pair_action:
-                            result=Movement.Pair_Refund(product,lot=lot_refund,category=category)
+                            result=Movement.Pair_Refund(product,lot=lot_refund,category=category,note=note)
                         else:
-                            result=Movement.Unit_Refund(product,lot=lot_refund,category=category)
+                            result=Movement.Unit_Refund(product,lot=lot_refund,category=category,note=note)
                         if result == True:
                             if category_id:
                                 categorys=Category.objects.filter(product__id=product.id).order_by("name")  

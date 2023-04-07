@@ -228,7 +228,7 @@
                                 </div>
                             {% endif %}
                             {% if "Admin" in Groups %}
-                                {% if product.unit_sold > 0 or product.pair_sold > 0 %}
+                                {% if product.unit_stored > 0 or product.pair_stored > 0 %}
                                     <div class="col-auto m-1">
                                         <a type="button" class=" btn btn-danger" data-bs-toggle="modal" data-bs-target="#SubModal" data-bs-whatever="1">
                                             Quitar
@@ -359,7 +359,11 @@
                                                 {% endfor %}
                                             </select>
                                         </div>
-                                    {% endif %}        
+                                    {% endif %}       
+                                    <div class="form-floating mb-3">
+                                        <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                        <label for="floatingInput">Nota Adicional</label>
+                                    </div>
                                     <div class="row">
                                         <div class="col-6">
                                             <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
@@ -384,6 +388,10 @@
                                     {% csrf_token %}
                                     <div class="modal-body">
                                         <table>Eliminar a {{product.name}} </table>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                        <label for="floatingInput">Nota Adicional</label>
                                     </div>
                                     <div class="modal-footer">
                                         <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">
@@ -496,14 +504,14 @@
                                         <div class="input-group mb-3">
                                             <span class="input-group-text">Vender</span>
                                             <div class="form-floating">
-                                                <input required type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                <input  required type="number"  oninput="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.unit_price}}','{{product.pair_profit_worker}}','{{product.unit_profit_worker}}')" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="idLotatChange" placeholder="Cantidad">
                                                 <label for="floatingInput">Cantidad</label>       
                                             </div>
                                         </div>
                                     </div>
                                     {% if product.pair %}
                                         <div class="form-check form-switch mb-3 m-1">
-                                            <input type="checkbox" class="form-check-input" name="AccionPar" checked >
+                                            <input onclick="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.unit_price}}','{{product.pair_profit_worker}}','{{product.unit_profit_worker}}')" id="VentaPresId" type="checkbox" class="form-check-input" name="AccionPar" checked >
                                             <label class="form-check-label">                   
                                                 Venta por Pares
                                             </label>
@@ -520,6 +528,27 @@
                                             </select>
                                         </div>
                                     {% endif %}
+                                    <div class="form-floating mb-3">
+                                        <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                        <label for="floatingInput">Nota Adicional</label>
+                                    </div>
+                                    <div class="continer my-2 text-center h5">
+                                        Importe: <span id="divIdChangeSellLot" class="text-success h5">
+                                        {% if product.pair %}
+                                                {{product.pair_price}}
+                                            {% else %}
+                                                {{product.unit_price}}
+                                        {% endif %} 
+                                        </span>$
+                                        <br>
+                                        Ganancia: <span id="divIdChangeProfitLot" class="text-success h5">
+                                            {% if product.pair %}
+                                                    {{product.pair_profit_worker}}
+                                                {% else %}
+                                                    {{product.unit_profit_worker}}
+                                            {% endif %} 
+                                            </span>$
+                                    </div>
                                     <div class="row">
                                         <div class="col-6">
                                             <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
@@ -573,6 +602,10 @@
                                             </select>
                                         </div>
                                     {% endif %}        
+                                    <div class="form-floating mb-3">
+                                        <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                        <label for="floatingInput">Nota Adicional</label>
+                                    </div>
                                     <div class="row">
                                         <div class="col-6">
                                             <input type="reset" class="btn btn-warning float-start" data-bs-dismiss="modal" value="Cancelar">         
@@ -627,6 +660,10 @@
                                                 </select>
                                             </div>
                                         {% endif %}      
+                                        <div class="form-floating mb-3">
+                                            <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                            <label for="floatingInput">Nota Adicional</label>
+                                        </div>
                                         <div class="row">
                                             <div class="col-6">
                                                 <input type="reset" class="btn btn-secondary float-start" data-bs-dismiss="modal" value="Cancelar">   
@@ -651,34 +688,40 @@
                                 <h1 class="modal-title fs-5" id="ConfirmAddModalLabel">Confirmar Entradas</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            {% for movement in MovementsConfirm %}
-                                <div class="row justify-content-center">
-                                    
-                                    <form method="POST" action=""  enctype=multipart/form-data>
-                                        {% csrf_token %}
-                                            <div class="row border m-2">
-                                                <h4 class="mb-3">Producto: {{movement.product.name}}</h5>
-                                                <h6 class="mb-3">Cantidad a Ingresar: <strong > {{movement.lot}}</strong></h6>
-                                                {% if movement.category %}
-                                                    <h6>Categoria: {{movement.category.name}}</h6>
-                                                {% endif %}
-                                                <div class="input-group mb-3">
-                                                    <span class="input-group-text">Rectificar</span>
-                                                    <div class="form-floating">
-                                                        <input type="hidden" name="MovimientoID" value="{{movement.id}}">
-                                                        <input required type="number" value="{{movement.lot}}" max="{{movement.lot}}" min="0" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                                        <label for="floatingInput">Cantidad</label>       
+                            <div class="modal-body">
+                                {% for movement in MovementsConfirm %}
+                                    <div class="row justify-content-center">
+                                        
+                                        <form method="POST" action=""  enctype=multipart/form-data>
+                                            {% csrf_token %}
+                                                <div class="row border m-2">
+                                                    <h4 class="mb-3">Producto: {{movement.product.name}}</h5>
+                                                    <h6 class="mb-3">Cantidad a Ingresar: <strong > {{movement.lot}}</strong></h6>
+                                                    {% if movement.category %}
+                                                        <h6>Categoria: {{movement.category.name}}</h6>
+                                                    {% endif %}
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text">Rectificar</span>
+                                                        <div class="form-floating">
+                                                            <input type="hidden" name="MovimientoID" value="{{movement.id}}">
+                                                            <input required type="number" value="{{movement.lot}}" max="{{movement.lot}}" min="0" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                            <label for="floatingInput">Cantidad</label>       
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-floating mb-3">
+                                                        <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                                        <label for="floatingInput">Nota Adicional</label>
+                                                    </div>
+                                                    <div class="col-6 d-flex justify-content-end  my-auto mx-auto p-2 m-2">
+                                                        <input type="submit"  name="ConfirmAddProduct" class="btn btn-info float-end" value="Confirmar">
                                                     </div>
                                                 </div>
-                                                <div class="col-6 d-flex justify-content-end  my-auto mx-auto p-2 m-2">
-                                                    <input type="submit"  name="ConfirmAddProduct" class="btn btn-info float-end" value="Confirmar">
-                                                </div>
-                                            </div>
-                                            
-                                        </div>       
-                                    </form>
-                                </div>      
-                            {% endfor %}
+                                                
+                                            </div>       
+                                        </form>
+                                    </div>      
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1029,6 +1072,14 @@
                                                     <div class="col-4 m-2 h6">
                                                         {{movement.date}}
                                                     </div>
+                                                    {% if movement.extra_info_str %}
+                                                        <div class="col-4 m-2 h6">
+                                                            Nota Adicional: 
+                                                        </div>
+                                                        <div class="col-4 m-2 h6">
+                                                            {{movement.extra_info_str}}
+                                                        </div>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         </div>
