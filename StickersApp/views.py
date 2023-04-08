@@ -79,20 +79,29 @@ def HomeView(request):
 def CajaView(request):
     try:
         movements=Movement.objects.filter(Q(type="VP") | Q(type="RD") | Q(type="rP")).order_by('-date')[:50]
-        if "RetireProduct" in request.POST:
-            #retire_product=FormLot(request.POST)
+        if "RetireMoney" in request.POST:
             retire_product=request.POST.dict()
-            #if retire_product.is_valid():
             lot_retire=retire_product.get("cantidad")
             note=retire_product.get("nota")
-            if lot_retire >= 0:
-                if Movement.Retire(lot=lot_retire,note=note):
+            if lot_retire > 0:
+                if Movement.RetireMoney(lot=lot_retire,note=note):
                     messages.success(request,"Se ha retirado {}$ correctamente".format(lot_retire))
                     return render(request,"Caja.html",{"movements":movements})
-            messages.error(request,"No se han podido retirar {}$".format(lot_retire))
+                messages.error(request,"No se han podido retirar {}$".format(lot_retire))
+            return render(request,"Caja.html",{"movements":movements})
+        elif "AgregateMoney" in request.POST:
+            agregate_product=request.POST.dict()
+            lot_agregate=agregate_product.get("cantidad")
+            note=agregate_product.get("nota")
+            if lot_agregate > 0:
+                if Movement.AgregateMoney(lot=lot_agregate,note=note):
+                    messages.success(request,"Se ha agregado {}$ correctamente".format(lot_retire))
+                    return render(request,"Caja.html",{"movements":movements})
+                messages.error(request,"No se han podido agregar {}$".format(lot_retire))
             return render(request,"Caja.html",{"movements":movements})
         return render(request,"Caja.html",{"movements":movements})
-    except:
+    except Exception as e:
+        print(e)
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
 

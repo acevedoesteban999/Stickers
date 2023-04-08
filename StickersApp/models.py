@@ -388,7 +388,7 @@ class Movement(models.Model):
             return "E0"
         return False
     @classmethod
-    def Retire(cls,lot,note):
+    def RetireMoney(cls,lot,note):
         if lot > 0:
             r_box=RegisteCash.objects.all().first()
             if r_box:
@@ -400,6 +400,18 @@ class Movement(models.Model):
                         movement.save()
                         r_box.save()
                         return True
+        return False
+    @classmethod
+    def AgregateMoney(cls,lot,note):
+        if lot > 0:
+            r_box=RegisteCash.objects.all().first()
+            if r_box:
+                r_box.money += lot
+                movement=cls(type="RD",extra_info_str=note,lot=lot)
+                if movement:
+                    movement.save()
+                    r_box.save()
+                    return True
         return False
     @classmethod
     def AddCategory(cls,product,category_name,image):

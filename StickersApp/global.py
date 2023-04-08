@@ -11,5 +11,5 @@ def UserGroups(request):
 def GlobalElements(request):
     registe_cash=RegisteCash.objects.all().first()
     if registe_cash:
-        return {"registe_cash":registe_cash,"year":datetime.today().year}
+        return {"registe_cash":registe_cash}
     return {}

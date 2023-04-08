@@ -204,7 +204,7 @@
         {% endif %}
     </div> {% endcomment %}
     <div class="display-2 my-3 text-center">  Transacciones </div>
-    {% comment %} =================  TABLE MOVEMENTS ==================== {% endcomment %}
+    {% comment %} =================  FILTER ==================== {% endcomment %}
     <div class="container justify-content-center mb-3">
         <div class="row w-auto justify-content-end">  
             <div class="w-auto my-2 mx-4">
@@ -298,6 +298,7 @@
             </div>
         </div>     
     </div>
+    {% comment %} =================  TABLE MOVEMENTS ==================== {% endcomment %}
     <div class="container">
         <div class="card bg-dark" style="max-width: auto;">
         <table class="table table-dark centrado shadow p-3 mb-0 bg-body-tertiary rounded">
@@ -346,6 +347,16 @@
                                             <div class="col-4 m-2 h6">
                                                 {{movement.id}}
                                             </div>
+                                            {% if movement.product %}
+                                                <div class="col-4 m-2 h6">
+                                                    Producto: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    <a style="text-decoration:none" class="text-dark border border-2 px-2 py-1 h5 "  href="{% url 'producto' movement.product.id %}">
+                                                        {{movement.product.name}}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
                                             {% if movement.type == "EP" %}
                                                 <div class="col-4 m-2 h6">
                                                     Cantidad Agregada: 
