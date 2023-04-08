@@ -102,7 +102,7 @@
                 </div>
             {% endif %}
             {% if  products %}
-                <div class="continer">
+                <div class="continer pt-4 m-2">
                     <div class="row cols-1 cols-md-2 cols-lg-3 cols-xl-4"> 
                         <div class="card-group">
                             {% for product in products %}
@@ -122,13 +122,23 @@
                                                     {% if product.pair %}
                                                         {% if product.pair_stored != 0 %}
                                                             <div class="text-dark text-center h3 p-1 mt-3 border-top border-bottom border-dark">
-                                                                {{product.pair_stored}}Pares
+                                                                {{product.pair_stored}}
+                                                                <span>
+                                                                    <small class="h6 text-muted pl-2">
+                                                                        Pares
+                                                                    </small>
+                                                                </span>
                                                             </div>
                                                         {% endif %}
                                                     {% endif %}
                                                     {% if product.unit_stored != 0 %}
                                                         <div class="text-dark text-center h3 p-1 mt-3 border-top border-bottom border-dark">
-                                                            {{product.unit_stored}}Unidad
+                                                            {{product.unit_stored}} 
+                                                            <span>
+                                                                <small class="h6 text-muted pl-2">
+                                                                    Unidades
+                                                                </small>
+                                                            </span>
                                                         </div>
                                                     {% endif %}
                                                     {% if product.pair and product.pair_stored == 0 and product.unit_stored == 0 or not product.pair and product.unit_stored == 0 %}

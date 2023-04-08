@@ -1,17 +1,25 @@
 .ColorWorker{
-    background: #667db6;  /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);  /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: rgb(132,58,180);
+    background: linear-gradient(90deg, rgba(132,58,180,1) 14%, rgba(29,253,228,1) 49%, rgba(69,252,195,1) 100%);  
 }
 .ColorNoAuthenticated
 {
-    background: rgb(34,193,195);
-    background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(98,253,45,1) 100%); 
+    background: rgb(64,180,58);
+    background: linear-gradient(90deg, rgba(64,180,58,1) 18%, rgba(29,253,228,1) 49%, rgba(69,186,252,1) 91%); 
+}
+.ColorUser{
+    background: rgb(192,218,81);
+    background: linear-gradient(90deg, rgba(192,218,81,1) 19%, rgba(145,226,162,1) 53%, rgba(148,191,233,1) 95%); 
 }
 .ColorAdmin
 {
     background: rgb(58,91,180);
     background: linear-gradient(90deg, rgba(58,91,180,1) 0%, rgba(29,210,253,1) 50%, rgba(153,252,69,1) 100%); 
+}
+.ColorSuperUser
+{
+    background: rgb(200,76,35);
+    background: radial-gradient(circle, rgba(200,76,35,1) 0%, rgba(164,30,152,0.8967786943879115) 28%, rgba(124,0,255,1) 100%); 
 }
 .centrado{
     text-align: center;
@@ -26,5 +34,6 @@
     border-radius: 60px;
 }
 .NaRaNjA{
-    background-color:darkgoldenrod;
+    background-color: orangered;
+    color: white;
 }
