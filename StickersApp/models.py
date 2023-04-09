@@ -3,6 +3,15 @@ from datetime  import datetime
 from django.contrib.auth.models import User
 # Create your models here.
 
+class Visits(models.Model):
+    # today_date=models.DateField( auto_now=False, auto_now_add=False)
+    # todat_visits=models.IntegerField(default=0)
+    # week_date=models.DateField( auto_now=False, auto_now_add=False)
+    # week_visits=models.IntegerField(default=0)
+    # month_date=models.DateField( auto_now=False, auto_now_add=False)
+    # month_visits=models.IntegerField(default=0)
+    total_visits=models.IntegerField(default=0)
+
 class RegisteCash(models.Model):
     money=models.IntegerField(default=0)
     def __str__(self):
@@ -63,7 +72,7 @@ class Movement(models.Model):
     extra_info_int=models.IntegerField(default=0)
     extra_info_bool=models.BooleanField(default=False)
     user = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True)
-    product=models.ForeignKey(Product, on_delete=models.SET_NULL,null=True,blank=True)
+    product=models.ForeignKey(Product, on_delete=models.SET_NULL,null=True,blank=True,related_name="product")
     category=models.ForeignKey(Category, on_delete=models.SET_NULL,null=True,blank=True)
     def __str__(self):
         return "M"+self.id.__str__()+"-"+self.date.date().__str__()

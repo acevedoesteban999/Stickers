@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.http import JsonResponse
-from .models import Product,RegisteCash,Movement,Category,MChoise
+from .models import MChoise,Product,RegisteCash,Movement,Category,Visits
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import FormProduc,FormLot,FormImg
 from datetime import datetime ,timedelta
@@ -54,10 +54,26 @@ def BasePost(request):
     return redirect('productos')
 
 def HomeView(request):
+    if request.method=="GET":
+        if "QR" in request.GET:
+            visits=Visits.objects.first()
+            visits.total_visits+=1
+            visits.save()
+        
+        
     #try:
+    #from django.db import connection
+    #print(connection.queries)
     date=datetime.now() 
-    movEP=Movement.objects.select_related('product').filter(date__day=date.day,type="EP").values_list('product__id',flat=True)
-    movVP=Movement.objects.select_related('product').filter(date__day=date.day,type="VP").values_list('product__id',flat=True)
+    #mov=Movement.objects.all()
+    #print(mov.query)
+    #ids=Movement.objects.select_related('product').values_list("id",flat=True)
+    #print(ids)
+    #return render(request,"Home.html")
+    #movEP=Movement.objects.select_related('product').filter(date__day=date.day,type="EP").values_list('product__id',flat=True)
+    #movVP=Movement.objects.select_related('product').filter(date__day=date.day,type="VP").values_list('product__id',flat=True)
+    movEP=Movement.objects.filter(date__day=date.day,type="EP").values_list('product__id',flat=True)
+    movVP=Movement.objects.filter(date__day=date.day,type="VP").values_list('product__id',flat=True)
     movM=Movement.objects.filter(date__day=date.day).order_by('-date')[:5]
     idsEP=[]
     idsVP=[]
@@ -119,7 +135,7 @@ def TiendaView(request):
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
 
-def ProductosView(request):
+def ProductosView(request): 
     try:
         user=request.user
         print(user)

@@ -270,6 +270,14 @@
                                                 {{movement.lot}}
                                             </div>
                                         {% endif %}
+                                        {% if movement.extra_info_str %}
+                                            <div class="col-4 m-2 h6">
+                                                Nota: 
+                                            </div>
+                                            <div class="col-4 m-2 h6">
+                                                {{movement.extra_info_str}}
+                                            </div>
+                                        {% endif %}
                                         <div class="col-4 m-2 h6">
                                             Fecha: 
                                         </div>

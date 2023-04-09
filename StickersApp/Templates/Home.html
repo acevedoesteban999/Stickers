@@ -6,12 +6,12 @@
     {% if not user.is_authenticated %}
     <div class="d-flex justify-content-center">
       <div class="p-3 px-5 m-3 alert alert-warning alert-dismissible fade show m-2 p-2 text-center" role="alert">
-        <div class="h4">
+        <div class="h5">
           <strong>
             Inicio de Sesion
           </strong>
       </div>
-      <div class="h5">
+      <div class="h6">
         No se ha iniciado sesion , pulse <br>
          <span style="border-radius: 60px;" class="mx-auto my-auto badge bg-success p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
           <svg  width="18" height="18" fill="currentColor" class="h6 d-block mx-auto bi bi-person-circle" viewBox="0 0 16 16">
@@ -30,7 +30,7 @@
     {% endif %}
   </div>
 <div class="continer">
-    <div class="text-center"> 
+    {% comment %} <div class="text-center"> 
       <div class="display-1 m-3 ">Hoy</div>
       <hr></hr>
     </div>
@@ -160,6 +160,19 @@
           </table>
         </div>
       {% endif %}
+    </div> {% endcomment %}
+    <div class="display-2">Hoy</div>
+    <div class="card text-center">
+      <div class="card-body">
+        <h4 class="card-title">Hoy</h4>
+        <div class="h3">Transacciones:</div>
+        <div class="card-text h3">Ventas: {{a}}$</div>
+        <div class="card-text h3">Reembolsos: {{a}}$</div>
+        <div class="card-text h3">Productos Agotados: {{a}}</div>
+        <div class="card-text h3">Dinero Recaudado: {{a}}$</div>
+        <div class="card-text h3">Ganancia Recaudada: {{a}}$</div>
+        <div class="card-text h3">Visitas: {{visits.total_visits}}</div>
+      </div>
     </div>
 </div> 
 
