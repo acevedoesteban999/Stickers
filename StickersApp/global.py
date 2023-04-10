@@ -9,12 +9,9 @@ def UserGroups(request):
     return {}
 
 def GlobalElements(request):
-    registe_cash=RegisteCash.objects.all().first()
-    visits=Visits.objects.first()
-    groups=[]
-    
-    for group  in  request.user.groups.all():
-        groups += {group.name}
+    visits=Visits.objects.values_list('total_visits').first()  
+    registe_cash=RegisteCash.objects.values_list('money').first()
+    groups=request.user.groups.values_list('name',flat=True)
     
     if not visits:
         visits=Visits()
@@ -23,5 +20,6 @@ def GlobalElements(request):
     if not registe_cash:
         registe_cash=RegisteCash()
         registe_cash.save()
+    
     return {"registe_cash":registe_cash,"Groups":groups,"visits":visits}
     

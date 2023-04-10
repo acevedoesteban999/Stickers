@@ -8,7 +8,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate,login,logout
 from django.db import IntegrityError
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q,F,Count,Sum
 import json
 def RedirectHomeView(request):
     return redirect("home")
@@ -54,40 +54,29 @@ def BasePost(request):
     return redirect('productos')
 
 def HomeView(request):
-    if request.method=="GET":
-        if "QR" in request.GET:
-            visits=Visits.objects.first()
-            visits.total_visits+=1
-            visits.save()
+    try:
+        if request.method=="GET":
+            if "QR" in request.GET:
+                #visits=Visits.objects.update(F("total_visits") + 1)
+                visits=Visits.objects.first()
+                visits.total_visits+=1
+                visits.save()
+            
+        date=datetime.now() 
+        movements_today=Movement.objects.filter(date__day=date.day).values("product__id","type","lot")
+        print(Movement.objects.annotate(lotes=Count('lot')))
+        print(Movement.objects.aggregate(sum_lotes=Sum('lot')))
+        ids_today=movements_today.values_list("product_id",flat=True)
+        #print(movements_today)
+        for movement in movements_today:
+            pass
+        products_today=Product.objects.filter(pk__in=ids_today).values('name','id').order_by('name')
+        #print(products_today)
         
-        
-    #try:
-    #from django.db import connection
-    #print(connection.queries)
-    date=datetime.now() 
-    #mov=Movement.objects.all()
-    #print(mov.query)
-    #ids=Movement.objects.select_related('product').values_list("id",flat=True)
-    #print(ids)
-    #return render(request,"Home.html")
-    #movEP=Movement.objects.select_related('product').filter(date__day=date.day,type="EP").values_list('product__id',flat=True)
-    #movVP=Movement.objects.select_related('product').filter(date__day=date.day,type="VP").values_list('product__id',flat=True)
-    movEP=Movement.objects.filter(date__day=date.day,type="EP").values_list('product__id',flat=True)
-    movVP=Movement.objects.filter(date__day=date.day,type="VP").values_list('product__id',flat=True)
-    movM=Movement.objects.filter(date__day=date.day).order_by('-date')[:5]
-    idsEP=[]
-    idsVP=[]
-    if movEP:
-        for id in movEP:
-            idsEP.append(id)
-    if movVP:
-        for id in movVP:
-            idsVP.append(id)
-    productsEP=Product.objects.filter(pk__in=idsEP).values('name','id').order_by('name')
-    productsVP=Product.objects.filter(pk__in=idsVP).values('name','id').order_by('name')
-    return render(request,"Home.html",{"productsEP":productsEP,"productsVP":productsVP,"movM":movM})
-    #except :
-    #    pass
+        # return render(request,"Home.html",{"productsEP":productsEP,"productsVP":productsVP,"movM":movM})
+        return render(request,"Home.html")
+    except :
+        pass
     return HttpResponse("Ha ocurrido un error insesperado , contacte con los administradores")
 
 def CajaView(request):
