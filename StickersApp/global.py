@@ -9,8 +9,8 @@ def UserGroups(request):
     return {}
 
 def GlobalElements(request):
-    visits=Visits.objects.values_list('total_visits').first()  
-    registe_cash=RegisteCash.objects.values_list('money').first()
+    visits=Visits.objects.values_list('total_visits',flat=True).first()  
+    registe_cash=RegisteCash.objects.values_list('money',flat=True).first()
     groups=request.user.groups.values_list('name',flat=True)
     
     if not visits:

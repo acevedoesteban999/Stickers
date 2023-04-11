@@ -70,6 +70,7 @@ class Movement(models.Model):
     lot=models.IntegerField(default=0)
     extra_info_str=models.CharField(max_length=100,null=True,blank=True)
     extra_info_int=models.IntegerField(default=0)
+    extra_info_int_1=models.IntegerField(default=0)
     extra_info_bool=models.BooleanField(default=False)
     user = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True)
     product=models.ForeignKey(Product, on_delete=models.SET_NULL,null=True,blank=True,related_name="product")
@@ -147,7 +148,7 @@ class Movement(models.Model):
                     amount=lot * product.unit_price
                     r_box.money += amount
                     
-                    movement=cls(type="VP",user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=lot,category=category)
+                    movement=cls(type="VP",user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,extra_info_int_1=product.unit_profit_worker,product=product,lot=lot,category=category)
                     if movement:
                         product.save()
                         movement.save()
@@ -182,7 +183,7 @@ class Movement(models.Model):
                             category.pair_sold += lot
                         else:
                             return "E1"
-                    movement=cls(type="VP",user=user,extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=lot,category=category)
+                    movement=cls(type="VP",extra_info_int_1=product.pair_profit_worker,user=user,extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=lot,category=category)
                     if movement:
                         product.save()
                         movement.save()
@@ -341,7 +342,7 @@ class Movement(models.Model):
                     if r_box.money >= 0:
                         product.unit_sold = diff
                         product.unit_stored += lot
-                        movement=cls(type="rP",user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=lot,category=category)
+                        movement=cls(type="rP",extra_info_int_1=product.unit_profit_worker,user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=lot,category=category)
                         if movement:
                             if category:
                                 #category=Category.objects.get(id=category_id)
@@ -375,7 +376,7 @@ class Movement(models.Model):
                     if r_box.money >= 0:
                         product.pair_sold = diff
                         product.pair_stored += lot
-                        movement=cls(type="rP",user=user,extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=lot,category=category)
+                        movement=cls(type="rP",extra_info_int_1=product.pair_profit_worker,user=user,extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=lot,category=category)
                         if movement:
                             if category:
                                 #category=Category.objects.get(id=category_id)

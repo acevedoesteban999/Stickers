@@ -8,9 +8,11 @@
       <title>Stickers</title>
   </head>
   <body class='{% if user.username == "SuperUser" %}ColorSuperUser {% elif 'Admin' in Groups %} ColorAdmin {% elif 'Worker' in Groups %} ColorWorker {% elif 'User' in Groups %} ColorUser {% else %} ColorNoAuthenticated  {% endif %}'>
+    {% comment %} ============================NAVBAAR============================ {% endcomment %}
     <nav  class="navbar bg-dark navbar-dark navbar-expand-md sticky-top ">
       <div class="container-fluid">
         <a class="navbar-brand"><span class="h3 text-light"> Stickers </span></a>
+        {% comment %} ============================Screen-sm============================ {% endcomment %}
         <div class="navbar-brand d-flex justify-content-start flex-grow-1 pe-3 d-block d-md-none">
             <a style="text-decoration: none;"  class="mx-3 {% if '/Home' in request.path %}link-light{% else %}link-secondary{% endif %}" href="{% url 'home'%}">
               <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-house-door" viewBox="0 0 16 16">
@@ -33,14 +35,56 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-
+        {% comment %} ============================Screen-md============================ {% endcomment %}
         <div class="offcanvas text-bg-dark offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
           <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Stickers</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
           </div>
           <div class="offcanvas-body">
-
+              <div class="d-block d-md-none">
+                <div class="row text-center align-items-center justify-content-center">
+                  <div class="col-6">  
+                    <div class="ms-auto p2 my-2 my-auto">
+                      <div style="border-radius: 60px;" class="w-auto bg-success text-light border border-success p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                        {% if user.is_authenticated %}
+                        <svg width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-person-check-fill" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                          <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                        </svg>
+                        <span class="h6">
+                          {{user.username}}
+                        </span>
+                        {% else %}
+                        <svg  width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-person-circle" viewBox="0 0 16 16">
+                          <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                        </svg>
+                        <span class="h6">
+                          Ingresar 
+                        </span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    {% if 'Admin' in Groups or 'Worker' in Groups %}
+                      <div class="ms-auto p-2 mx-2 my-auto">
+                        <a class="btn btn-warning w-auto" type="button" {% if "Admin" in Groups %} href="{% url 'caja' %}"{% endif %} style="border-radius: 60px;" >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-currency-dollar" viewBox="0 0 16 16">
+                            <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
+                          </svg>
+                          <p class="h6">
+                            <span class="text-success">
+                              {{registe_cash}}$ 
+                            </span>
+                          </p> 
+                        </a>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
               <ul class="navbar-nav justify-content-evenly flex-grow-1 pe-3">
                 <li class="nav-item text-center my-auto">
                   <a class="mx-3 nav-link {% if '/Home' in request.path %}active{% endif %}" aria-current="page" href="{% url 'home'%}">
@@ -63,7 +107,6 @@
                       <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="d-block mx-auto  bi bi-cart3" viewBox="0 0 16 16">
                         <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .49.598l-1 5a.5.5 0 0 1-.465.401l-9.397.472L4.415 11H13a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l.84 4.479 9.144-.459L13.89 4H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
                       </svg>
-                      
                       Productos
                     </a>
                   </li>
@@ -80,58 +123,67 @@
                   </li> 
                 {% endif %}    
               </ul>
-
-
-              <div class="d-flex flex-row mb-2 justify-content-center">
-                <div class="ms-auto px-3 my-auto mx-2  my-auto">
-                    {% if user.is_authenticated %}         
-                      <button type="button" class=" btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                        <svg width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-search" viewBox="0 0 16 16">
-                          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+              <div class="d-none d-md-block">
+                <div class="row text-center align-items-center justify-content-center">
+                  <div class="col-6">  
+                    <div class="ms-auto p2 my-2 my-auto">
+                      <div style="border-radius: 60px;" class="w-auto bg-success text-light border border-success p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                        {% if user.is_authenticated %}
+                        <svg width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-person-check-fill" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                          <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
                         </svg>
-                        <span class="m-1">Buscar</span>
-                      </button>    
-                    {% endif %} 
-                </div>
-
-                <div class="ms-auto p-2 mx-2 my-auto ">
-                  <div style="border-radius: 60px;" class=" bg-success p-2 px-3 text-light border border-success " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-                    {% if user.is_authenticated %}
-                    <svg width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-person-check-fill" viewBox="0 0 16 16">
-                      <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-                      <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                    </svg>
-                      {{user.username}}
-                    {% else %}
-                    <svg  width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-person-circle" viewBox="0 0 16 16">
-                      <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                      <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                    </svg>
-                      Ingresar 
+                        <span class="h6">
+                          {{user.username}}
+                        </span>
+                        {% else %}
+                        <svg  width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-person-circle" viewBox="0 0 16 16">
+                          <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                          <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                        </svg>
+                        <span class="h6">
+                          Ingresar 
+                        </span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    {% if 'Admin' in Groups or 'Worker' in Groups %}
+                      <div class="ms-auto p-2 mx-2 my-auto">
+                        <a class="btn btn-warning w-auto" type="button" {% if "Admin" in Groups %} href="{% url 'caja' %}"{% endif %} style="border-radius: 60px;" >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-currency-dollar" viewBox="0 0 16 16">
+                            <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
+                          </svg>
+                          <p class="h6">
+                            <span class="text-success">
+                              {{registe_cash}}$ 
+                            </span>
+                          </p> 
+                        </a>
+                      </div>
                     {% endif %}
                   </div>
                 </div>
-                {% if user.is_authenticated  %}
-                  <div class="ms-auto p-2 mx-2 my-auto">
-                    <a class="btn btn-warning p-1 p-2 px-3" type="button" {% if "Admin" in Groups %} href="{% url 'caja' %}"{% endif %} style="border-radius: 60px;" >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-currency-dollar" viewBox="0 0 16 16">
-                        <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
+              </div>
+              <div class="d-flex flex-row mb-2 justify-content-center">
+                {% comment %} <div class="ms-auto px-3 my-auto mx-2  my-auto">
+                  {% if user.is_authenticated %}         
+                    <button type="button" class=" btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                      <svg width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                       </svg>
-                      
-                      <p class="h5">
-                        <span class="text-success">
-                          {{registe_cash.money}}$ 
-                        </span>
-                      </p>
-                    </a>
-                  </div>
-                {% endif %}
+                      <span class="m-1">Buscar</span>
+                    </button>    
+                  {% endif %} 
+                </div> {% endcomment %}
               </div>
             </div>
           </div>
         </div>
       </div>
     </nav>
+    {% comment %} ============================MODAL============================ {% endcomment %}
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -149,8 +201,8 @@
               </span>       
               <input  class=" form-control me-2" type="dr" id="SearchProductID" placeholder="Buscar Producto" oninput="SearchProduct('{% url 'base_post' %}')" aria-label="Search"> 
             </div>                  
-          <div class="my-3 text-center h5" id="searchProductList">
-          </div>
+            <div class="my-3 text-center h5" id="searchProductList">
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -158,9 +210,7 @@
         </div>
       </div>
     </div>
-
-
-
+    {% comment %} ===========================OFFCANVAS============================ {% endcomment %}
     <div calss="container-sm">
       <div class="offcanvas offcanvas-end " tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
         <div class="offcanvas-header">

@@ -54,29 +54,69 @@ def BasePost(request):
     return redirect('productos')
 
 def HomeView(request):
-    try:
-        if request.method=="GET":
-            if "QR" in request.GET:
-                #visits=Visits.objects.update(F("total_visits") + 1)
-                visits=Visits.objects.first()
-                visits.total_visits+=1
-                visits.save()
-            
-        date=datetime.now() 
-        movements_today=Movement.objects.filter(date__day=date.day).values("product__id","type","lot")
-        print(Movement.objects.annotate(lotes=Count('lot')))
-        print(Movement.objects.aggregate(sum_lotes=Sum('lot')))
-        ids_today=movements_today.values_list("product_id",flat=True)
-        #print(movements_today)
-        for movement in movements_today:
-            pass
-        products_today=Product.objects.filter(pk__in=ids_today).values('name','id').order_by('name')
-        #print(products_today)
+    #try:
+    if request.method=="GET":
+        if "QR" in request.GET:
+            #visits=Visits.objects.update(F("total_visits") + 1)
+            visits=Visits.objects.first()
+            visits.total_visits+=1
+            visits.save()
+    # try:
+    #     mySession=request.session.get('MySession',0)
+    #     mySession+=1
+    #     request.session['MySession']=mySession
+    #     #request.session.modified = True
+    #     print(mySession) 
+    # except KeyError as ke:
+    #     print('Error:',ke)
+    date=datetime.now() 
+    context={}
+    #movements_today={"movements_today":Movement.objects.filter(date__day=date.day)}
+    #movments_count=Movement.objects.filter(date__day=date.day).aggregate(movments_count=Count('id'))
+    #if movments_count:
+    #context.update(Movement.objects.filter(date__day=date.day,type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sell=Sum(F('lot')* F('extra_info_int'))).aggregate(total_money_worker_profit=Sum('money_worker_profit'),total_sells_money=Sum('money_sell'),total_sells_count=Count('id')))
+    #print(context)
+    #context.update(Movement.objects.filter(date__day=date.day,type='rP').annotate(money_refund=Sum(F('lot')* F('extra_info_int'))).aggregate(total_refund_money=Sum('money_refund'),total_refund_count=Count('id')))
+    #context.update(movements_today)
+    movements_today=Movement.objects.filter(date__day=date.day)
+    if movements_today:
+        context.update({"movements_today":movements_today})
+        context.update({"movements_today_count":movements_today.count()})
+        money_sell_profit_today=Movement.objects.filter(date__day=date.day,type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sell=Sum(F('lot')* F('extra_info_int'))).aggregate(total_money_worker_profit=Sum('money_worker_profit'),total_sells_money=Sum('money_sell'),total_sells_count=Count('id'))
+        context.update(money_sell_profit_today)
         
-        # return render(request,"Home.html",{"productsEP":productsEP,"productsVP":productsVP,"movM":movM})
-        return render(request,"Home.html")
-    except :
-        pass
+        users=movements_today.filter(type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sells=Sum(F('lot')* F('extra_info_int'))).values('money_worker_profit','money_sells','user__username')
+        #print(users)
+        usersnames=users.values_list('user__username',flat=True).distinct()
+        context.update({"users_count":usersnames.count()})
+        users_profit={}
+        for username in usersnames:
+            users_profit.update({username:users.filter(user__username = username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
+            #print(users_profit)
+            #value=movements_today.filter('user__name'== userna me,type="VP").aggregate(total=Sum('money_worker_profit'))
+            #print(value)
+        proucts_sell_today=movements_today.filter(type='VP').values('product__name','product__id').distinct()
+        context.update({"proucts_sell_today":proucts_sell_today})
+        context.update({"proucts_count_today":proucts_sell_today.count()})
+        context.update({"workers_profit":users_profit})
+        #print(context)
+        contextUser={}
+        
+        # print(contextUser)
+        # for c in contextUser:
+        #     print(c)
+        # for c in contextUser['id']:
+        #     print(c)
+        # print(users)
+        #users=User.objects.filter(pk__in=)
+        
+    movements_sell_today=Movement.objects.filter(date__day=date.day,type="VP")
+    #ids_today=Movement.objects.filter(date__day=date.day).values_list("product__id",flat=True)
+    #print(movements_sell_today)
+    
+    return render(request,"Home.html",{'context':context})
+    #except Exception as e:
+    #    print(e)
     return HttpResponse("Ha ocurrido un error insesperado , contacte con los administradores")
 
 def CajaView(request):
