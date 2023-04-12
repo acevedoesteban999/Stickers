@@ -55,46 +55,97 @@ def BasePost(request):
 
 def ResumeView(request):
     #try:
-    if request.method=="GET":
-        if "QR" in request.GET:
-            #visits=Visits.objects.update(F("total_visits") + 1)
-            visits=Visits.objects.first()
-            visits.total_visits+=1
-            visits.save()
-    date=datetime.now() 
-    context={}
-    movements_today=Movement.objects.filter(date__day=date.day)
-    context.update({"movements_today_count":movements_today.count()})
-    if movements_today:
-        context.update({"movements_today":movements_today})
-        money_sell_profit_today=Movement.objects.filter(date__day=date.day,type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sell=Sum(F('lot')* F('extra_info_int'))).aggregate(total_money_worker_profit=Sum('money_worker_profit'),total_sells_money=Sum('money_sell'),total_sells_count=Count('id'))
-        context.update(money_sell_profit_today)
+    def Movement_Resume(movements):
+        money_sell_profit=movements.filter(
+            Q(type='VP')|Q(type='rP')
+                ).annotate(
+                    money_sell_worker_profit=Sum(
+                        F('lot')* F('extra_info_int_1'),
+                        filter=Q(type="VP"),
+                        default=0
+                        ),
+                    money_refund_worker_profit=Sum(
+                        F('lot')* F('extra_info_int_1'),
+                        filter=Q(type="rP"),
+                        default=0
+                        ),
+                    money_sell=Sum(
+                        F('lot')* F('extra_info_int'),
+                        filter=Q(type="VP"),
+                        default=0
+                        ),
+                    money_refund=Sum(
+                        F('lot')* F('extra_info_int'),
+                        filter=Q(type="rP"),
+                        default=0
+                        )
+                ).aggregate(
+                    total_money_worker_profit=Sum('money_sell_worker_profit')-Sum('money_refund_worker_profit'),
+                    total_sells_money=Sum('money_sell')-Sum('money_refund'),
+                    total_sells_count=Count('id')
+                )
         
-        users=movements_today.filter(type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sells=Sum(F('lot')* F('extra_info_int'))).values('money_worker_profit','money_sells','user__username')
-        usersnames=users.values_list('user__username',flat=True).distinct()
-        context.update({"users_count":usersnames.count()})
+        users=movements.filter(
+            Q(type='VP')|Q(type='rP')
+            ).annotate(
+                money_worker_profit=Sum(F('lot')* F('extra_info_int_1'),filter=Q(type='VP'),default=0)-Sum(F('lot')* F('extra_info_int_1'),filter=Q(type='rP'),default=0),
+                money_sells=Sum(F('lot')* F('extra_info_int'),filter=Q(type='VP'),default=0)-Sum(F('lot')* F('extra_info_int'),filter=Q(type='rP'),default=0)
+                ).values(
+                    'money_worker_profit',
+                    'money_sells',
+                    'user__username'
+                    )
         users_profit={}
+        usersnames=users.values_list('user__username',flat=True).distinct()
+        print(usersnames)
         for username in usersnames:
             users_profit.update({username:users.filter(user__username = username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
+        proucts_sell=movements_today.filter(
+            Q(type='VP')|Q(type='rP')
+            ).values(
+                'product__name',
+                'product__id'
+                ).distinct()
+        
+        context={}
+        context.update({'movements':movements})
+        context.update({'money_sell_profit':money_sell_profit})
+        context.update({"movements_count":movements.count()})
+        context.update({"workers_profit":users_profit})
+        context.update({"users_count":usersnames.count()})
+        context.update({"proucts_sell":proucts_sell})
+        return context
+        #proucts_sell=movements_today.filter(type='VP').values('product__name','product__id').distinct()
+        
+    date=datetime.now() 
+    context={}
+    movements_today=Movement.objects.filter(date__day=date.day).order_by('-date')
+    #context.update({"movements_today_count":movements_today.count()})
+    if movements_today:
+        context_today=Movement_Resume(movements_today)
+        context.update({"context_today":context_today})
+        print(context)
+        #context.update({"movements_today":movements_today})
+        #money_sell_profit_today=Movement.objects.filter(date__day=date.day,type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sell=Sum(F('lot')* F('extra_info_int'))).aggregate(total_money_worker_profit=Sum('money_worker_profit'),total_sells_money=Sum('money_sell'),total_sells_count=Count('id'))
+        #context.update(money_sell_profit_today)
+        
+        #users=movements_today.filter(type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sells=Sum(F('lot')* F('extra_info_int'))).values('money_worker_profit','money_sells','user__username')
+        #usersnames=users.values_list('user__username',flat=True).distinct()
+        #context.update({"users_count":usersnames.count()})
+        #users_profit={}
+        #for username in usersnames:
+        #    users_profit.update({username:users.filter(user__username = username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
             #print(users_profit)
             #value=movements_today.filter('user__name'== userna me,type="VP").aggregate(total=Sum('money_worker_profit'))
             #print(value)
-        proucts_sell_today=movements_today.filter(type='VP').values('product__name','product__id').distinct()
-        context.update({"proucts_sell_today":proucts_sell_today})
-        context.update({"proucts_count_today":proucts_sell_today.count()})
-        context.update({"workers_profit":users_profit})
+        #proucts_sell_today=movements_today.filter(type='VP').values('product__name','product__id').distinct()
+        #context.update({"proucts_sell_today":proucts_sell_today})
+        #context.update({"proucts_count_today":proucts_sell_today.count()})
+        #context.update({"workers_profit":users_profit})
         #print(context)
-        contextUser={}
+        #contextUser={}
         
-        # print(contextUser)
-        # for c in contextUser:
-        #     print(c)
-        # for c in contextUser['id']:
-        #     print(c)
-        # print(users)
-        #users=User.objects.filter(pk__in=)
-        
-    movements_sell_today=Movement.objects.filter(date__day=date.day,type="VP")
+    #movements_sell_today=Movement.objects.filter(date__day=date.day,type="VP")
     #ids_today=Movement.objects.filter(date__day=date.day).values_list("product__id",flat=True)
     #print(movements_sell_today)
     
@@ -105,6 +156,13 @@ def ResumeView(request):
 
 def HomeView(request):
     try:
+        if request.method=="GET":
+            if "QR" in request.GET:
+                #visits=Visits.objects.update(F("total_visits") + 1)
+                visits=Visits.objects.first()
+                visits.total_visits+=1
+                visits.save()
+    
         return render(request,"Home.html")
     except Exception as e:
         print(e)
