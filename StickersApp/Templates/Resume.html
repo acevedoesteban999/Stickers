@@ -1,0 +1,276 @@
+{% extends 'Base.html' %}
+{% load static %}
+{% block contenido %}
+  <div class="container">
+    {% if not user.is_authenticated %}
+    <div class="d-flex justify-content-center">
+      <div class="p-3 px-5 m-3 alert alert-warning alert-dismissible fade show m-2 p-2 text-center" role="alert">
+        <div class="h5">
+          <strong>
+            Inicio de Sesion
+          </strong>
+      </div>
+      <div class="h6">
+        No se ha iniciado sesion , pulse <br>
+         <span style="border-radius: 60px;" class="mx-auto my-auto badge bg-success p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+          <svg  width="18" height="18" fill="currentColor" class="h6 d-block mx-auto bi bi-person-circle" viewBox="0 0 16 16">
+            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+          </svg>
+            Ingresar
+        </span>
+        <br>
+         para iniciar la sesion
+      </div> 
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    </div>
+        
+    {% endif %}
+  </div>
+  <div class="continer text-center">
+    {% comment %} <div class="text-center"> 
+      <div class="display-1 m-3 ">Hoy</div>
+      <hr></hr>
+    </div>
+    <div class="row justify-content-around cols-1 cols-md-2 cols-lg-3 cols-xl-3">
+      <div class="col-auto mx-5 w-3 txt-center">
+        <table class="table table-dark centrado shadow p-3 mb-5 bg-body-tertiary rounded">
+          <thead>
+            <tr>
+                <th scope="col">Productos Agregados</th>
+            </tr>
+          </thead>
+          <tbody class="table-group-divider">
+            {% for product in productsEP %}
+              <tr>
+                  <td>
+                    <a class="link-light h4" style=" text-decoration: none;" {% if user.is_authenticated %} href="{% url 'producto' product.id %}" {% endif %}>
+                      <span {% if user.is_authenticated %} class="badge bg-info w-75 text-break" {% endif %}>
+                          {{product.name}}
+                      </span>
+                  </a>
+                  </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td>
+                  <div class="h3">
+                    No hay Productos Agregados Hoy en la Almacen
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="col-auto mx-5 w-3 txt-center">
+        <table class="table table-dark centrado shadow p-3 mb-5 bg-body-tertiary rounded">
+            <thead>
+            <tr>
+                <th scope="col">Productos Vendidos</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+              {% for product in productsVP %}
+                <tr>
+                    <td>
+                      
+                      
+                      <a class="link-light h4" style=" text-decoration: none;" {% if user.is_authenticated %} href="{% url 'producto' product.id %}" {% endif %}>
+                        <span {% if user.is_authenticated %} class="badge bg-success w-75 text-break" {% endif %}>
+                            {{product.name}}
+                        </span>
+                      </a>            
+                    </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td>
+                    <div class="h3">
+                      No hay Productos Vendidos Hoy en la Almacen
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+        </table>
+      </div>
+      {% if user.is_authenticated %}
+        <div class="col-auto mx-5 w-3 txt-center">
+          <table class="table table-dark centrado shadow p-3 mb-5 bg-body-tertiary rounded">
+              <thead>
+                <tr>
+                    <th scope="col">Ultimas 5 Transacciones</th>
+                </tr>
+              </thead>
+              <tbody class="table-group-divider">
+                {% for movement in movM %}
+                  <tr>
+                      <td >
+                        <div class="row text-center">
+                          <div class="col-6 ">
+                            {{movement.get_type_display}}:
+                          </div>
+                          <div class="col-6">
+                            {% if movement.type != "RD" %}
+                            <a class="link-light h4" style=" text-decoration: none;" {% if movement.type != "RP" %} href="{% url 'producto' movement.product.id %}"{% endif %} >
+                              <span  
+                              {% if movement.type == "VP" %}
+                                    class="badge bg-success w-75 text-break"
+                                {% elif movement.type == "eP" %}
+                                    class="badge bg-warning w-75 text-break"
+                                {% elif movement.type == "EP" %}
+                                    class="badge bg-info w-75 text-break"
+                                {% elif movement.type == "rP" %}
+                                    class="badge w-75 text-break" style="background-color: orangered; color: white;"
+                                {% elif movement.type == "RP" %}
+                                    class="badge bg-danger  w-75 text-break"
+                                {% elif movement.type == "CP" %}
+                                    class="badge bg-primary w-75 text-break"
+                                {% else %}
+                                    class="badge bg-secondary w-75 text-break"
+                                {% endif %}
+                                >
+                                {% if movement.type == "RP" %}
+                                  {{movement.product.description}}  
+                                {% else %}
+                                  {{movement.product.name}}  
+                                {% endif %}
+                              </span>
+                            </a>
+                            {% else %}
+                              -
+                          {% endif %}
+                          </div>
+                        </div>
+                      </td>   
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td>
+                      <div class="h3">
+                        No hay Movmimientos Hoy en la Almacen
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </div> {% endcomment %}
+    <div class="display-2 my-2">Hoy</div>
+    <div class="row justify-content-center">
+      <div class="col-10 col-6-md">
+        <div class="card text-center my-2 ">
+          <div class="card-body ">
+            <div>
+              <a style="text-decoration: none;" class="text-dark my-2" data-bs-toggle="collapse" href="#collapseMovementTransacciones" role="button" aria-expanded="false" aria-controls="collapseMovementTransacciones">
+                <div class="row justify-content-around align-items-center ">
+                  <div class="col-6 h5 m-1">
+                    Transacciones:
+                  </div>
+                  <div class="col-4 h5 m-1">
+                    {{context.movements_today_count}}
+                  </div>
+                </div>
+              </a>
+              <div class="collapse" id="collapseMovementTransacciones">
+                <div class="card card-body m-1 border border-0 ">
+                  <div class="continer text-dark">
+                    <div class="row justify-content-center">
+                      {% include 'BaseMovementsTable.html' with movements=context.movements_today %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <a style="text-decoration: none;" class="text-dark my-2" data-bs-toggle="collapse" href="#collapseMovementTrabajadores" role="button" aria-expanded="false" aria-controls="collapseMovementTrabajadores">
+                <div class="row justify-content-around align-items-center">
+                  <div class="col-6 h5 m-1">
+                    Trabajadores:
+                  </div>
+                  <div class="col-4 h5  m-1">
+                    {{context.users_count}}
+                  </div>
+                </div>
+              </a>
+              <div class="collapse  " id="collapseMovementTrabajadores">
+                <div class="card card-body m-1 border border-0">
+                  {% for key,value in context.workers_profit.items %}
+                    <div class="row justify-content-around h-5 p-3 border border-2 align-items-center">
+                      <div class="col-12 h4">
+                        <span><strong> {{key}}</strong></span>
+                      </div>
+                      <div class="col-6 m-1">
+                        Total Dinero Recaudado:
+                      </div>
+                      <div class="col-4 m-1">
+                        {{value.total_sells}}$
+                      </div>
+                      <div class="col-6 m-1">
+                        Total de Ganancia:
+                      </div>
+                      <div class="col-4 m-1">
+                        {{value.total_profit}}$
+                      </div>
+                    </div>
+                     
+                  {% endfor %}  
+                </div>
+              </div>
+            </div>
+            <div>
+              <a style="text-decoration: none;" class="text-dark my-2" data-bs-toggle="collapse" href="#collapseMovementProducts" role="button" aria-expanded="false" aria-controls="collapseMovementProducts">
+                <div class="row justify-content-around align-items-center">
+                  <div class="col-6 h5 m-1">
+                    Productos Vendidos:
+                  </div>
+                  <div class="col-4 h5  m-1">
+                    {{context.proucts_count_today}}
+                  </div>
+                </div>
+              </a>
+              <div class="collapse  " id="collapseMovementProducts">
+                <div class="card card-body m-1 border border-2">
+                  <div class="row justify-content-center text-center h3 p-1  align-items-center">
+                    <div class="col-10 h3 px-3 mx-2">
+                      Productos:
+                    </div>
+                    {% for product in context.proucts_sell_today %}
+                      <a class="text-dark " style=" text-decoration: none;" href="{% url 'producto' product.product__id %}">
+                        <div class="row justify-content-center text-center h3  align-items-center">
+                          <div class="col-4 h5 border border-2 w-auto py-1 my-1  px-4 mx-2">
+                              {{product.product__name}}
+                          </div>
+                        </div>
+                      </a>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row justify-content-around align-items-center">
+              <div class="col-6 h5 m-1">
+                Total de Dinero:
+              </div>
+              <div class="col-4 h5 m-1">
+                {{context.total_sells_money}}$
+              </div>
+            
+            </div>
+            <div class="row justify-content-end">
+              <div class="card-text h6 p-2"><small>Visitas por QR: {{visits}}</small></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div> 
+
+
+
+{% endblock  %}

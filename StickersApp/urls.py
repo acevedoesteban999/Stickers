@@ -11,7 +11,8 @@ urlpatterns = [
     path('Producto/<int:productoID>/', views.ProductoView,name='producto'),
     path('Transacciones/', views.TransaccionesView,name='transacciones'),
     path('Caja/', views.CajaView,name='caja'),
-    path('BasePost',views.BasePost,name='base_post'),  
+    path('BasePost',views.BasePost,name='base_post'),
+    path('Resume/',views.ResumeView,name='resume'), 
 ]
 
 urlpatterns+=static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
