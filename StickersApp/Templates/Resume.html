@@ -1,6 +1,7 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
+{% if user.is_authenticated  and 'Admin' in Groups %}
   <div class="container">
     {% if not user.is_authenticated %}
     <div class="d-flex justify-content-center">
@@ -270,7 +271,9 @@
       </div>
     </div>
   </div> 
-
+{% else %}
+  <meta http-equiv="Refresh" content="0; url='{% url 'home' %}'" />
+{% endif %}
 
 
 {% endblock  %}

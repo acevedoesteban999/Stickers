@@ -11,7 +11,10 @@ def UserGroups(request):
 def GlobalElements(request):
     visits=Visits.objects.values_list('total_visits',flat=True).first()  
     registe_cash=RegisteCash.objects.values_list('money',flat=True).first()
-    groups=request.user.groups.values_list('name',flat=True)
+    if request.user.is_superuser:
+        groups=("Admin","Worker","Users")
+    else:
+        groups=request.user.groups.values_list('name',flat=True)
     
     if not visits:
         visits=Visits()

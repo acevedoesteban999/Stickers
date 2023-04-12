@@ -206,10 +206,44 @@
     <div class="display-2 my-3 text-center">  Transacciones </div>
     {% comment %} =================  FILTER ==================== {% endcomment %}
     <div class="container justify-content-center mb-3">
-        <div class="row w-auto justify-content-end">  
-            <div class="w-auto my-2 mx-4">
-                <a class="btn btn-light px-5" data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">
+        <div class="row w-auto justify-content-center">  
+            <div class="w-auto bg-light my-2 mx-4" style="border-radius: 20px;">
+                <a class="btn px-5"  data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">
                 <span class="h3">Filtro</span>
+                {% if type_filter != 'NF' or product_filter != 'NF' or date_filter != 'NF' %}
+                    <div class="col bg-light text-dark p-2">
+                        <div class="row text-start justify-content-center">
+                            <div class="col-6">
+                                {% if type_filter != 'NF' %}
+                                    {% for value,value_text in MChoise  %}
+                                        {% if type_filter == value %}
+                                        <small>Tipo:  {{value_text}}</small>
+                                            <br>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %} 
+                                {% if product_filter != 'NF' %}
+                                    <small >Producto:  {{product_filter_name.name}}</small>
+                                    <br>
+                                {% endif %}
+                            </div>
+                            <div class="col">
+                                {% if date_filter != 'NF' %}
+                                    {% if date_filter == 'DD' %}
+                                        <small >Dia:  {{date_day_filter}}</small>
+                                    {% else %}
+                                        <small >Inicio:  {{date_end_filter}}</small>
+                                        <br>
+                                        <small >Fin:  {{date_start_filter}}</small>
+                                    {% endif %}
+                                    
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                    </div>
+                {% endif %}
+                
                 </a>
             </div>
         </div>
@@ -219,77 +253,78 @@
                     <p class="card-text">
                         <form method="POST" action="">
                             {% csrf_token %}
-                            <div class="row m-3">
-                                <div class="col-4">
-                                    <div class="h4">
-                                        Tipo 
-                                    </div>
-                                    <select name="TypeFilter" class="form-select" aria-label="Default select example">  
-                                        <option {% if type_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
-                                        {% for value,value_text in MChoise  %}
-                                            <option {% if type_filter == "value" %} selected {% endif %} value="{{value}}">{{value_text}}</option>
-                                        {% endfor %}
-                                    </select>
+                            <div class="row cols-1 cols-md-2 cols-lg-3 m-3 justify-content-around text-center align-items-start">
+                                <div class="py-1 mx-1 my-1 col-10 col-md-5 col-lg-3">
+                                    <fieldset class="border m-1 p-2">
+                                        <legend  class="float-none w-auto">Tipo</legend>
+                                        <select name="TypeFilter" class="form-select" aria-label="Default select example">  
+                                            <option {% if type_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
+                                            {% for value,value_text in MChoise  %}
+                                                <option {% if type_filter == value %} selected {% endif %} value="{{value}}">{{value_text}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </fieldset>
                                 </div>
-                                <div class="col-4">
-                                    <div class="h4">
-                                        Producto
-                                    </div>
-                                    <select name="ProductFilter" class="form-select" aria-label="Default select example">  
-                                        <option {% if product_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
-                                        {% for product in products %}
-                                            <option {% if product_filter == product.id %} selected {% endif %} value="{{product.id}}">{{product.name}}</option>
-                                        {% endfor %}
-                                    </select>
+                                <div class="py-1 my-1 mx-1 col-10 col-md-5 col-lg-3">
+                                    <fieldset class="border m-1 p-2">
+                                        <legend  class="float-none w-auto">Producto</legend> 
+                                        <select name="ProductFilter" class="form-select" aria-label="Default select example">  
+                                            <option {% if product_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
+                                            {% for product in products %}
+                                                <option {% if product_filter == product.id %} selected {% endif %} value="{{product.id}}">{{product.name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </fieldset>
                                 </div>
-                                <div class="col-4">
-                                    <div class="row">
-                                        <div class="col-6 text-start">
-                                            <fieldset>
-                                                <div class="h4">
+                                <div class="py-2 my-1 mx-1 col-10 col-md-5 col-lg-3 ">
+                                    <div class="row ">
+                                        <div class="col-12">
+                                            <fieldset class="border p-2 m-1">
+                                                <legend  class="float-none w-auto">Fecha</legend> 
+                                                {% comment %} <div class="h5">
                                                     Fecha:
+                                                </div> {% endcomment %}
+                                                <div class="row text-start">
+                                                    <div>
+                                                        <input onClick="FilterTime('NF')" type="radio"  name="FilterDate" value="NF" {% if date_filter == "NF" %}checked{% endif %} >
+                                                        <label for="NF" class="h6">Sin Filtro</label>
+                                                    </div>
+                                                    <div>
+                                                        <input onClick="FilterTime('DD')" type="radio"  name="FilterDate" value="DD" {% if date_filter == "DD" %}checked{% endif %}>
+                                                        <label for="FD">Dia</label>
+                                                    </div>
+                                                    <div>
+                                                        <input onClick="FilterTime('RD')" type="radio"  name="FilterDate" value="RD" {% if date_filter == "RD" %}checked{% endif %}>
+                                                        <label for="FD">Rango</label>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <input onClick="FilterTime('NF')" type="radio"  name="FilterDate" value="NF" {% if date_filter == "NF" %}checked{% endif %} >
-                                                    <label for="NF">Sin Filtro</label>
+                                                <hr>
+                                                <div {% if date_filter != "DD" %} style="display: none" {% endif %} id="DD">
+                                                <label for="filter__day">Fecha:</label>
+                                                    <br>
+                                                    <input {% if date_filter == "DD" %}required{% endif %} type="date" id="filter__day" value="{{date_day_filter}}" max="{{date_today_max}}" name="FilterDateDay" ></input>
                                                 </div>
-                                                <div>
-                                                    <input onClick="FilterTime('DD')" type="radio"  name="FilterDate" value="DD" {% if date_filter == "DD" %}checked{% endif %}>
-                                                    <label for="FD">Dia</label>
-                                                </div>
-                                                <div>
-                                                    <input onClick="FilterTime('RD')" type="radio"  name="FilterDate" value="RD" {% if date_filter == "RD" %}checked{% endif %}>
-                                                    <label for="FD">Rango</label>
+                                                <div {% if date_filter != "RD" %} style="display: none" {% endif %} id="RD">
+                                                    <label for="filter__start">Fecha Incial:</label>
+                                                    <input {% if date_filter == "RD" %}required{% endif %} type="date" id="filter__start" max="{{date_today_max}}" value="{{date_start_filter}}"  name="FilterDateStart">
+                                                    <label for="filter__end">Fecha Final:</label>
+                                                    <input {% if date_filter == "RD" %}required{% endif %} type="date" id="filter__end" name="FilterDateEnd" value="{{date_end_filter}}"  max="{{date_today_max}}">
                                                 </div>
                                             </fieldset>
-                                        </div>
-                                        <div class="col-6" >
-                                            <div {% if date_filter != "DD" %} style="display: none" {% endif %} id="DD">
-                                            <label for="filter__day">Fecha:</label>
-                                                <input {% if date_filter == "DD" %}required{% endif %} type="date" id="filter__day" value="{{date_day_filter}}" max="{{date_today_max}}" name="FilterDateDay" ></input>
-                                            </div>
-                                            
-                                            <div {% if date_filter != "RD" %} style="display: none" {% endif %} id="RD">
-                                                <label for="filter__start">Fecha Incial:</label>
-                                                <input {% if date_filter == "RD" %}required{% endif %} type="date" id="filter__start" max="{{date_today_max}}" value="{{date_start_filter}}"  name="FilterDateStart">
-                                                <label for="filter__end">Fecha Final:</label>
-                                                <input {% if date_filter == "RD" %}required{% endif %} type="date" id="filter__end" name="FilterDateEnd" value="{{date_end_filter}}"  max="{{date_today_max}}">
-                                            </div>
-                                            
                                         </div>
                                     </div>           
                                 </div>       
                             </div>       
-                            <div class="row">
+                            <div class="row text-center justify-content-around">
                                 <hr></hr>
                                 <div class="col-4">
-                                    <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">         
+                                    <input type="reset"  value="Cancelar"  class="btn btn-warning " data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">         
                                 </div>
                                 <div class="col-4">
-                                    <input type="submit"  name="FilterRemoveMovement" class="btn btn-danger float-end mx-2" value="Eliminar Filtros">
+                                    <input type="submit"  name="FilterRemoveMovement" class="btn btn-danger " value="Eliminar Filtros">
                                 </div>
                                 <div class="col-4">
-                                    <input type="submit"  name="FilterMovement" class="btn btn-info float-end mx-2" value="Filtrar">
+                                    <input type="submit"  name="FilterMovement" class="btn btn-info " value="Filtrar">
                                 </div>
                             </div>       
                         </form>        

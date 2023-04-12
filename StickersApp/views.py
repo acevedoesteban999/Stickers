@@ -449,9 +449,10 @@ def TransaccionesView(request):
                 type_filter=filter_movement.get("TypeFilter")
                 product_filter=filter_movement.get("ProductFilter")
                 date_filter=filter_movement.get("FilterDate")
+                #print(type_filter,product_filter,date_filter)
                 if date_filter ==  "DD":
                     date_day_filter=filter_movement.get("FilterDateDay")
-                    print(date_day_filter)
+                    #print(date_day_filter)
                     q = q & Q(date__date=date_day_filter)
                 elif date_filter ==  "RD":
                     date_start_filter=filter_movement.get("FilterDateStart")
@@ -461,13 +462,17 @@ def TransaccionesView(request):
                     q = q & Q(date__range=(start_date,end_date))
                 if product_filter != "NF":
                     q = q & Q(product__id=product_filter)
-                    product_filter=int(product_filter)
+                    #product_filter=int(product_filter)
                 if type_filter != "NF":
                     q = q & Q(type=type_filter)
         movements=Movement.objects.filter(q).order_by('-date')[:20] 
+        product_filter_name=None
+        if product_filter!="NF":
+            product_filter_name=Product.objects.get(id=product_filter)
+        #print(product_filter_name,product_filter)
         products=Product.objects.all().exclude(removed=True).values("id","name")
         date_today_max =datetime.today() + timedelta(days=1)
-        return render(request,"Transacciones.html",{"MChoise":MChoise,"date_end_filter":date_end_filter,"date_start_filter":date_start_filter,"date_day_filter":date_day_filter,"date_today":datetime.today().strftime("%Y-%m-%d"),"date_today_max":date_today_max.strftime("%Y-%m-%d"),"movements":movements,"product_filter":product_filter,"type_filter":type_filter,"date_filter":date_filter,"products":products})
+        return render(request,"Transacciones.html",{"product_filter_name":product_filter_name,"MChoise":MChoise,"date_end_filter":date_end_filter,"date_start_filter":date_start_filter,"date_day_filter":date_day_filter,"date_today":datetime.today().strftime("%Y-%m-%d"),"date_today_max":date_today_max.strftime("%Y-%m-%d"),"movements":movements,"product_filter":product_filter,"type_filter":type_filter,"date_filter":date_filter,"products":products})
     except Exception as e:
         print(e)
         messages.error(request,"Algo ha salido mal")    
