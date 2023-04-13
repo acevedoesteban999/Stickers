@@ -96,24 +96,27 @@ def ResumeView(request):
                     'user__username'
                     )
         users_profit={}
-        usersnames=users.values_list('user__username',flat=True).distinct()
-        print(usersnames)
+        usersnames=set(users.values_list('user__username',flat=True))
+        #print(usersnames)
         for username in usersnames:
             users_profit.update({username:users.filter(user__username = username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
-        proucts_sell=movements_today.filter(
-            Q(type='VP')|Q(type='rP')
-            ).values(
-                'product__name',
-                'product__id'
-                ).distinct()
+        # proucts_sell=movements_today.filter(
+        #     Q(type='VP')|Q(type='rP')
+        #     ).values(
+        #         'product__name',
+        #         'product__id'
+        #         ).distinct()
+        
+        # print(set(proucts_sell.values_list('product__name',flat=True)))
+        # print(set(proucts_sell.values_list('product__id',flat=True)))
         
         context={}
         context.update({'movements':movements})
         context.update({'money_sell_profit':money_sell_profit})
         context.update({"movements_count":movements.count()})
         context.update({"workers_profit":users_profit})
-        context.update({"users_count":usersnames.count()})
-        context.update({"proucts_sell":proucts_sell})
+        context.update({"users_count":usersnames.__len__()})
+        #   context.update({"proucts_sell":proucts_sell})
         return context
         #proucts_sell=movements_today.filter(type='VP').values('product__name','product__id').distinct()
         
@@ -130,8 +133,9 @@ def ResumeView(request):
         #context.update(money_sell_profit_today)
         
         #users=movements_today.filter(type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sells=Sum(F('lot')* F('extra_info_int'))).values('money_worker_profit','money_sells','user__username')
-        #usersnames=users.values_list('user__username',flat=True).distinct()
-        #context.update({"users_count":usersnames.count()})
+        #usersnames=set(users.values_list('user__username',flat=True))
+        #print(usersnames)
+        #context.update({"users_count":usersnames.__len__()})
         #users_profit={}
         #for username in usersnames:
         #    users_profit.update({username:users.filter(user__username = username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
