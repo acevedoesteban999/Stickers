@@ -3,10 +3,10 @@
 {% block contenido %}
     {% if user.is_authenticated %}
         <div class="container">
-            {% if user.is_authenticated and "Admin" in Groups %}
+            {% if user.is_admin %}
                 <div class="container my-4"style="text-align: center;">
                     <div class="d-grid gap-2 col-6 mx-auto">
-                        <button type="button" class="btn btn-success " data-bs-toggle="modal" data-bs-target="#CrearModal" data-bs-whatever="@mdo">Crear Producto</button>      
+                        <button type="button" class="btn btn-success " style="border-radius: 20px;" data-bs-toggle="modal" data-bs-target="#CrearModal" data-bs-whatever="@mdo"><span class="h3"> Crear Producto</span></button>      
                     </div>
                 </div>
                 

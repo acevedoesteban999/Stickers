@@ -18,6 +18,7 @@ def BasePost(request):
         if request.method == "POST":
             if "Inicar_Sesion" in request.POST:
                 formlogin=AuthenticationForm(request,data=request.POST)
+                print(formlogin)
                 if formlogin.is_valid():
                     nombre=formlogin.cleaned_data.get("username")
                     contra=formlogin.cleaned_data.get("password")
@@ -27,6 +28,7 @@ def BasePost(request):
                         messages.success(request ,"Se ha iniciado en la cuenta '%s' correctamente"  %  nombre)    
                         return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
                     messages.error(request,"No se pudo inicar en la cuenta '%s'" % nombre)
+                print(formlogin)    
                 return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
             elif "CerrarSesion" in request.POST:
                 user=request.user.username
@@ -82,10 +84,9 @@ def ResumeView(request):
                 ).aggregate(
                     total_money_worker_profit=Sum('money_sell_worker_profit')-Sum('money_refund_worker_profit'),
                     total_sells_money=Sum('money_sell')-Sum('money_refund'),
-                    total_sells_count=Count('id')
                 )
         
-        users=movements.filter(
+        users_movement=movements.filter(
             Q(type='VP')|Q(type='rP')
             ).annotate(
                 money_worker_profit=Sum(F('lot')* F('extra_info_int_1'),filter=Q(type='VP'),default=0)-Sum(F('lot')* F('extra_info_int_1'),filter=Q(type='rP'),default=0),
@@ -95,25 +96,35 @@ def ResumeView(request):
                     'money_sells',
                     'user__username'
                     )
+        
+        
+        users_usernames=set(users_movement.values_list('user__username',flat=True))
+        users_usernames.discard(None)
+        
         users_profit={}
-        usersnames=users.values_list('user__username',flat=True).distinct()
-        print(usersnames)
-        for username in usersnames:
-            users_profit.update({username:users.filter(user__username = username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
-        proucts_sell=movements_today.filter(
+        for users_username in users_usernames:
+            users_profit.update({users_username:users_movement.filter(user__username = users_username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
+        #print(users_profit)
+        
+        proucts_movements=movements.filter(
             Q(type='VP')|Q(type='rP')
             ).values(
-                'product__name',
-                'product__id'
-                ).distinct()
-        
-        context={}
+                    'product__name',
+                    'product__id',
+                    )
+        #print(proucts_movements)
+        products = {}
+        for prouct_movement in proucts_movements:
+            if prouct_movement['product__id'] not in products:
+                products.update({prouct_movement['product__id']:prouct_movement})
+      
         context.update({'movements':movements})
         context.update({'money_sell_profit':money_sell_profit})
         context.update({"movements_count":movements.count()})
         context.update({"workers_profit":users_profit})
-        context.update({"users_count":usersnames.count()})
-        context.update({"proucts_sell":proucts_sell})
+        context.update({"users_count":users_usernames.__len__()})
+        context.update({"products":products})
+        context.update({"proucts_count":products.__len__()})
         return context
         #proucts_sell=movements_today.filter(type='VP').values('product__name','product__id').distinct()
         
@@ -124,7 +135,7 @@ def ResumeView(request):
     if movements_today:
         context_today=Movement_Resume(movements_today)
         context.update({"context_today":context_today})
-        print(context)
+        #print(context)
         #context.update({"movements_today":movements_today})
         #money_sell_profit_today=Movement.objects.filter(date__day=date.day,type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sell=Sum(F('lot')* F('extra_info_int'))).aggregate(total_money_worker_profit=Sum('money_worker_profit'),total_sells_money=Sum('money_sell'),total_sells_count=Count('id'))
         #context.update(money_sell_profit_today)
@@ -289,7 +300,10 @@ def ProductoView(request,productoID):
                     messages.success(request,text)
                     return render(request,"Producto.html",{'MovementsConfirm':movements_confirm,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
                 
-                def WarningProduct(text):
+                def WarningProduct(text,no_redirect=False):
+                    if no_redirect==True:
+                        messages.warning(request,text)
+                        return render(request,"Producto.html",{'MovementsConfirm':movements_confirm,'product':product,"movements":movements,"categorys":categorys,"categorysImgI":range(i)}) 
                     messages.warning(request,text)
                     return redirect('home') 
                 
@@ -437,10 +451,14 @@ def ProductoView(request,productoID):
                                 result=Movement.Pair_Refund(user=user,product=product,lot=lot_refund,category=category,note=note)
                             else:
                                 result=Movement.Unit_Refund(user=user,product=product,lot=lot_refund,category=category,note=note)
-                            if result == True:
+                            if result == "OK0":
                                 if category_id:
                                     categorys=Category.objects.filter(product__id=product.id).order_by("name")  
                                 return SuccessProduct("Se han reembolsado {} {} {} con un importe de {}$".format(lot_refund,"Pares de " if pair_action else "Unidades de ",product.name,lot_refund * (product.pair_price if pair_action else product.unit_price)))
+                            elif result == "OK1":
+                                if category_id:
+                                    categorys=Category.objects.filter(product__id=product.id).order_by("name")  
+                                return WarningProduct(no_redirect=True,text="Se han reembolsado {} {} {} con un importe de {}$, el usuario {} no presentaba el dinero suficiente en la cuenta, se ha retirado todo el dinero del usuario".format(lot_refund,"Pares de " if pair_action else "Unidades de ",product.name,lot_refund * (product.pair_price if pair_action else product.unit_price),user.username))
                             elif result == "E0":
                                 return ErrorProduct("No se han podido reembolsar {} {}".format(lot_refund,product.name))
                             elif result == "E1":

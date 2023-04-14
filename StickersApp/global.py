@@ -9,20 +9,20 @@ def UserGroups(request):
     return {}
 
 def GlobalElements(request):
-    visits=Visits.objects.values_list('total_visits',flat=True).first()  
-    registe_cash=RegisteCash.objects.values_list('money',flat=True).first()
-    if request.user.is_superuser:
-        groups=("Admin","Worker","Users")
-    else:
-        groups=request.user.groups.values_list('name',flat=True)
+    visits=Visits.objects.first()  
+    registe_cash_money=RegisteCash.objects.first()
+    #if request.user.is_superuser:
+    #    groups=("Admin","Worker","Users")
+    #else:
+    #    groups=request.user.groups.values_list('name',flat=True)
     
     if not visits:
         visits=Visits()
         visits.save()
 
-    if not registe_cash:
-        registe_cash=RegisteCash()
-        registe_cash.save()
-    
-    return {"registe_cash":registe_cash,"Groups":groups,"visits":visits}
+    if not registe_cash_money:
+        registe_cash_money=RegisteCash()
+        registe_cash_money.save()
+        
+    return {"registe_cash_money":registe_cash_money,"visits":visits}
     

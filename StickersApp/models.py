@@ -1,8 +1,15 @@
 from django.db import models
 from datetime  import datetime
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 # Create your models here.
+from django.contrib.auth.models import AbstractUser
 
+class UsEr(AbstractUser):
+    is_worker=models.BooleanField(default=False)
+    is_admin=models.BooleanField(default=False)
+    money=models.IntegerField(default=0)
+    #REQUIRED_FIELDS = ['username']
+    
 class Visits(models.Model):
     # today_date=models.DateField( auto_now=False, auto_now_add=False)
     # todat_visits=models.IntegerField(default=0)
@@ -11,11 +18,13 @@ class Visits(models.Model):
     # month_date=models.DateField( auto_now=False, auto_now_add=False)
     # month_visits=models.IntegerField(default=0)
     total_visits=models.IntegerField(default=0)
+    def __str__(self):
+        return self.total_visits.__str__()
 
 class RegisteCash(models.Model):
     money=models.IntegerField(default=0)
     def __str__(self):
-        return self.money.__str__()+' $'
+        return self.money.__str__()
     
 class Product(models.Model):
     name=models.CharField(max_length=30, unique=True)
@@ -72,7 +81,7 @@ class Movement(models.Model):
     extra_info_int=models.IntegerField(default=0)
     extra_info_int_1=models.IntegerField(default=0)
     extra_info_bool=models.BooleanField(default=False)
-    user = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True)
+    user = models.ForeignKey(UsEr,on_delete=models.SET_NULL,null=True,blank=True)
     product=models.ForeignKey(Product, on_delete=models.SET_NULL,null=True,blank=True,related_name="product")
     category=models.ForeignKey(Category, on_delete=models.SET_NULL,null=True,blank=True)
     def __str__(self):
@@ -147,7 +156,7 @@ class Movement(models.Model):
                     product.unit_sold += lot
                     amount=lot * product.unit_price
                     r_box.money += amount
-                    
+                    user.money+=amount
                     movement=cls(type="VP",user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,extra_info_int_1=product.unit_profit_worker,product=product,lot=lot,category=category)
                     if movement:
                         product.save()
@@ -155,6 +164,7 @@ class Movement(models.Model):
                         if category:
                             category.save()
                         r_box.save()
+                        user.save()
                         if bool_no_category == True:
                             return "OK0"    
                         return True
@@ -176,6 +186,7 @@ class Movement(models.Model):
                     product.pair_sold += lot
                     amount=lot * product.unit_price
                     r_box.money += amount
+                    user.money+=amount
                     if category:
                         diff = category.pair_stored - lot
                         if diff >= 0:
@@ -190,6 +201,7 @@ class Movement(models.Model):
                         if category:
                             category.save()
                         r_box.save()
+                        user.save()
                         return True
                 return False
             return "E0"
@@ -340,6 +352,11 @@ class Movement(models.Model):
                     amount=lot * product.unit_price
                     r_box.money -= amount
                     if r_box.money >= 0:
+                        user.money-=amount
+                        warning_bool=False
+                        if user.money < 0:
+                            user.money=0
+                            warning_bool=True
                         product.unit_sold = diff
                         product.unit_stored += lot
                         movement=cls(type="rP",extra_info_int_1=product.unit_profit_worker,user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=lot,category=category)
@@ -358,7 +375,8 @@ class Movement(models.Model):
                             movement.save()
                             product.save()
                             r_box.save()
-                            return True
+                            user.save()
+                            return ("OK0" if warning_bool==False else "OK1")
                         return False
                     return "E1"
                 return False
@@ -374,6 +392,11 @@ class Movement(models.Model):
                     amount=lot * product.pair_price
                     r_box.money -= amount
                     if r_box.money >= 0:
+                        user.money-=amount
+                        warning_bool=False
+                        if user.money < 0:
+                            user.money=0
+                            warning_bool=True
                         product.pair_sold = diff
                         product.pair_stored += lot
                         movement=cls(type="rP",extra_info_int_1=product.pair_profit_worker,user=user,extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=lot,category=category)
@@ -391,7 +414,8 @@ class Movement(models.Model):
                             movement.save()
                             product.save()
                             r_box.save()
-                            return True
+                            user.save()
+                            return ("OK0" if warning_bool==False else "OK1")
                         return False
                     return "E1"
                 return False

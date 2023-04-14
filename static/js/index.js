@@ -3,9 +3,21 @@ var SearchBool=false
 function ChangeSellLot(pair,pair_price,unit_price,pair_profit_worker,unit_profit_worker)
 {
     lot=document.getElementById("idLotatChange").value
-    if(!lot)
+    max_lot=parseInt(document.getElementById("idLotatChange").max)
+    min_lot=parseInt(document.getElementById("idLotatChange").min)
+    console.log(max_lot,min_lot)
+    if (lot > max_lot)
     {
-        document.getElementById("divIdChangeSellLot").innerHTML="0";
+        document.getElementById("divIdChangeSellLot").innerHTML= "Cantidad Maxima Superada";
+        document.getElementById("divIdChangeProfitLot").innerHTML="Cantidad Maxima Superada";
+        //lot= max_lot
+        return
+    }
+    else if(!lot ||  lot < min_lot  )
+    {
+        document.getElementById("divIdChangeSellLot").innerHTML= "Cantidad Minima Superada";
+        document.getElementById("divIdChangeProfitLot").innerHTML="Cantidad Minima Superada";
+        //lot=min_lot;
         return
     }
     if(pair=="True")

@@ -89,7 +89,7 @@
                                                     el Par
                                                 </small>
                                             </span>
-                                            {% if 'Admin' in Groups or 'Worker' in Groups %}
+                                            {% if user.is_admin or user.is_worker %}
                                                 <div class="row justify-content-center mt-3">
                                                     <fieldset class="border w-auto">
                                                         <legend class="float-none">Pares Almacenadas</legend>
@@ -108,7 +108,7 @@
                                                     la Unidad
                                                 </small>
                                             </span>
-                                            {% if 'Admin' in Groups or 'Worker' in Groups %}
+                                            {% if user.is_admin or user.is_worker %}
                                                 <div class="row justify-content-center mt-3">
                                                     <fieldset class="border w-auto">
                                                         <legend class="float-none">Unidades Almacenadas</legend>
@@ -133,7 +133,7 @@
                         </div>
                     </div>
                 </div>
-                {% if 'Admin' in Groups or 'Worker' in Groups %}
+                {% if user.is_admin or user.is_worker %}
                     <div class="row text-center justify-content-center m-1">
                         {% if not product.confirm %}
                             <div class="col-10">
@@ -143,7 +143,7 @@
                             </div>
                             
                         {% endif %}
-                        {% if product.confirm or 'Admin' in Groups %} 
+                        {% if product.confirm or user.is_admin %} 
                             <div class="col-10">
                                 <button class="btn m-2  btn-sm btn-outline-secondary w-auto" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
                                     <span class="h-1"> Informacion Adicional </span>
@@ -218,12 +218,12 @@
                 {% endif %}
                 
                 {% comment %} =============== BUTTONS ======================== {% endcomment %}
-                {% if 'Admin' in Groups or 'Worker' in Groups %}
+                {% if user.is_admin or user.is_worker %}
                     <div class="card-footer">
-                        {% if product.confirm or "Admin" in Groups %}        
+                        {% if product.confirm or user.is_admin %}        
                             <div class="row cols-1 my-3 justify-content-around">
                                 
-                                {% if "Admin" in Groups %}
+                                {% if user.is_admin %}
                                     <div class="col-auto m-1">
                                         <a type="button" class=" btn btn-info" data-bs-toggle="modal" data-bs-target="#AddModal" data-bs-whatever="1">
                                             Agregar
@@ -237,7 +237,7 @@
                                         </a>  
                                     </div>
                                 {% endif %}
-                                {% if "Admin" in Groups %}
+                                {% if user.is_admin %}
                                     <div class="col-auto m-1">
                                         <button type="button" class=" btn btn-warning" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">
                                             Editar
@@ -251,7 +251,7 @@
                                         </a>  
                                     </div>
                                 {% endif %}
-                                {% if "Admin" in Groups %}
+                                {% if user.is_admin %}
                                     {% if product.unit_stored > 0 or product.pair_stored > 0 %}
                                         <div class="col-auto m-1">
                                             <a type="button" class=" btn btn-danger" data-bs-toggle="modal" data-bs-target="#SubModal" data-bs-whatever="1">
@@ -266,9 +266,9 @@
                 {% endif %}
             </div>   
             {% comment %}=================================== MODALS =================================  {% endcomment %}
-            {% if 'Admin' in Groups or 'Worker' in Groups %}
-                {% if product.confirm or "Admin" in Groups  %}
-                    {% if "Admin" in Groups %}
+            {% if user.is_admin or user.is_worker %}
+                {% if product.confirm or user.is_admin  %}
+                    {% if user.is_admin %}
                         {% comment %} ========================= ADD CATEGORY ===============    {% endcomment %}
                         <div class="modal fade" data-bs-backdrop="static" id="AddCategoryModal" tabindex="-1" aria-labelledby="AddCategoryModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
@@ -530,7 +530,7 @@
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text">Vender</span>
                                                 <div class="form-floating">
-                                                    <input  required type="number"  oninput="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.unit_price}}','{{product.pair_profit_worker}}','{{product.unit_profit_worker}}')" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="idLotatChange" placeholder="Cantidad">
+                                                    <input  required type="number"  oninput="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.unit_price}}','{{product.pair_profit_worker}}','{{product.unit_profit_worker}}')" value="1" min="1" max="{% if product.pair %}{{product.pair_stored}} {% else %}{{product.unit_stored}}{% endif %} " name="cantidad" class="form-control" id="idLotatChange" placeholder="Cantidad">
                                                     <label for="floatingInput">Cantidad</label>       
                                                 </div>
                                             </div>
@@ -567,13 +567,15 @@
                                             {% endif %} 
                                             </span>$
                                             <br>
-                                            Ganancia: <span id="divIdChangeProfitLot" class="text-success h5">
-                                                {% if product.pair %}
-                                                        {{product.pair_profit_worker}}
-                                                    {% else %}
-                                                        {{product.unit_profit_worker}}
-                                                {% endif %} 
-                                                </span>$
+                                            <div class="h6">
+                                                Ganancia: <span id="divIdChangeProfitLot" class="text-success h5">
+                                                    {% if product.pair %}
+                                                            {{product.pair_profit_worker}}
+                                                        {% else %}
+                                                            {{product.unit_profit_worker}}
+                                                    {% endif %} 
+                                                    </span>$
+                                            </div>
                                         </div>
                                         <div class="row justify-content-around m-2">
                                             <div class="col-6 ">
@@ -604,7 +606,7 @@
                                             <div class="input-group mb-3">
                                                 <span class="input-group-text">Reembolsar</span>
                                                 <div class="form-floating">
-                                                    <input required type="number" value="1" min="1" max="{{product.sold}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                    <input required type="number" value="1" min="1" max="{% if product.pair %}{{product.pair_sold}} {% else %}{{product.unit_sold}}{% endif %}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
                                                     <label for="floatingInput">Cantidad</label>       
                                                 </div>
                                             </div>
@@ -646,7 +648,7 @@
                         </div>
                     {% endif %}
                     {% comment %} ========================= SUB ===============    {% endcomment %}
-                    {% if "Admin" in Groups %}
+                    {% if user.is_admin %}
                         {% if product.unit_stored > 0 or product.pair_stored > 0 %}
                             <div class="modal fade" data-bs-backdrop="static" id="SubModal" tabindex="-1" aria-labelledby="SubModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -662,7 +664,7 @@
                                                 <div class="input-group mb-3">
                                                     <span class="input-group-text">Quitar</span>
                                                     <div class="form-floating">
-                                                        <input required type="number" value="1" min="1" max="{{product.stored}}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                        <input required type="number" value="1" min="1" max="{% if product.pair %}{{product.pair_stored}} {% else %}{{product.unit_stored}}{% endif %}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
                                                         <label for="floatingInput">Cantidad</label>       
                                                     </div>
                                                 </div>
@@ -845,7 +847,7 @@
                     {% endif %}  
                     <div class="row">
                         <div class="col">
-                            {% if "Admin" in Groups %}
+                            {% if user.is_admin %}
                             <div class="d-flex justify-content-around">
                                 <button type="button" class="float-start btn btn-warning m-3 p-2" data-bs-toggle="modal" data-bs-target="#AddCategoryModal" data-bs-whatever="0">Agregar Categoría</button>
                                 {% if categorys %}
@@ -857,7 +859,7 @@
                     </div>
                 </div>
             </div>
-            {% if 'Admin' in Groups or 'Worker' in Groups %}   
+            {% if user.is_admin or user.is_worker %}   
                 <div class="display-2 my-5 text-center">  Transacciones </div>
                 {% comment %} =================  TABLE MOVEMENTS ==================== {% endcomment %}
                 
@@ -865,7 +867,7 @@
 
                 <div class="row ">
                     <div class="col">
-                        {% if "Admin" in Groups %}
+                        {% if user.is_admin %}
                             <button type="button" class="float-end btn btn-danger m-3 p-2" data-bs-toggle="modal" data-bs-target="#RemoveModal" data-bs-whatever="0">Eliminar Producto: {{product.name}}</button>
                         {% endif %}
                     </div>
