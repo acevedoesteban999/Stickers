@@ -64,16 +64,36 @@
                                                     el Par
                                                 </small>
                                             </span>
-                                            {% if user.is_admin or user.is_worker %}
-                                                <div class="row justify-content-center mt-3">
-                                                    <fieldset class="border w-auto">
-                                                        <legend class="float-none">Pares Almacenadas</legend>
-                                                        <div class="h4">
-                                                            {{product.pair_stored}}
-                                                        </div>
-                                                    </fieldset>
-                                                </div>        
-                                            {% endif %}   
+                                            <div class="row justify-content-center align-items-center text-center">
+
+                                           
+
+                                                {% if user.is_admin or user.is_worker %}
+                                                    <div class="col-6 mt-3 w-auto">
+                                                        <fieldset class="border">
+                                                            <legend class="float-none w-auto">Pares Almacenadas</legend>
+                                                            <div class="h4">
+                                                                {{product.pair_stored}}
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>        
+                                                {% endif %}   
+                                                    
+                                                {% if product.unit_stored != 0 %}      
+                                                    {% if user.is_admin or user.is_worker %}
+                                                        <div class="col-6 mt-3 w-auto">
+                                                            <fieldset class="border">
+                                                                <legend class="float-none w-auto">Unidades Almacenadas</legend>
+                                                                <div class="h4">
+                                                                    {{product.unit_stored}}
+                                                                    
+                                                                </div>
+                                                            </fieldset>
+                                                        </div>                   
+                                                    {% endif %}
+                                                {% endif %}
+                                            </div>
+
                                         {% else %}
                                             <span class="h2 m-1">
                                                 {{product.unit_price}}$
@@ -83,10 +103,6 @@
                                                     la Unidad
                                                 </small>
                                             </span>
-                                        {% endif %}
-                                                                         
-                                        {% if not product.pair or product.unit_stored != 0 %}
-                                            
                                             {% if user.is_admin or user.is_worker %}
                                                 <div class="row justify-content-center mt-3">
                                                     <fieldset class="border w-auto">
@@ -98,8 +114,9 @@
                                                     </fieldset>
                                                 </div>                   
                                             {% endif %}
-                                            
                                         {% endif %}
+                                                                         
+                                        
                                         
                                     </div>
                                 </div>
@@ -139,33 +156,43 @@
                                                     <th scope="col h3">Por Unidad</th>
                                                 </tr>
                                                 <tbody>
-                                                    <th scope="row h3">Precio</th>
-                                                    {% if product.pair %}
-                                                            <td class="h3">{{product.pair_price}}$</td>
-                                                    {% endif %}
-                                                    <td class="h3">{{product.unit_price}}$</td>
+                                                    <tr>
+                                                        <th scope="row h3">Precio</th>
+                                                        {% if product.pair %}
+                                                                <td class="h3">{{product.pair_price}}$</td>
+                                                        {% endif %}
+                                                        <td class="h3">{{product.unit_price}}$</td>
                                                     </tr>
-                                                    <tr>
-                                                        <th scope="row h3">Ganancia</th>
+                                                    
+                                                    {% if user.is_admin %}  
+                                                        <tr>
+                                                            <th scope="row h3">Ganancia</th>
                                                             {% if product.pair %}
-                                                                    <td class="h3">{{product.pair_profit_worker}}$</td>
+                                                                    <td class="h3">{{product.pair_profit}}$</td>
                                                             {% endif %}
-                                                            <td class="h3">{{product.unit_profit_worker}}$</td>
+                                                            <td class="h3">{{product.unit_profit}}$</td>
                                                         </tr>
+                                                    {% endif %}
                                                     <tr>
+                                                        <th scope="row h3">Pago a Trabajdor</th>
+                                                        {% if product.pair %}
+                                                                <td class="h3">{{product.pair_profit_worker}}$</td>
+                                                        {% endif %}
+                                                        <td class="h3">{{product.unit_profit_worker}}$</td>
+                                                    </tr>
+                                                    {% comment %} <tr>
                                                         <th scope="row h5">Total Almacenado</th>
                                                         {% if product.pair %}
                                                             <td class="h3">{{product.pair_stored}}</td>
                                                         {% endif %}
                                                         <td class="h3">{{product.unit_stored}}</td>
-                                                    </tr>
+                                                    </tr> {% endcomment %}
                                                     <tr>
                                                         <th scope="row h3">Total Vendido</th>
                                                         {% if product.pair %}
                                                             <td class="h3">{{product.pair_sold}}</td>
                                                         {% endif %}
                                                         <td class="h3">{{product.unit_sold}}</td>
-                                                        
                                                     </tr>
                                                     
                                                 </tbody>
@@ -320,46 +347,63 @@
                                             <input required type="text" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{product.name}}">
                                             <label for="floatingInput">Nombre</label>
                                         </div>
+                                        <div class="form-floating mb-3">
+                                            <input required type="text" class="form-control" name="i_d" id="floatingInput" placeholder="Id" value="{{product.i_d}}">
+                                            <label for="floatingInput">Id</label>
+                                        </div>
                                         {% if product.pair %}
                                             <fieldset class="border p-2 m-1">
                                                 <legend  class="float-none w-auto">Por Pares</legend> 
-                                                    <div class="form-floating mb-3">
-                                                        <input required min="0" type="number" value="{{product.pair_stored}}"  class="form-control"  name="almacenado pares" placeholder="Precio">
-                                                        <label for="floatingInput">Pares Almacenados </label>
-                                                    </div>
-                                                    <div class="form-floating mb-3">
-                                                        <input required min="0" type="number" value="{{product.pair_sold}}"  class="form-control"  name="vendido pares" placeholder="Precio">
-                                                        <label for="floatingInput">Pares Vendidos </label>
-                                                    </div>
-                                                    <div class="form-floating mb-3">
-                                                        <input required min="0" type="number" value="{{product.pair_price}}" class="form-control"  name="precio pares" placeholder="Precio">
-                                                        <label for="floatingInput">Precio por Par </label>
-                                                    </div>
-                                                    <div class="form-floating mb-3">
-                                                        <input required min="0" type="number" value="{{product.pair_profit_worker}}"  class="form-control"  name="ganancia pares" id="ParesGanancia" placeholder="Ganancia por Venta">
-                                                        <label for="floatingInput">Ganancia por Par para Trabajador</label>
-                                                    </div>
+
+                                                <div class="form-floating mb-3">
+                                                    <input required min="0" type="number" value="{{product.pair_price}}" class="form-control"  name="precio pares" placeholder="Precio">
+                                                    <label for="floatingInput">Precio por Par </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input required min="0" type="number" value="{{product.pair_profit}}" class="form-control"  name="ganancia pares" placeholder="Ganancia">
+                                                    <label for="floatingInput">Ganancia por Par </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input required min="0" type="number" value="{{product.pair_profit_worker}}"  class="form-control"  name="ganancia pares trabajador" id="ParesGanancia" placeholder="Pago a Trabajador">
+                                                    <label for="floatingInput">Pago a Trabajador por Par</label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input required min="0" type="number" value="{{product.pair_stored}}"  class="form-control"  name="almacenado pares" placeholder="Precio">
+                                                    <label for="floatingInput">Pares Almacenados </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input required min="0" type="number" value="{{product.pair_sold}}"  class="form-control"  name="vendido pares" placeholder="Precio">
+                                                    <label for="floatingInput">Pares Vendidos </label>
+                                                </div>
+                                                    
                                                 </fieldset>
                                         {% endif %}
                                         <fieldset class="border p-2 m-1">
                                             <legend  class="float-none w-auto">Por Unidad</legend> 
-                                                <div class="form-floating mb-3">
-                                                    <input required min="0" type="number" value="{{product.unit_stored}}"  class="form-control"  name="almacenado unitario" placeholder="Precio">
-                                                    <label for="floatingInput">Unidades Almacenadas  </label>
-                                                </div>
-                                                <div class="form-floating mb-3">
-                                                    <input required min="0" type="number" value="{{product.unit_sold}}"  class="form-control"  name="vendido unitario" placeholder="Precio">
-                                                    <label for="floatingInput">Unidades Vendidas </label>
-                                                </div>
-                                                <div class="form-floating mb-3">
-                                                    <input required min="0" type="number" value="{{product.unit_price}}" class="form-control"  name="precio unitario" placeholder="Precio">
-                                                    <label for="floatingInput">Precio por Unidad </label>
-                                                </div>
-                                                <div class="form-floating mb-3">
-                                                    <input required min="0" type="number" value="{{product.unit_profit_worker}}"  class="form-control"  name="ganancia unitario" id="ParesGanancia" placeholder="Ganancia por Venta">
-                                                    <label for="floatingInput">Ganancia por Unidad para Trabajador</label>
-                                                </div>
-                                            </fieldset>
+
+                                            <div class="form-floating mb-3">
+                                                <input required min="0" type="number" value="{{product.unit_price}}" class="form-control"  name="precio unitario" placeholder="Precio">
+                                                <label for="floatingInput">Precio por Unidad </label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input required min="0" type="number" value="{{product.unit_profit}}" class="form-control"  name="ganancia unitario" placeholder="Ganancia">
+                                                <label for="floatingInput">Ganancia por Unidad </label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input required min="0" type="number" value="{{product.unit_profit_worker}}"  class="form-control"  name="ganancia unitario trabajador" id="ParesGanancia" placeholder="Pago a Trabajador">
+                                                <label for="floatingInput">Pago a Trabajador por Unidad </label>
+                                            </div>    
+                                            <div class="form-floating mb-3">
+                                                <input required min="0" type="number" value="{{product.unit_stored}}"  class="form-control"  name="almacenado unitario" placeholder="Precio">
+                                                <label for="floatingInput">Unidades Almacenadas  </label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input required min="0" type="number" value="{{product.unit_sold}}"  class="form-control"  name="vendido unitario" placeholder="Precio">
+                                                <label for="floatingInput">Unidades Vendidas </label>
+                                            </div>
+                                            
+                                        </fieldset>
+
                                         <div class="form-floating mb-3">
                                             <textarea  type="text" class="form-control" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;">{{product.description}}</textarea >
                                             <label for="floatingInput">Descripcion</label>
@@ -408,14 +452,18 @@
                                         <div class="input-group mb-3">
                                             <span class="input-group-text">Vender</span>
                                             <div class="form-floating">
-                                                <input  required type="number"  oninput="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.unit_price}}','{{product.pair_profit_worker}}','{{product.unit_profit_worker}}')" value="1" min="1" max="{% if product.pair %}{{product.pair_stored}} {% else %}{{product.unit_stored}}{% endif %} " name="cantidad" class="form-control" id="idLotatChange" placeholder="Cantidad">
+                                                <input  required type="number"  oninput="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.pair_profit}}','{{product.pair_profit_worker}}','{{product.unit_price}}','{{product.unit_profit}}','{{product.unit_profit_worker}}')" value="1" min="1" max="{% if product.pair %}{{product.pair_stored}} {% else %}{{product.unit_stored}}{% endif %} " name="cantidad" class="form-control" id="idLotatChange" placeholder="Cantidad">
+                                                
+                                                {% if product.pair == True %} 
+                                                    <input type="hidden" id="HiddenInptMaxMin"value="{{product.unit_stored}}">
+                                                {% endif %}
                                                 <label for="floatingInput">Cantidad</label>       
                                             </div>
                                         </div>
                                     </div>
                                     {% if product.pair %}
                                         <div class="form-check form-switch mb-3 m-1">
-                                            <input onclick="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.unit_price}}','{{product.pair_profit_worker}}','{{product.unit_profit_worker}}')" id="VentaPresId" type="checkbox" class="form-check-input" name="AccionPar" checked >
+                                            <input onclick="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.pair_profit}}','{{product.pair_profit_worker}}','{{product.unit_price}}','{{product.unit_profit}}','{{product.unit_profit_worker}}')" id="VentaPresId" type="checkbox" class="form-check-input" name="AccionPar" checked >
                                             <label class="form-check-label">                   
                                                 Venta por Pares
                                             </label>
@@ -425,7 +473,9 @@
                                         <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
                                         <label for="floatingInput">Nota Adicional</label>
                                     </div>
-                                    <div class="continer my-2 text-center h5">
+
+                                    {% comment %}   Labels Money 
+                                     <div class="continer my-2 text-center h5">
                                         Importe: <span id="divIdChangeSellLot" class="text-success h5">
                                         {% if product.pair %}
                                                 {{product.pair_price}}
@@ -434,16 +484,30 @@
                                         {% endif %} 
                                         </span>$
                                         <br>
+                                        {% if user.is_admin %}
+                                            <div class="h6">
+                                                Ganancia: 
+                                                <span id="divIdChangeProfitLot" class="text-success h5">
+                                                    {% if product.pair %}
+                                                            {{product.pair_profit}}
+                                                        {% else %}
+                                                            {{product.unit_profit}}
+                                                    {% endif %} 
+                                                </span>$
+                                            </div>
+                                        {% endif %}
+                                            
                                         <div class="h6">
-                                            Ganancia: <span id="divIdChangeProfitLot" class="text-success h5">
+                                            Pago a Trabajador: 
+                                            <span id="divIdChangeProfitWorkerLot" class="text-success h5">
                                                 {% if product.pair %}
                                                         {{product.pair_profit_worker}}
                                                     {% else %}
                                                         {{product.unit_profit_worker}}
                                                 {% endif %} 
-                                                </span>$
+                                            </span>$
                                         </div>
-                                    </div>
+                                    </div> {% endcomment %}
                                     <div class="row justify-content-around m-2">
                                         <div class="col-6 ">
                                             <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
@@ -593,10 +657,7 @@
                                                     </div>
                                                     
                                                     <div class="row justify-content-center m-2">
-                                                        
-                                                       
-                                                        <input type="submit"  name="ConfirmAddProduct" class="btn btn-info float-end mx-2" value="Confirmar">
-                                                        
+                                                        <input type="submit"  name="ConfirmAddProduct" class="btn btn-info float-end mx-2 w-75" value="Confirmar">
                                                     </div>      
                                                 </div>
                                             </form>

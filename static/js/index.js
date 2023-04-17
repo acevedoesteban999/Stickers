@@ -20,47 +20,53 @@ function onPairAddUni()
     console.log(document.getElementById("PairAddUnitInput").min)
 }
 
-function ChangeSellLot(pair,pair_price,unit_price,pair_profit_worker,unit_profit_worker)
-{
-    lot=document.getElementById("idLotatChange").value
-    max_lot=parseInt(document.getElementById("idLotatChange").max)
-    min_lot=parseInt(document.getElementById("idLotatChange").min)
-    console.log(max_lot,min_lot)
-    if (lot > max_lot)
-    {
-        document.getElementById("divIdChangeSellLot").innerHTML= "Cantidad Maxima Superada";
-        document.getElementById("divIdChangeProfitLot").innerHTML="Cantidad Maxima Superada";
-        //lot= max_lot
-        return
-    }
-    else if(!lot ||  lot < min_lot  )
-    {
-        document.getElementById("divIdChangeSellLot").innerHTML= "Cantidad Minima Superada";
-        document.getElementById("divIdChangeProfitLot").innerHTML="Cantidad Minima Superada";
-        //lot=min_lot;
-        return
-    }
-    if(pair=="True")
-    {
-        if(pair_price=="None" || unit_price=="None" )
-            return ;
-        if(document.getElementById("VentaPresId").checked==true)
-        {
-            document.getElementById("divIdChangeSellLot").innerHTML= parseInt(pair_price)*lot;
-            document.getElementById("divIdChangeProfitLot").innerHTML=parseInt(pair_profit_worker)*lot;
-            return
-        }
-    }
-    if(pair=="False" || document.getElementById("VentaPresId").checked==false)
-    {
-        if(unit_price=="None")
-            return ;
-        document.getElementById("divIdChangeSellLot").innerHTML= parseInt(unit_price)*lot;
-        document.getElementById("divIdChangeProfitLot").innerHTML=parseInt(unit_profit_worker)*lot;
-    }
-    else
-        document.getElementById("divIdChangeSellLot").innerHTML="-";
-}
+// function ChangeSellLot(pair,pair_price,pair_profit,pair_profit_worker,unit_price,unit_profit,unit_profit_worker)
+// {
+//     lot=document.getElementById("idLotatChange").value
+//     max_lot_U=document.getElementById("HiddenInptMaxMin").value
+//     max_lot=parseInt(document.getElementById("idLotatChange").max)
+//     min_lot=parseInt(document.getElementById("idLotatChange").min)
+//     //console.log(max_lot,min_lot,lot,lot_U)
+//     if ( lot > max_lot || lot>max_lot_U)
+//     {
+//         if (pair==false || document.getElementById("VentaPresId").checked==true || lot>max_lot_U )
+//         {
+//             document.getElementById("divIdChangeSellLot").innerHTML= "Cantidad Maxima Superada:"+ String(max_lot);
+//             document.getElementById("divIdChangeProfitLot").innerHTML="-";
+//             document.getElementById("divIdChangeProfitWorkerLot").innerHTML="-";
+//             return
+//         }
+//     }
+
+//     if(!lot ||  lot < min_lot  )
+//     {
+//         document.getElementById("divIdChangeSellLot").innerHTML= "Cantidad Minima Superada:"+ String(min_lot);
+//         document.getElementById("divIdChangeProfitLot").innerHTML="-";
+//         document.getElementById("divIdChangeProfitWorkerLot").innerHTML="-";
+//         //lot=min_lot;
+//         return
+//     }
+//     if(pair=="True")
+//     {
+//         if(pair_price=="None" || unit_price=="None" )
+//             return ;
+//         if(document.getElementById("VentaPresId").checked==true)
+//         {
+//             document.getElementById("divIdChangeSellLot").innerHTML= parseInt(pair_price)*lot;
+//             document.getElementById("divIdChangeProfitLot").innerHTML=parseInt(pair_profit)*lot;
+//             document.getElementById("divIdChangeProfitWorkerLot").innerHTML=parseInt(pair_profit_worker)*lot;
+//             return
+//         }
+//     }
+//     if(pair=="False" || document.getElementById("VentaPresId").checked==false)
+//     {
+//         if(unit_price=="None")
+//             return ;
+//         document.getElementById("divIdChangeSellLot").innerHTML= parseInt(unit_price)*lot;
+//         document.getElementById("divIdChangeProfitLot").innerHTML=parseInt(unit_profit)*lot;
+//         document.getElementById("divIdChangeProfitWorkerLot").innerHTML=parseInt(unit_profit_worker)*lot;
+//     }
+// }
 function SearchProduct(addr)
 {
     if (SearchBool == true)
@@ -207,17 +213,20 @@ function VentasParesFunction(VentasParesBool)
     paredId=document.getElementById("ParesDivId");
     paresPrecio=document.getElementById("ParesPrecio");
     presGanancia=document.getElementById("ParesGanancia");
+    ParesGananciaTrabajador=document.getElementById("ParesGananciaTrabajador");
     console.log(VentasParesBool)
     if(VentasParesBool==false)
     {
         paredId.setAttribute("style","display:none;");
         paresPrecio.require=false;
         presGanancia.required=false;
+        ParesGananciaTrabajador.required=false;
     }
     else
     {
         paredId.removeAttribute("style");
         paresPrecio.require=true;
         presGanancia.required=true;
+        ParesGananciaTrabajador.required=true;
     }
 }

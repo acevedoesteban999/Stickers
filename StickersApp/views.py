@@ -200,55 +200,57 @@ def HomeView(request):
                         total_sells_money=Sum('money_sell')-Sum('money_refund'),
         )
         return a
-    #try:
+    try:
         
-    if request.method=="GET":
-        if "QR" in request.GET:
-            #visits=Visits.objects.update(F("total_visits") + 1)
-            visits=Visits.objects.first()
-            visits.total_visits+=1
-            visits.save()
-    context={}   
-    #q=Q(date__day=datetime.now().day)
-    #context.update({'context_today':Summary(q)})
-    #q=Q(date=datetime.now().day)
-    #q=Q(date__range=( datetime.now().day-datetime.now().weekday(), datetime.now().day ) )
-    #context.update({'context_this_week':Summary(q)})
-    #q=Q(date__month=datetime.now().month)
-    #context.update({'context_this_month':Summary(q)})
-    # context.update({'context_today':
-    #     Movement.objects.filter(
-    #         Q(date__day=datetime.now().day)&(Q(type='VP')|Q(type='rP'))
-    #             ).values('lot','extra_info_int','extra_info_int_1'
-    #                 ).annotate(
-    #                     money_sell_worker_profit=Sum(
-    #                         F('lot')* F('extra_info_int_1'),
-    #                         filter=Q(type="VP"),
-    #                         default=0
-    #                         ),
-    #                     money_refund_worker_profit=Sum(
-    #                         F('lot')* F('extra_info_int_1'),
-    #                         filter=Q(type="rP"),
-    #                         default=0
-    #                         ),
-    #                     money_sell=Sum(
-    #                         F('lot')* F('extra_info_int'),
-    #                         filter=Q(type="VP"),
-    #                         default=0
-    #                         ),
-    #                     money_refund=Sum(
-    #                         F('lot')* F('extra_info_int'),
-    #                         filter=Q(type="rP"),
-    #                         default=0
-    #                         )
-    #             ).aggregate(
-    #                 total_money_worker_profit=Sum('money_sell_worker_profit')-Sum('money_refund_worker_profit'),
-    #                 total_sells_money=Sum('money_sell')-Sum('money_refund'),
-    # )})
-    #print(context)
-    return render(request,"Home.html")
-    #except Exception as e:
-        #print(e)
+        if request.method=="GET":
+            if "QR" in request.GET:
+                #visits=Visits.objects.update(F("total_visits") + 1)
+                visits=Visits.objects.first()
+                visits.total_visits+=1
+                visits.save()
+        context={}   
+        if request.user.is_admin or request.user.is_worker:
+            print("A")
+            #q=Q(date__day=datetime.now().day)
+            #context.update({'context_today':Summary(q)})
+            #q=Q(date=datetime.now().day)
+            #q=Q(date__range=( datetime.now().day-datetime.now().weekday(), datetime.now().day ) )
+            #context.update({'context_this_week':Summary(q)})
+            #q=Q(date__month=datetime.now().month)
+            #context.update({'context_this_month':Summary(q)})
+            # context.update({'context_today':
+            #     Movement.objects.filter(
+            #         Q(date__day=datetime.now().day)&(Q(type='VP')|Q(type='rP'))
+            #             ).values('lot','extra_info_int','extra_info_int_1'
+            #                 ).annotate(
+            #                     money_sell_worker_profit=Sum(
+            #                         F('lot')* F('extra_info_int_1'),
+            #                         filter=Q(type="VP"),
+            #                         default=0
+            #                         ),
+            #                     money_refund_worker_profit=Sum(
+            #                         F('lot')* F('extra_info_int_1'),
+            #                         filter=Q(type="rP"),
+            #                         default=0
+            #                         ),
+            #                     money_sell=Sum(
+            #                         F('lot')* F('extra_info_int'),
+            #                         filter=Q(type="VP"),
+            #                         default=0
+            #                         ),
+            #                     money_refund=Sum(
+            #                         F('lot')* F('extra_info_int'),
+            #                         filter=Q(type="rP"),
+            #                         default=0
+            #                         )
+            #             ).aggregate(
+            #                 total_money_worker_profit=Sum('money_sell_worker_profit')-Sum('money_refund_worker_profit'),
+            #                 total_sells_money=Sum('money_sell')-Sum('money_refund'),
+            # )})
+            #print(context)
+        return render(request,"Home.html",{"context":context})
+    except Exception as e:
+        print(e)
     return HttpResponse("Ha ocurrido un error insesperado , contacte con los administradores")
 
 def CajaView(request):
@@ -317,15 +319,17 @@ def ProductosView(request):
                         pair=False
                     
                     unit_price=int(crear_form.get("precio unitario") )
-                    unit_profit_worker=int(crear_form.get("ganancia unitaria") )
+                    unit_profit=int(crear_form.get("ganancia unitaria") )
+                    unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
                     pair_price=None
                     pair_profit_worker=None
                     if pair == True:
                         pair_price=int(crear_form.get("precio pares"))
-                        pair_profit_worker=int(crear_form.get("ganancia pares")) 
+                        pair_profit=int(crear_form.get("ganancia pares") )
+                        pair_profit_worker=int(crear_form.get("ganancia pares trabajador")) 
                     image=files.cleaned_data.get("imagen")
                     description=crear_form.get("descripcion")
-                    result=Movement.Create(i_d=i_d,user=user,name=name,pair=pair,unit_price=unit_price,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker,description=description,image=image)
+                    result=Movement.Create(i_d=i_d,user=user,name=name,pair=pair,unit_price=unit_price,pair_profit=pair_profit,unit_profit=unit_profit,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker,description=description,image=image)
                     if result==True:
                         crear_form=FormProduc()
                         product=Product.objects.exclude(removed=True).get(name=name)
@@ -391,11 +395,13 @@ def ProductoView(request,productoID):
                             pair_stored=int(edit_product.get("almacenado pares"))
                             pair_sold=int(edit_product.get("vendido pares"))
                             pair_price=int(edit_product.get("precio pares"))
-                            pair_profit_worker=int(edit_product.get("ganancia pares"))
+                            pair_profit=int(edit_product.get("ganancia pares"))
+                            pair_profit_worker=int(edit_product.get("ganancia pares trabajador"))
                         unit_stored=int(edit_product.get("almacenado unitario"))
                         unit_sold=int(edit_product.get("vendido unitario"))
                         unit_price=int(edit_product.get("precio unitario"))
-                        unit_profit_worker=int(edit_product.get("ganancia unitario"))
+                        unit_profit=int(edit_product.get("ganancia unitario"))
+                        unit_profit_worker=int(edit_product.get("ganancia unitario trabajador"))
                         #price=edit_product.get("precio")
                         description=edit_product.get("descripcion")
                         image=files.cleaned_data.get("imagen")
@@ -405,10 +411,12 @@ def ProductoView(request,productoID):
                                             pair_stored=pair_stored,
                                             pair_sold=pair_sold,
                                             pair_price=pair_price,
+                                            pair_profit=pair_profit,
                                             pair_profit_worker=pair_profit_worker,
                                             unit_stored=unit_stored,
                                             unit_sold=unit_sold,
                                             unit_price=unit_price,
+                                            unit_profit=unit_profit,
                                             unit_profit_worker=unit_profit_worker,
                                             description=description,
                                             image=image) 
@@ -453,8 +461,9 @@ def ProductoView(request,productoID):
                             pair_action=True
                             if unit_action:
                                 lot_add_1=int(add_product.get("cantidad_1"))
-                                if lot_add<=0:
+                                if lot_add==0:
                                     pair_action=False
+                                    lot_add=lot_add_1
                         else:             
                             pair_action=False
                         note=add_product.get("nota")
@@ -545,7 +554,9 @@ def ProductoView(request,productoID):
             return redirect('home') 
     except ObjectDoesNotExist:
         messages.error(request,"Error, producto inexistente")
-      
+    except Exception as e:
+        print(e)
+        messages.error(request,"Error, Algo ha salido mal")  
     return redirect('productos')        
 
 def OperacionesView(request):

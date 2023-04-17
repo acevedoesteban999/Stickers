@@ -1,6 +1,7 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
+  <div class="display-1 my-3 text-center">  Stickers </div>
   {% if not user.is_authenticated %}
     <div class="container">
       <div class="d-flex justify-content-center">
@@ -24,18 +25,28 @@
         </div> 
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-      </div>
-          
-      {% endif %}
+      </div>     
+
+      <div class="row justify-content-center">
+        <a type="button" href="{% url 'tienda' %}"  style="border-radius: 20px;" class="px-5 m-5 btn btn-primary w-auto"><span class="h1"> Ir a la Tienda </span></a>
+      </div>  
+      
+  {% else %}
+    <div class="container">
+      <div class="display-3 my-3 text-center">  Resumen </div>
+      {% comment %} Mini Resumen {% endcomment %}
+      <div class="display-5 my-3 text-center">  Hoy </div>
+      
+      <div class="display-5 my-3 text-center">  Esta Semana </div>
+      <div class="display-5 my-3 text-center">  Este Mes </div>
+
+
+
+
+
+      
     </div>
-  <div class="container">
-    <div class="display-1 my-3 text-center">  Stickers </div>
-    {% comment %} Mini Resumen {% endcomment %}
-    
+  {% endif %}
 
-
-    <div class="row justify-content-center">
-      <a type="button" href="{% url 'tienda' %}"  style="border-radius: 20px;" class="px-5 m-5 btn btn-primary w-auto"><span class="h1"> Ir a la Tienda </span></a>
-    </div>  
-  </div>
+  
 {% endblock  %}

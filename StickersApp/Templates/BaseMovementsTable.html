@@ -229,7 +229,7 @@
                                                 {% widthratio movement.extra_info_int 1 movement.lot %}$
                                             </div>
                                             <div class="col-4 m-2 h6">
-                                                Gananacia Reembolsado: 
+                                                Ganancia Reembolsado: 
                                             </div>
                                             <div class="col-4 m-2 h6">
                                                 {% widthratio movement.extra_info_int_1 1 movement.lot %}$
@@ -248,15 +248,27 @@
                                             </div>
                                             <div class="col-4 m-2 h6">
                                                 {{movement.lot}}
+                                                {% if movement.extra_info_int == 1 %}
+                                                    Pares
+                                                {% elif movement.extra_info_int == 0 %}
+                                                    Unidades
+                                                {% else %}
+                                                    Pares + {{movement.extra_info_int_1}} Unidades
+                                                        
+                                                {% endif %}
+                                                    
+                                                
                                             </div>
                                         {% endif %}
-                                        {% if movement.extra_info_str %}
-                                            <div class="col-4 m-2 h6">
-                                                Nota: 
-                                            </div>
-                                            <div class="col-4 m-2 h6">
-                                                {{movement.extra_info_str}}
-                                            </div>
+                                        {% if movement.extra_info_str  %}
+                                            {% if movement.type != "eP" and movement.type != "CP" %}
+                                                <div class="col-4 m-2 h6">
+                                                    Nota: 
+                                                </div>
+                                                <div class="col-4 m-2 h6">
+                                                    {{movement.extra_info_str}}
+                                                </div>
+                                            {% endif %}
                                         {% endif %}
                                         <div class="col-4 m-2 h6">
                                             Usuario: 
