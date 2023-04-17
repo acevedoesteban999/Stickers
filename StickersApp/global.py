@@ -15,7 +15,6 @@ def GlobalElements(request):
     #    groups=("Admin","Worker","Users")
     #else:
     #    groups=request.user.groups.values_list('name',flat=True)
-    
     if not visits:
         visits=Visits()
         visits.save()

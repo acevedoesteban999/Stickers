@@ -20,7 +20,16 @@
                         {% endif %}  
                       </div>
                       <div class="col-4 col-md-11 my-md-2 pt-md-3">
-                        <span class="h4"><strong>{{product.name}}</strong></span>
+                        <span class="h4">
+                          <strong>{{product.name}}</strong>
+                          <br>
+                          
+                        </span>
+                        <span>
+                          <small class="text-muted pl-2">
+                            Id: {{product.i_d}}
+                          </small>
+                        </span>
                       </div>
                       <div class="col-4 col-md-11 my-md-2 ">
                         {% if product.pair %}
@@ -68,6 +77,7 @@
                     </div>
                     <div class="align-self-end col-4 col-md-11 my-md-2 pt-md-3">
                       <span class="h4"><strong>{{product.name}}</strong></span>
+                      
                     </div>
                     <div class="align-self-end col-4 col-md-11 my-md-2 ">
                       {% if product.pair %}

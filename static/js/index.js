@@ -1,5 +1,25 @@
 var SearchBool=false
 
+function onPairAddUni()
+{
+    pair_add_unit=document.getElementById("PairAddUni").checked;
+    
+    if (pair_add_unit)
+    {
+        document.getElementById("divIdCantUni").removeAttribute("style");
+        document.getElementById("PairAddUnitInput").required=true;
+        document.getElementById("idPairLotInput").min=0;
+
+    }
+    else
+    {
+        document.getElementById("divIdCantUni").setAttribute("style","display: none") ;
+        document.getElementById("PairAddUnitInput").required=false;
+        document.getElementById("idPairLotInput").min=1;
+    }
+    console.log(document.getElementById("PairAddUnitInput").min)
+}
+
 function ChangeSellLot(pair,pair_price,unit_price,pair_profit_worker,unit_profit_worker)
 {
     lot=document.getElementById("idLotatChange").value

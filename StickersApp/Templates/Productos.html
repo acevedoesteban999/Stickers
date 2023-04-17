@@ -26,6 +26,10 @@
                                             <input type="text" class="form-control" maxlength="30" required name="name" id="floatingInput" placeholder="Nombre">
                                             <label for="floatingInput">Nombre</label>
                                         </div>
+                                        <div class="form-floating mb-3">
+                                            <input type="number" class="form-control" maxlength="30" required name="i_d" id="floatingInput" placeholder="ID">
+                                            <label for="floatingInput">ID</label>
+                                        </div>
                                         <fieldset class="border p-2 m-1">
                                             <legend  class="float-none w-auto">Venta</legend> 
                                             <div class="form-check">
@@ -130,8 +134,8 @@
                                                                 </span>
                                                             </div>
                                                         {% endif %}
-                                                    {% endif %}
-                                                    {% if product.unit_stored != 0 %}
+                                                    
+                                                    {% else %}
                                                         <div class="text-dark text-center h3 p-1 mt-3 border-top border-bottom border-dark">
                                                             {{product.unit_stored}} 
                                                             <span>
@@ -141,6 +145,7 @@
                                                             </span>
                                                         </div>
                                                     {% endif %}
+                                                    
                                                     {% if product.pair and product.pair_stored == 0 and product.unit_stored == 0 or not product.pair and product.unit_stored == 0 %}
                                                         <div class="border border-danger p-2 mt-3 text-center text-danger h5">
                                                             AGOTADO
