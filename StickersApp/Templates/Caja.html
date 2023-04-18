@@ -1,83 +1,83 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
-    {% if user.is_authenticated and "Admin" in Groups %}
+    {% if user.is_admin or user.is_worker %}
         <div class="continer-md">
             {% comment %} =================  Buttons Money ==================== {% endcomment %}
-            <div class="container my-4 ">
-                <div class="row justify-content-around">
-
-                    
-                    <div class="col-6 w-auto ">
-                        <button type="button" class="btn btn-success px-3" data-bs-toggle="modal" data-bs-target="#AgregateModal" data-bs-whatever="@AGrDin">Agregar Dinero</button>     
-                        <div class="modal fade" data-bs-backdrop="static" id="AgregateModal" tabindex="-1" aria-labelledby="AgregateModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="AgregateModalLabel">Agregar Dinero</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form method="POST" action="">
-                                            {% csrf_token %}
-                                            <div class="modal-body">
-                                                <div class="form-floating mb-3">
-                                                    <input required type="text" class="form-control" name="cantidad" id="floatingInput" placeholder="Nombre">
-                                                    <label for="floatingInput">Cantidad</label>
+            {% if  user.is_admin  %}
+                <div class="container my-4 ">
+                    <div class="row justify-content-around">
+    
+                        <div class="col-6 w-auto ">
+                            <button type="button" class="btn btn-success px-3 "  style="border-radius: 20px;" data-bs-toggle="modal" data-bs-target="#AgregateModal" data-bs-whatever="@AGrDin"><span class="h4"> Agregar Dinero</span></button>     
+                            <div class="modal fade" data-bs-backdrop="static" id="AgregateModal" tabindex="-1" aria-labelledby="AgregateModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="AgregateModalLabel">Agregar Dinero</h1>
+                                            <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="POST" action="">
+                                                {% csrf_token %}
+                                                <div class="modal-body">
+                                                    <div class="form-floating mb-3">
+                                                        <input required type="text" class="form-control" name="cantidad" id="floatingInput" placeholder="Nombre">
+                                                        <label for="floatingInput">Cantidad</label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="form-floating mb-3">
-                                                <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
-                                                <label for="floatingInput">Nota Adicional</label>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                <input class="btn btn-warning" type="submit" name="AgregateMoney" value="Agregar">
-                                            </div>
-                                        </form>
+                                                <div class="form-floating mb-3">
+                                                    <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                                    <label for="floatingInput">Nota Adicional</label>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <input class="btn btn-warning" type="submit" name="AgregateMoney" value="Agregar">
+                                                </div>
+                                            </form>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" col-6 w-auto ">
+                            <button type="button" class="btn btn-success px-3 " style="border-radius: 20px;" data-bs-toggle="modal" data-bs-target="#RetirarModal" data-bs-whatever="@RetDin"><span class="h4"> Retirar Dinero </span></button>     
+                            <div class="modal fade" data-bs-backdrop="static" id="RetirarModal" tabindex="-1" aria-labelledby="RetirarModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="CrearModalLabel">Retirar Dinero</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="POST" action="">
+                                                {% csrf_token %}
+                                                <div class="modal-body">
+                                                    <div class="form-floating mb-3">
+                                                        <input required type="text" class="form-control" name="cantidad" id="floatingInput" placeholder="Nombre">
+                                                        <label for="floatingInput">Cantidad</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                                    <label for="floatingInput">Nota Adicional</label>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <input class="btn btn-warning" type="submit" name="RetireMoney" value="Retirar">
+                                                </div>
+                                            </form>
                                         
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class=" col-6 w-auto ">
-                        <button type="button" class="btn btn-success px-3 " data-bs-toggle="modal" data-bs-target="#RetirarModal" data-bs-whatever="@RetDin">Retirar Dinero</button>     
-                        <div class="modal fade" data-bs-backdrop="static" id="RetirarModal" tabindex="-1" aria-labelledby="RetirarModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="CrearModalLabel">Retirar Dinero</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form method="POST" action="">
-                                            {% csrf_token %}
-                                            <div class="modal-body">
-                                                <div class="form-floating mb-3">
-                                                    <input required type="text" class="form-control" name="cantidad" id="floatingInput" placeholder="Nombre">
-                                                    <label for="floatingInput">Cantidad</label>
-                                                </div>
-                                            </div>
-                                            <div class="form-floating mb-3">
-                                                <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
-                                                <label for="floatingInput">Nota Adicional</label>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                <input class="btn btn-warning" type="submit" name="RetireMoney" value="Retirar">
-                                            </div>
-                                        </form>
-                                    
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
-                </div>
-            </div>
-            
+            {% endif %}
             <div class="continer my-2 mx-5 w-3">
                 {% comment %} <table class="table table-dark centrado shadow p-3 mb-5 bg-body-tertiary rounded">
                     <thead>
@@ -119,22 +119,52 @@
                     </tbody>
                 </table> {% endcomment %}
                 {% comment %} =================  Info Caja ==================== {% endcomment %}
-                <div class="row justify-content-center m-3">
-                    <div class="col-11 w-auto">
+                <div class="row cols-1 justify-content-center align-items-center m-3">
+                    <div class="col-11   w-auto">
                         <div class="card bg-warning text-center p-2 w-auto">
                             <div class="card-body">
-                              <h4 class="card-title">Dinero en Caja</h4>
-                              <p class="card-text text-success h3">{{registe_cash}}$</p>
+                              <h4 class="card-title h5">Dinero Total en Caja</h4>
+                              <p class="card-text text-success h4">{{registe_cash_money}}$</p>
                             </div>
                           </div>
+                          <br>
                     </div>
+                </div>
+                <div class="row cols-1 justify-content-center align-items-center m-3">
+                    {% if user.is_admin %}
+                        <div class="col-11 w-auto">
+                            <div class="card bg-warning text-center p-2 w-auto">
+                                <div class="card-body">
+                                <h4 class="card-title h5">Dinero Obtenido por Ventas Directas por {{user.username}}</h4>
+                                <p class="card-text text-success h4">{{user.money}}$</p>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                    {% endif %}
+                </div>
+                <div class="row cols-1 justify-content-center align-items-center m-3">
+                    {% if user.is_worker %}
+
+                        <div class="col-11  w-auto">
+                            <div class="card bg-warning text-center p-2 w-auto">
+                                <div class="card-body">
+                                <h4 class="card-title h5">Dinero de {{user.username}} en Caja</h4>
+                                <p class="card-text text-success h4">{{user.money}}$</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                        
+                    
                     {% comment %} <div class="col-11 col-md-5">
 
                     </div> {% endcomment %}
                 </div>
-                
+                <div class="display-2 my-3 text-center">  Operaciones </div>
                 {% comment %} =================  TABLE MOVEMENTS ==================== {% endcomment %}
-               
+                
                 {% include 'BaseMovementsTable.html' %}
                     
             </div>

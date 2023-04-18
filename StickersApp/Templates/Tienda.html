@@ -20,7 +20,16 @@
                         {% endif %}  
                       </div>
                       <div class="col-4 col-md-11 my-md-2 pt-md-3">
-                        <span class="h4"><strong>{{product.name}}</strong></span>
+                        <span class="h4">
+                          <strong>{{product.name}}</strong>
+                          <br>
+                          
+                        </span>
+                        <span>
+                          <small class="text-muted pl-2">
+                            Id: {{product.i_d}}
+                          </small>
+                        </span>
                       </div>
                       <div class="col-4 col-md-11 my-md-2 ">
                         {% if product.pair %}
@@ -59,6 +68,10 @@
               <a type="button" href="{% url 'producto' product.id %}" style="text-decoration:none;" class="text-dark" >
                 <div class="card h-100 text-center p-2 m-2 ">
                   <div class="row h-100 justify-content-around ">
+                    
+                    <div class="align-self-start my-2 col-4 col-md-11 my-md-2 pt-md-3">
+                      <span class="h3 border border-3 px-5 my-2"><strong>{{product.name}}</strong></span>
+                    </div>
                     <div class="col-3 m-0 p-0 col-md-11 ">
                       {% if product.image %}
                           <img src="{{product.image.url}}"  class="img-fluid w-auto h-auto" alt="...">
@@ -66,9 +79,7 @@
                           <img src="" max-width="200" max-height="400" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
                       {% endif %}  
                     </div>
-                    <div class="align-self-end col-4 col-md-11 my-md-2 pt-md-3">
-                      <span class="h4"><strong>{{product.name}}</strong></span>
-                    </div>
+                    
                     <div class="align-self-end col-4 col-md-11 my-md-2 ">
                       {% if product.pair %}
                         <span class="h5 m-1">
