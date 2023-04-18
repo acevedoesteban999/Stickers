@@ -3,7 +3,6 @@ from .models import Product,Movement,RegisteCash,Visits,UsEr,SummaryDate
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
-
 class UsErAdmin(UserAdmin ):
         fieldsets = (
         (None, {"fields": ("username", "password")}),

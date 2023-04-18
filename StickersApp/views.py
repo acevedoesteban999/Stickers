@@ -170,8 +170,7 @@ def ResumeView(request):
 def HomeView(request):
     def Summary(movement):
         if movement:
-            print(movement)
-            return movement.values(
+            context=movement.values(
                         'lot',
                         'extra_info_int',
                         'extra_info_int_1',
@@ -210,6 +209,25 @@ def HomeView(request):
                         total_worker_profit_money=Sum('worKer_proFit')
                         
         )
+            aa=movement.values(
+                'product__name',
+                'product__i_d',
+                'lot',
+                'product__pair_price',
+                'product__unit_price',
+                'extra_info_bool',
+            )
+            context1={}
+            
+            for a in aa:
+                if context1.get(a['product__i_d']):
+                    context1[a['product__i_d']]['lot']+=a['lot']
+                    context1[a['product__i_d']]['money']+=a['product__pair_price']*a['lot'] if a['extra_info_bool'] else a['product__unit_price']*a['lot']
+                    
+                else:
+                    context1[a['product__i_d']]={"name":a['product__name'],"i_d":a['product__i_d'],"lot":a['lot'],"money":a['product__pair_price'] *a['lot'] if a['extra_info_bool'] else a['product__unit_price'] *a['lot']}
+            context.update({"products":context1})    
+            return context
         return None
     try:
         
@@ -220,16 +238,13 @@ def HomeView(request):
                 visits.total_visits+=1
                 visits.save()
         context={}
-        
-        if request.user.is_admin or request.user.is_worker:
+        if request.user.is_authenticated and (request.user.is_admin or request.user.is_worker):
             context.update({"context_today":Summary(Movement.objects.filter(type="VP",date__day=date.today().day))})
             summary_date=SummaryDate.objects.first()
             if not summary_date:
                 raise  Exception()
             
-            
-            if summary_date.active:
-                
+            if summary_date.active:       
                 context.update({"context_this_week":Summary(Movement.objects.filter(type="VP",date__range=( date.today()-timedelta(days=date.today().weekday() ), date.today()+timedelta(days=1) )))})
                 if context['context_this_week']:
                     context['context_this_week'].update({"this_week":ceil((date.today()-summary_date.start_date).days/7) })
@@ -238,49 +253,6 @@ def HomeView(request):
                 if context['context_this_month']:
                     context['context_this_month'].update({"start_date":summary_date.start_date.strftime("%d-%m-%y"),"end_date":summary_date.end_date.strftime("%d-%m-%y")})
                 
-                #ceil((summary_date.end_date-summary_date.start_date).day/7)
-            
-            #context.update({
-            #    "context_this_month":Summary(Movement.objects.filter(type="VP",date__range=(datetime.now().day-datetime.now().weekday(), datetime.now().day)))})
-            
-            print(context)
-            #q=Q(date__day=datetime.now().day)
-            #context.update({'context_today':Summary(q)})
-            #q=Q(date=datetime.now().day)
-            #q=Q(date__range=( datetime.now().day-datetime.now().weekday(), datetime.now().day ) )
-            #context.update({'context_this_week':Summary(q)})
-            #q=Q(date__month=datetime.now().month)
-            #context.update({'context_this_month':Summary(q)})
-            # context.update({'context_today':
-            #     Movement.objects.filter(
-            #         Q(date__day=datetime.now().day)&(Q(type='VP')|Q(type='rP'))
-            #             ).values('lot','extra_info_int','extra_info_int_1'
-            #                 ).annotate(
-            #                     money_sell_worker_profit=Sum(
-            #                         F('lot')* F('extra_info_int_1'),
-            #                         filter=Q(type="VP"),
-            #                         default=0
-            #                         ),
-            #                     money_refund_worker_profit=Sum(
-            #                         F('lot')* F('extra_info_int_1'),
-            #                         filter=Q(type="rP"),
-            #                         default=0
-            #                         ),
-            #                     money_sell=Sum(
-            #                         F('lot')* F('extra_info_int'),
-            #                         filter=Q(type="VP"),
-            #                         default=0
-            #                         ),
-            #                     money_refund=Sum(
-            #                         F('lot')* F('extra_info_int'),
-            #                         filter=Q(type="rP"),
-            #                         default=0
-            #                         )
-            #             ).aggregate(
-            #                 total_money_worker_profit=Sum('money_sell_worker_profit')-Sum('money_refund_worker_profit'),
-            #                 total_sells_money=Sum('money_sell')-Sum('money_refund'),
-            # )})
-            #print(context)
         return render(request,"Home.html",{"context":context})
     except Exception as e:
         print(e)

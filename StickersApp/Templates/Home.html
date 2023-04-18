@@ -36,121 +36,240 @@
       <div class="display-3 my-3 text-center">  Resumen </div>
       {% comment %} Mini Resumen {% endcomment %}
       
-      <div class="container">
-        <div class="display-5 my-3 text-center">  Hoy </div>
+      <div class="container text-center">
+        <div class="display-5 my-3 ">  Hoy </div>
         <hr>
-        <div class="row cols-1 cols-md-3 justify-content-center">
-          <div class="col-7 col-md-3 mb-2">
-            
-            <div class="card text-dark bg-light w-auto">
+        <div class="row cols-1  cols-md-3 justify-content-center">
+          <div class="col-5 col-md-3 mb-2">
+            <div class="card text-dark bg-light">
               <div class="card-body"> 
-                <h4 class="card-title h5">Dinero Recaudado</h4>
-                <p class="card-text h3 text-success text-center">{{context.context_today.total_money}}$</p>
+                <h4 class="card-title h5">Dinero Obtenido</h4>
+                <hr>
+                <p class="card-text h3 text-success ">{{context.context_today.total_money}}$</p>
               </div>
             </div>
 
           </div>
-          <div class="col-7 col-md-3 mb-2">
-            
-            <div class="card text-dark bg-light">
+          <div class="col-5 col-md-3 mb-2">
+
+            <div class="card text-dark bg-light h-100">
               <div class="card-body"> 
-                <h4 class="card-title h5">Ganancia </h4>
-                <p class="card-text h3 text-success text-center">{{context.context_today.total_profit_money}}$</p>
+                <h4 class="card-title h5">Pago a Trabajador</h4>
+                <hr>
+                <p class="card-text h3 text-success ">{{context.context_today.total_worker_profit_money}}$</p>
               </div>
             </div>
 
           </div>
-          <div class="col-7 col-md-3 mb-2">
-
-            <div class="card text-dark bg-light">
-              <div class="card-body"> 
-                <h4 class="card-title h5">Pago al Trabajador</h4>
-                <p class="card-text h3 text-success text-center">{{context.context_today.total_worker_profit_money}}$</p>
+          {% if user.is_admin %}
+            <div class="col-5 col-md-3 mb-2">
+              
+              <div class="card text-dark bg-light h-100">
+                <div class="card-body"> 
+                  <h4 class="card-title h5">Ganancia </h4>
+                  <hr>
+                  <p class="card-text h3 text-success ">{{context.context_today.total_profit_money}}$</p>
+                </div>
               </div>
-            </div>
 
+            </div>
+          {% endif %}
+          <div class="col-12">
+            <div class="card text-dark bg-light">
+              <a class="text-dark" style="text-decoration: none;" data-bs-toggle="collapse" href="#contentIdHoy" aria-expanded="false" aria-controls="contentId">
+                <div class="card-body"> 
+                  <h4 class="card-title h5">Productos Venidos</h4>
+                </div>
+              </a>
+              <div class="collapse" id="contentIdHoy">
+                
+                <div class="table-responsive-md">
+                  <table class="table table-light">
+                    <thead>
+                      <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Producto</th>
+                        <th scope="col">Cantidad</th>
+                        <th scope="col">Importe</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for product in context.context_today.products.values %}
+                        <tr class="">
+                          <td scope="row">{{product.i_d}}</td>
+                          <td>{{product.name}}</td>
+                          <td>{{product.lot}}</td>
+                          <td>{{product.money}}$</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
         <hr>
         {% if global_context.summary_date.active %}
-          <div class="display-5 mt-3 text-center">  Esta Semana</div>
-          <div class="h6 mb-3 text-center"><small>({{context.context_this_week.this_week}}/{{context.context_this_week.total_weeks}})</small></div>
+          <div class="display-5 mt-3 ">  Esta Semana</div>
+          <div class="h6 mb-3 "><small>({{context.context_this_week.this_week}}/{{context.context_this_week.total_weeks}})</small></div>
           
           <hr>
-          <div class="row cols-1 cols-md-3 justify-content-center">
-            <div class="col-7 col-md-3 mb-2">
-              
-              <div class="card text-dark bg-light w-auto">
+          <div class="row cols-1  cols-md-3 justify-content-center">
+            <div class="col-5 col-md-3 mb-2">
+              <div class="card text-dark bg-light">
                 <div class="card-body"> 
-                  <h4 class="card-title h5">Dinero Recaudado</h4>
-                  <p class="card-text h3 text-success text-center">{{context.context_this_week.total_money}}$</p>
+                  <h4 class="card-title h5">Dinero Obtenido</h4>
+                  <hr>
+                  <p class="card-text h3 text-success ">{{context.context_this_week.total_money}}$</p>
                 </div>
               </div>
   
             </div>
-            <div class="col-7 col-md-3 mb-2">
-              
-              <div class="card text-dark bg-light">
+            <div class="col-5 col-md-3 mb-2">
+  
+              <div class="card text-dark bg-light h-100">
                 <div class="card-body"> 
-                  <h4 class="card-title h5">Ganancia </h4>
-                  <p class="card-text h3 text-success text-center">{{context.context_this_week.total_profit_money}}$</p>
+                  <h4 class="card-title h5">Pago a Trabajador</h4>
+                  <hr>
+                  <p class="card-text h3 text-success ">{{context.context_this_week.total_worker_profit_money}}$</p>
                 </div>
               </div>
   
             </div>
-            <div class="col-7 col-md-3 mb-2">
-  
-              <div class="card text-dark bg-light">
-                <div class="card-body"> 
-                  <h4 class="card-title h5">Pago al Trabajador</h4>
-                  <p class="card-text h3 text-success text-center">{{context.context_this_week.total_worker_profit_money}}$</p>
+            {% if user.is_admin %}
+              <div class="col-5 col-md-3 mb-2">
+                
+                <div class="card text-dark bg-light h-100">
+                  <div class="card-body"> 
+                    <h4 class="card-title h5">Ganancia </h4>
+                    <hr>
+                    <p class="card-text h3 text-success ">{{context.context_this_week.total_profit_money}}$</p>
+                  </div>
                 </div>
-              </div>
   
+              </div>
+            {% endif %}
+            <div class="col-12">
+              <div class="card text-dark bg-light">
+                <a class="text-dark" style="text-decoration: none;" data-bs-toggle="collapse" href="#contentIdSemana" aria-expanded="false" aria-controls="contentId">
+                  <div class="card-body"> 
+                    <h4 class="card-title h5">Productos Venidos</h4>
+                  </div>
+                </a>
+                <div class="collapse" id="contentIdSemana">
+                  
+                  <div class="table-responsive-md">
+                    <table class="table table-light">
+                      <thead>
+                        <tr>
+                          <th scope="col">Id</th>
+                          <th scope="col">Producto</th>
+                          <th scope="col">Cantidad</th>
+                          <th scope="col">Importe</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for product in context.context_this_week.products.values %}
+                          <tr class="">
+                            <td scope="row">{{product.i_d}}</td>
+                            <td>{{product.name}}</td>
+                            <td>{{product.lot}}</td>
+                            <td>{{product.money}}$</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+  
+              </div>
             </div>
           </div>
           
           <hr>
-          <div class="display-5 mt-3 text-center"> Este Mes </div>
+          <div class="display-5 mt-3 "> Este Mes </div>
             
-          <div class="h6 mb-3 text-center"><small>({{context.context_this_month.start_date}})~({{context.context_this_month.end_date}})</small></div>
+          <div class="h6 mb-3 "><small>({{context.context_this_month.start_date}})~({{context.context_this_month.end_date}})</small></div>
            
           <hr>
-          <div class="row cols-1 cols-md-3 justify-content-center">
-            <div class="col-7 col-md-3 mb-2">
-              
-              <div class="card text-dark bg-light w-auto">
+          <div class="row cols-1  cols-md-3 justify-content-center">
+            <div class="col-5 col-md-3 mb-2">
+              <div class="card text-dark bg-light">
                 <div class="card-body"> 
-                  <h4 class="card-title h5">Dinero Recaudado</h4>
-                  <p class="card-text h3 text-success text-center">{{context.context_this_month.total_money}}$</p>
+                  <h4 class="card-title h5">Dinero Obtenido</h4>
+                  <hr>
+                  <p class="card-text h3 text-success ">{{context.context_this_month.total_money}}$</p>
                 </div>
               </div>
   
             </div>
-            <div class="col-7 col-md-3 mb-2">
-              
-              <div class="card text-dark bg-light">
+            <div class="col-5 col-md-3 mb-2">
+  
+              <div class="card text-dark bg-light h-100">
                 <div class="card-body"> 
-                  <h4 class="card-title h5">Ganancia </h4>
-                  <p class="card-text h3 text-success text-center">{{context.context_this_month.total_profit_money}}$</p>
+                  <h4 class="card-title h5">Pago a Trabajador</h4>
+                  <hr>
+                  <p class="card-text h3 text-success ">{{context.context_this_month.total_worker_profit_money}}$</p>
                 </div>
               </div>
   
             </div>
-            <div class="col-7 col-md-3 mb-2">
-  
-              <div class="card text-dark bg-light">
-                <div class="card-body"> 
-                  <h4 class="card-title h5">Pago al Trabajador</h4>
-                  <p class="card-text h3 text-success text-center">{{context.context_this_month.total_worker_profit_money}}$</p>
+            {% if user.is_admin %}
+              <div class="col-5 col-md-3 mb-2">
+                
+                <div class="card text-dark bg-light h-100">
+                  <div class="card-body"> 
+                    <h4 class="card-title h5">Ganancia </h4>
+                    <hr>
+                    <p class="card-text h3 text-success ">{{context.context_this_month.total_profit_money}}$</p>
+                  </div>
                 </div>
-              </div>
   
+              </div>
+            {% endif %}
+            <div class="col-12">
+              <div class="card text-dark bg-light">
+                <a class="text-dark" style="text-decoration: none;" data-bs-toggle="collapse" href="#contentIdMes" aria-expanded="false" aria-controls="contentId">
+                  <div class="card-body"> 
+                    <h4 class="card-title h5">Productos Venidos</h4>
+                  </div>
+                </a>
+                <div class="collapse" id="contentIdMes">
+                  
+                  <div class="table-responsive-md">
+                    <table class="table table-light">
+                      <thead>
+                        <tr>
+                          <th scope="col">Id</th>
+                          <th scope="col">Producto</th>
+                          <th scope="col">Cantidad</th>
+                          <th scope="col">Importe</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for product in context.context_this_month.products.values %}
+                          <tr class="">
+                            <td scope="row">{{product.i_d}}</td>
+                            <td>{{product.name}}</td>
+                            <td>{{product.lot}}</td>
+                            <td>{{product.money}}$</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+  
+              </div>
             </div>
           </div>
           <hr>  
           
         {% endif %}
+      
+        <a  class="btn btn-primary m-3 p-3" href="{% url 'resumen' %}" role="button"><span class="h3">Ver Resumen Completo</span></a>
       </div>
 
 
