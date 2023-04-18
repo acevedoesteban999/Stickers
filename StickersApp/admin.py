@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product,Movement,RegisteCash,Visits,UsEr
+from .models import Product,Movement,RegisteCash,Visits,UsEr,SummaryDate
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
@@ -28,4 +28,4 @@ admin.site.register(Product)
 admin.site.register(Movement)
 admin.site.register(RegisteCash)
 admin.site.register(Visits)
-#admin.site.register(UsEr)
+admin.site.register(SummaryDate)

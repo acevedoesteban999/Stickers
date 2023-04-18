@@ -344,11 +344,11 @@
                                     {% csrf_token %}
                                     <div class="modal-body">
                                         <div class="form-floating mb-3">
-                                            <input required type="text" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{product.name}}">
+                                            <input required type="text" maxlength="30" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{product.name}}">
                                             <label for="floatingInput">Nombre</label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <input required type="text" class="form-control" name="i_d" id="floatingInput" placeholder="Id" value="{{product.i_d}}">
+                                            <input required type="text" maxlength="4" class="form-control" name="i_d" id="floatingInput" placeholder="Id" value="{{product.i_d}}">
                                             <label for="floatingInput">Id</label>
                                         </div>
                                         {% if product.pair %}

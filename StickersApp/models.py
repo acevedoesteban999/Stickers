@@ -4,6 +4,8 @@ from datetime  import datetime
 # Create your models here.
 from django.contrib.auth.models import AbstractUser
 
+
+
 class UsEr(AbstractUser):
     is_worker=models.BooleanField(default=False)
     is_admin=models.BooleanField(default=False)
@@ -25,6 +27,13 @@ class RegisteCash(models.Model):
     money=models.IntegerField(default=0)
     def __str__(self):
         return self.money.__str__()
+
+class SummaryDate(models.Model):
+    start_date=models.DateField(blank=True,null=True)
+    end_date=models.DateField(blank=True,null=True)
+    active=models.BooleanField(default=False)
+    def __str__(self):
+        return "Active-"+self.start_date.__str__()+" ~ "+self.end_date.__str__() if self.active else "Desactive"
     
 class Product(models.Model):
     i_d=models.CharField(max_length=4, unique=True)
@@ -69,6 +78,7 @@ class Movement(models.Model):
     extra_info_str=models.CharField(max_length=100,null=True,blank=True)
     extra_info_int=models.IntegerField(default=0)
     extra_info_int_1=models.IntegerField(default=0)
+    extra_info_int_2=models.IntegerField(default=0)
     extra_info_bool=models.BooleanField(default=False)
     user = models.ForeignKey(UsEr,on_delete=models.SET_NULL,null=True,blank=True)
     product=models.ForeignKey(Product, on_delete=models.SET_NULL,null=True,blank=True,related_name="product")
@@ -77,9 +87,9 @@ class Movement(models.Model):
 
     @classmethod
     def Create(cls,user,i_d,name,pair,unit_price,unit_profit,unit_profit_worker,pair_price,pair_profit,pair_profit_worker,description,image):
-        if unit_price > 0 and pair_profit > 0 and unit_profit_worker > 0 and unit_price >= pair_profit and unit_price >= unit_profit_worker :
+        if unit_price > 0  and unit_profit_worker >= 0  and unit_profit >= 0 :
             if pair == True :
-                if pair_price > 0 and pair_profit > 0 and pair_profit_worker > 0 and pair_price >= pair_profit  and pair_price >= pair_profit_worker :
+                if pair_price > 0 and pair_profit >= 0 and pair_profit_worker >= 0 :
                     pass
                 else:
                     return False
@@ -113,7 +123,8 @@ class Movement(models.Model):
                         product.save()
                         movement.save()
                         return True
-                    except:
+                    except Exception as e:
+                        print(e)
                         return "E0"
         return False
     @classmethod
@@ -139,7 +150,7 @@ class Movement(models.Model):
                     amount=lot * product.unit_price
                     r_box.money += amount
                     user.money+=amount
-                    movement=cls(type="VP",user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,extra_info_int_1=product.unit_profit_worker,product=product,lot=lot)
+                    movement=cls(type="VP",user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,extra_info_int_1=product.unit_profit,extra_info_int_2=product.unit_profit_worker,product=product,lot=lot)
                     if movement:
                         product.save()
                         movement.save()
@@ -168,7 +179,7 @@ class Movement(models.Model):
                     amount=lot * product.unit_price
                     r_box.money += amount
                     user.money+=amount
-                    movement=cls(type="VP",extra_info_int_1=product.pair_profit_worker,user=user,extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=lot)
+                    movement=cls(type="VP",user=user,extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,extra_info_int_1=product.pair_profit,extra_info_int_2=product.pair_profit_worker,product=product,lot=lot)
                     if movement:
                         product.save()
                         movement.save()

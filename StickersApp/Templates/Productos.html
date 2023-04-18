@@ -27,8 +27,8 @@
                                             <label for="floatingInput">Nombre</label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <input type="number" class="form-control" maxlength="30" required name="i_d" id="floatingInput" placeholder="ID">
-                                            <label for="floatingInput">ID</label>
+                                            <input type="number" class="form-control" maxlength="4" required name="i_d" id="floatingInput" placeholder="ID">
+                                            <label for="floatingInput">Id</label>
                                         </div>
                                         <fieldset class="border p-2 m-1">
                                             <legend  class="float-none w-auto">Venta</legend> 
@@ -136,19 +136,17 @@
                                                 </div>
                                                 <div class="col-6">
                                                     <div class="row">
-                                                        {% if product.pair %}
-                                                            {% if product.pair_stored != 0 %}
-                                                                <div class="text-dark text-center h3 p-1 mt-3 border-top border-bottom border-dark">
-                                                                    {{product.pair_stored}}
-                                                                    <span>
-                                                                        <small class="h6 text-muted pl-2">
-                                                                            Pares
-                                                                        </small>
-                                                                    </span>
-                                                                </div>
-                                                            {% endif %}
-                                                        
-                                                        {% else %}
+                                                        {% if product.pair and product.pair_stored != 0 %}
+                                                            
+                                                            <div class="text-dark text-center h3 p-1 mt-3 border-top border-bottom border-dark">
+                                                                {{product.pair_stored}}
+                                                                <span>
+                                                                    <small class="h6 text-muted pl-2">
+                                                                        Pares
+                                                                    </small>
+                                                                </span>
+                                                            </div>
+                                                        {% elif product.unit_stored != 0  %}
                                                             <div class="text-dark text-center h3 p-1 mt-3 border-top border-bottom border-dark">
                                                                 {{product.unit_stored}} 
                                                                 <span>
@@ -157,13 +155,12 @@
                                                                     </small>
                                                                 </span>
                                                             </div>
-                                                        {% endif %}
-                                                        
-                                                        {% if product.pair and product.pair_stored == 0 and product.unit_stored == 0 or not product.pair and product.unit_stored == 0 %}
+                                                        {% else %}
                                                             <div class="border border-danger p-2 mt-3 text-center text-danger h5">
                                                                 AGOTADO
                                                             </div>
                                                         {% endif %}
+                                                        
                                                     </div>
                                                     
                                                 </div>

@@ -1,9 +1,10 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.http import JsonResponse
-from .models import MChoise,Product,RegisteCash,Movement,Visits
+from .models import MChoise,Product,RegisteCash,Movement,Visits,SummaryDate
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import FormProduc,FormLot,FormImg
-from datetime import datetime ,timedelta
+from datetime import datetime ,timedelta,date
+from math import ceil
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate,login,logout
 from django.db import IntegrityError
@@ -167,40 +168,49 @@ def ResumeView(request):
     return HttpResponse("Ha ocurrido un error insesperado , contacte con los administradores")
 
 def HomeView(request):
-    def Summary(q):
-        #qq=Q(date__day=datetime.now().day)
-        a= Movement.objects.filter(
-                q &(Q(type='VP')|Q(type='rP'))
-                    ).values(
+    def Summary(movement):
+        if movement:
+            print(movement)
+            return movement.values(
                         'lot',
                         'extra_info_int',
                         'extra_info_int_1',
+                        'extra_info_int_2',
                         ).annotate(
-                            money_sell_worker_profit=Sum(
-                                F('lot')* F('extra_info_int_1'),
-                                filter=Q(type="VP"),
-                                default=0
-                                ),
-                            money_refund_worker_profit=Sum(
-                                F('lot')* F('extra_info_int_1'),
-                                filter=Q(type="rP"),
-                                default=0
-                                ),
-                            money_sell=Sum(
+                            moNey=Sum(
                                 F('lot')* F('extra_info_int'),
-                                filter=Q(type="VP"),
+                                #filter=Q(type="VP"),
                                 default=0
                                 ),
-                            money_refund=Sum(
-                                F('lot')* F('extra_info_int'),
-                                filter=Q(type="rP"),
+                            #money_refund_worker_profit=Sum(
+                            #    F('lot')* F('extra_info_int_1'),
+                            #    filter=Q(type="rP"),
+                            #    default=0
+                            #    ),
+                            proFit=Sum(
+                                F('lot')* F('extra_info_int_1'),
+                                #filter=Q(type="VP"),
                                 default=0
-                                )
+                                ),
+                            worKer_proFit=Sum(
+                                F('lot')* F('extra_info_int_2'),
+                                #filter=Q(type="VP"),
+                                default=0
+                                ),
+                            #money_refund=Sum(
+                            #    F('lot')* F('extra_info_int'),
+                            #    filter=Q(type="rP"),
+                            #    default=0
+                            #    )
                     ).aggregate(
-                        total_money_worker_profit=Sum('money_sell_worker_profit')-Sum('money_refund_worker_profit'),
-                        total_sells_money=Sum('money_sell')-Sum('money_refund'),
+                        #total_money_worker_profit=Sum('money_sell_worker_profit')-Sum('money_refund_worker_profit'),
+                        #total_sells_money=Sum('money_sell')-Sum('money_refund'),
+                        total_money=Sum('moNey'),
+                        total_profit_money=Sum('proFit'),
+                        total_worker_profit_money=Sum('worKer_proFit')
+                        
         )
-        return a
+        return None
     try:
         
         if request.method=="GET":
@@ -209,9 +219,31 @@ def HomeView(request):
                 visits=Visits.objects.first()
                 visits.total_visits+=1
                 visits.save()
-        context={}   
+        context={}
+        
         if request.user.is_admin or request.user.is_worker:
-            print("A")
+            context.update({"context_today":Summary(Movement.objects.filter(type="VP",date__day=date.today().day))})
+            summary_date=SummaryDate.objects.first()
+            if not summary_date:
+                raise  Exception()
+            
+            
+            if summary_date.active:
+                
+                context.update({"context_this_week":Summary(Movement.objects.filter(type="VP",date__range=( date.today()-timedelta(days=date.today().weekday() ), date.today()+timedelta(days=1) )))})
+                if context['context_this_week']:
+                    context['context_this_week'].update({"this_week":ceil((date.today()-summary_date.start_date).days/7) })
+                    context['context_this_week'].update({"total_weeks":ceil((summary_date.end_date-summary_date.start_date).days/7) })
+                context.update({"context_this_month":Summary(Movement.objects.filter(type="VP",date__range=( summary_date.start_date, date.today()+timedelta(days=1) )))})
+                if context['context_this_month']:
+                    context['context_this_month'].update({"start_date":summary_date.start_date.strftime("%d-%m-%y"),"end_date":summary_date.end_date.strftime("%d-%m-%y")})
+                
+                #ceil((summary_date.end_date-summary_date.start_date).day/7)
+            
+            #context.update({
+            #    "context_this_month":Summary(Movement.objects.filter(type="VP",date__range=(datetime.now().day-datetime.now().weekday(), datetime.now().day)))})
+            
+            print(context)
             #q=Q(date__day=datetime.now().day)
             #context.update({'context_today':Summary(q)})
             #q=Q(date=datetime.now().day)
@@ -302,7 +334,6 @@ def TiendaView(request):
 def ProductosView(request): 
     try:
         user=request.user
-        print(user)
         if user:
             products = Product.objects.exclude(removed=True).order_by('name')   
 
@@ -322,8 +353,9 @@ def ProductosView(request):
                     unit_price=int(crear_form.get("precio unitario") )
                     unit_profit=int(crear_form.get("ganancia unitaria") )
                     unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
-                    pair_price=None
-                    pair_profit_worker=None
+                    pair_price=0
+                    pair_profit=0
+                    pair_profit_worker=0
                     if pair == True:
                         pair_price=int(crear_form.get("precio pares"))
                         pair_profit=int(crear_form.get("ganancia pares") )
@@ -337,7 +369,7 @@ def ProductosView(request):
                         messages.success(request,"Se ha creado  el objeto {} correctamente".format(name))
                         return redirect("/Producto/{}".format(product.id))
                     elif result=="E0":
-                        messages.error(request,"Nose ha podido  crear, ya existe un objeto de nombre %s"% name)
+                        messages.error(request,"No se ha podido  crear, ya existe un objeto de nombre %s"% name)
                         return render(request,"Productos.html",{'products':products})
                 messages.error(request,"Ha ocurrido un error  insesperado")
                 return render(request,"Productos.html",{'products':products})

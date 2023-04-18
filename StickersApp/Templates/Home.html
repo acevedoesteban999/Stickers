@@ -35,10 +35,123 @@
     <div class="container">
       <div class="display-3 my-3 text-center">  Resumen </div>
       {% comment %} Mini Resumen {% endcomment %}
-      <div class="display-5 my-3 text-center">  Hoy </div>
       
-      <div class="display-5 my-3 text-center">  Esta Semana </div>
-      <div class="display-5 my-3 text-center">  Este Mes </div>
+      <div class="container">
+        <div class="display-5 my-3 text-center">  Hoy </div>
+        <hr>
+        <div class="row cols-1 cols-md-3 justify-content-center">
+          <div class="col-7 col-md-3 mb-2">
+            
+            <div class="card text-dark bg-light w-auto">
+              <div class="card-body"> 
+                <h4 class="card-title h5">Dinero Recaudado</h4>
+                <p class="card-text h3 text-success text-center">{{context.context_today.total_money}}$</p>
+              </div>
+            </div>
+
+          </div>
+          <div class="col-7 col-md-3 mb-2">
+            
+            <div class="card text-dark bg-light">
+              <div class="card-body"> 
+                <h4 class="card-title h5">Ganancia </h4>
+                <p class="card-text h3 text-success text-center">{{context.context_today.total_profit_money}}$</p>
+              </div>
+            </div>
+
+          </div>
+          <div class="col-7 col-md-3 mb-2">
+
+            <div class="card text-dark bg-light">
+              <div class="card-body"> 
+                <h4 class="card-title h5">Pago al Trabajador</h4>
+                <p class="card-text h3 text-success text-center">{{context.context_today.total_worker_profit_money}}$</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <hr>
+        {% if global_context.summary_date.active %}
+          <div class="display-5 mt-3 text-center">  Esta Semana</div>
+          <div class="h6 mb-3 text-center"><small>({{context.context_this_week.this_week}}/{{context.context_this_week.total_weeks}})</small></div>
+          
+          <hr>
+          <div class="row cols-1 cols-md-3 justify-content-center">
+            <div class="col-7 col-md-3 mb-2">
+              
+              <div class="card text-dark bg-light w-auto">
+                <div class="card-body"> 
+                  <h4 class="card-title h5">Dinero Recaudado</h4>
+                  <p class="card-text h3 text-success text-center">{{context.context_this_week.total_money}}$</p>
+                </div>
+              </div>
+  
+            </div>
+            <div class="col-7 col-md-3 mb-2">
+              
+              <div class="card text-dark bg-light">
+                <div class="card-body"> 
+                  <h4 class="card-title h5">Ganancia </h4>
+                  <p class="card-text h3 text-success text-center">{{context.context_this_week.total_profit_money}}$</p>
+                </div>
+              </div>
+  
+            </div>
+            <div class="col-7 col-md-3 mb-2">
+  
+              <div class="card text-dark bg-light">
+                <div class="card-body"> 
+                  <h4 class="card-title h5">Pago al Trabajador</h4>
+                  <p class="card-text h3 text-success text-center">{{context.context_this_week.total_worker_profit_money}}$</p>
+                </div>
+              </div>
+  
+            </div>
+          </div>
+          
+          <hr>
+          <div class="display-5 mt-3 text-center"> Este Mes </div>
+            
+          <div class="h6 mb-3 text-center"><small>({{context.context_this_month.start_date}})~({{context.context_this_month.end_date}})</small></div>
+           
+          <hr>
+          <div class="row cols-1 cols-md-3 justify-content-center">
+            <div class="col-7 col-md-3 mb-2">
+              
+              <div class="card text-dark bg-light w-auto">
+                <div class="card-body"> 
+                  <h4 class="card-title h5">Dinero Recaudado</h4>
+                  <p class="card-text h3 text-success text-center">{{context.context_this_month.total_money}}$</p>
+                </div>
+              </div>
+  
+            </div>
+            <div class="col-7 col-md-3 mb-2">
+              
+              <div class="card text-dark bg-light">
+                <div class="card-body"> 
+                  <h4 class="card-title h5">Ganancia </h4>
+                  <p class="card-text h3 text-success text-center">{{context.context_this_month.total_profit_money}}$</p>
+                </div>
+              </div>
+  
+            </div>
+            <div class="col-7 col-md-3 mb-2">
+  
+              <div class="card text-dark bg-light">
+                <div class="card-body"> 
+                  <h4 class="card-title h5">Pago al Trabajador</h4>
+                  <p class="card-text h3 text-success text-center">{{context.context_this_month.total_worker_profit_money}}$</p>
+                </div>
+              </div>
+  
+            </div>
+          </div>
+          <hr>  
+          
+        {% endif %}
+      </div>
 
 
 
