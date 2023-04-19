@@ -1,7 +1,7 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
-    {% if user.is_admin or user.is_worker %}
+    {% if user.is_admin %}
         <div class="continer-md">
             {% comment %} =================  Buttons Money ==================== {% endcomment %}
             {% if  user.is_admin  %}
@@ -9,7 +9,7 @@
                     <div class="row justify-content-around">
     
                         <div class="col-6 w-auto ">
-                            <button type="button" class="btn btn-success px-3 "  style="border-radius: 20px;" data-bs-toggle="modal" data-bs-target="#AgregateModal" data-bs-whatever="@AGrDin"><span class="h4"> Agregar Dinero</span></button>     
+                            <button type="button" class="btn btn-success p-3 "  style="border-radius: 20px;" data-bs-toggle="modal" data-bs-target="#AgregateModal" data-bs-whatever="@AGrDin"><span class="h4"> Agregar Dinero</span></button>     
                             <div class="modal fade" data-bs-backdrop="static" id="AgregateModal" tabindex="-1" aria-labelledby="AgregateModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -42,7 +42,7 @@
                             </div>
                         </div>
                         <div class=" col-6 w-auto ">
-                            <button type="button" class="btn btn-success px-3 " style="border-radius: 20px;" data-bs-toggle="modal" data-bs-target="#RetirarModal" data-bs-whatever="@RetDin"><span class="h4"> Retirar Dinero </span></button>     
+                            <button type="button" class="btn btn-success p-3 " style="border-radius: 20px;" data-bs-toggle="modal" data-bs-target="#RetirarModal" data-bs-whatever="@RetDin"><span class="h4"> Retirar Dinero </span></button>     
                             <div class="modal fade" data-bs-backdrop="static" id="RetirarModal" tabindex="-1" aria-labelledby="RetirarModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -120,30 +120,29 @@
                 </table> {% endcomment %}
                 {% comment %} =================  Info Caja ==================== {% endcomment %}
                 <div class="row cols-1 justify-content-center align-items-center m-3">
-                    <div class="col-11   w-auto">
-                        <div class="card bg-warning text-center p-2 w-auto">
+                    <div class="col-7 col-md-3 ">
+                        <div class="card bg-warning text-center p-2 ">
                             <div class="card-body">
                               <h4 class="card-title h5">Dinero Total en Caja</h4>
-                              <p class="card-text text-success h4">{{registe_cash_money}}$</p>
+                              <p class="card-text text-success h4">{{global_context.registe_cash.money}}$</p>
                             </div>
                           </div>
                           <br>
                     </div>
                 </div>
-                <div class="row cols-1 justify-content-center align-items-center m-3">
-                    {% if user.is_admin %}
-                        <div class="col-11 w-auto">
-                            <div class="card bg-warning text-center p-2 w-auto">
-                                <div class="card-body">
-                                <h4 class="card-title h5">Dinero Obtenido por Ventas Directas por {{user.username}}</h4>
-                                <p class="card-text text-success h4">{{user.money}}$</p>
-                                </div>
+                {% comment %} <div class="row cols-1 justify-content-center align-items-center m-3">
+                    <div class="col-11 w-auto">
+                        <div class="card bg-warning text-center p-2 w-auto">
+                            <div class="card-body">
+                            <h4 class="card-title h5">Dinero Obtenido por Ventas Directas por {{user.username}}</h4>
+                            <p class="card-text text-success h4">{{user.money}}$</p>
                             </div>
                         </div>
-                        <br>
-                    {% endif %}
-                </div>
-                <div class="row cols-1 justify-content-center align-items-center m-3">
+                    </div>
+                    <br>
+                    
+                </div> {% endcomment %}
+                {% comment %} <div class="row cols-1 justify-content-center align-items-center m-3">
                     {% if user.is_worker %}
 
                         <div class="col-11  w-auto">
@@ -156,13 +155,8 @@
                         </div>
                     {% endif %}
                     
-                        
-                    
-                    {% comment %} <div class="col-11 col-md-5">
-
-                    </div> {% endcomment %}
-                </div>
-                <div class="display-2 my-3 text-center">  Operaciones </div>
+                </div> {% endcomment %}
+                <div class="display-2 my-3 text-center">  Operaciones con la Caja </div>
                 {% comment %} =================  TABLE MOVEMENTS ==================== {% endcomment %}
                 
                 {% include 'BaseMovementsTable.html' %}

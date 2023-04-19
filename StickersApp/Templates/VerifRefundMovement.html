@@ -1,0 +1,53 @@
+<div class="container text-center">
+   <div class="row justify-content-between">
+        <div class="col-4 justify-content-start">
+            Id Operacion
+        </div>
+        <div class="col-6 justify-content-end">
+            {{movement.id}}
+        </div>
+        <div class="col-4">
+            Producto
+        </div>
+        <div class="col-6">
+            {{movement.product__name}}
+        </div>
+        <div class="col-4">
+            Id Producto
+        </div>
+        <div class="col-6">
+            {{movement.product__i_d}}
+        </div>
+        
+        <div class="col-4">
+            Tipo Venta
+        </div>
+        <div class="col-6">
+            {% if movement.exta_info_bool == True %}
+                Por Pares
+            {% else %}
+                Por Unidades
+            {% endif %}
+        </div>
+        <div class="col-4">
+            Cantidad
+        </div>
+        <div class="col-6">
+            {{movement.lot}}
+        </div>
+        <div class="col-4">
+            Importe
+        </div>
+        <div class="col-6">
+            {% widthratio movement.extra_info_int 1 movement.lot %}$
+        </div>
+        <div class="col-4">
+            Usuario
+        </div>
+        <div class="col-6">
+            {{movement.user__username}}
+        </div>
+        
+   </div>
+
+</div>

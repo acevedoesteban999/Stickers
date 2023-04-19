@@ -40,23 +40,52 @@ def BasePost(request):
             #is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest': #if is_ajax
                 data = json.load(request)
-                search_value = data.get('SearchValue')  
-                try:
-                    if search_value:
-                        q=Q(removed=False) & (Q(name__contains=search_value) | Q(i_d__contains=search_value))
-                        products=Product.objects.filter(q)[:5]
-                        if products:
-                            return render(None,"SearchProducts.html",{"products": products})
-                except Exception as e:
-                    print(e)
-                return HttpResponse("NoProducts")
-             
+                if 'SearchValue' in data:
+                    search_value = data.get('SearchValue')  
+                    try:
+                        if search_value:
+                            q=Q(removed=False) & (Q(name__contains=search_value) | Q(i_d__contains=search_value))
+                            products=Product.objects.filter(q)[:5]
+                            if products:
+                                return render(None,"SearchProducts.html",{"products": products})
+                    except Exception as e:
+                        print(e)
+                    return HttpResponse("NoProducts")
+                elif 'VerifRefundIdMovement' in data:
+                    id_refund = data.get('VerifRefundIdMovement') 
+                    if id_refund:
+                        try:
+                            movement=Movement.objects.filter(id=id_refund).values(
+                                "id",
+                                "type",
+                                "lot",
+                                "product__name",
+                                "product__i_d",
+                                "user__username",
+                                "extra_info_bool",
+                                "extra_info_int",
+                                #"extra_info_int_1",
+                                #"extra_info_int_2",
+                            )
+                            if movement:
+                                print(movement[0])
+                                if movement[0].get('type') =="VP":
+                                    return render(None,"VerifRefundMovement.html",{"movement": movement[0]})
+                                return HttpResponse("E2")
+                            return HttpResponse("E1")
+                        except Exception as e:
+                            print(e)
+                    return HttpResponse("E0")
+                return HttpResponse("Error")
         return render(request,"Home.html")
-    except:
+    except Exception as e:
+        print(e)
         messages.error(request,"Algo ha salido mal")    
     return redirect('productos')
 
 def ResumeView(request):
+    
+    return redirect('home')
     #try:
     def Movement_Resume(movements):
         money_sell_profit=movements.filter(
@@ -163,6 +192,7 @@ def ResumeView(request):
     #print(movements_sell_today)
     
     return render(request,"Resume.html",{'context':context})
+    
     #except Exception as e:
     #    print(e)
     return HttpResponse("Ha ocurrido un error insesperado , contacte con los administradores")
@@ -209,7 +239,7 @@ def HomeView(request):
                         total_worker_profit_money=Sum('worKer_proFit')
                         
         )
-            aa=movement.values(
+            products=movement.values(
                 'product__name',
                 'product__i_d',
                 'lot',
@@ -218,19 +248,17 @@ def HomeView(request):
                 'extra_info_bool',
             )
             context1={}
-            
-            for a in aa:
-                if context1.get(a['product__i_d']):
-                    context1[a['product__i_d']]['lot']+=a['lot']
-                    context1[a['product__i_d']]['money']+=a['product__pair_price']*a['lot'] if a['extra_info_bool'] else a['product__unit_price']*a['lot']
-                    
+            for product in products:
+                if context1.get(product['product__i_d']):
+                    context1[product['product__i_d']]['lot']+=product['lot']
+                    context1[product['product__i_d']]['money']+=product['product__pair_price']*product['lot'] if product['extra_info_bool'] else product['product__unit_price']*product['lot']
                 else:
-                    context1[a['product__i_d']]={"name":a['product__name'],"i_d":a['product__i_d'],"lot":a['lot'],"money":a['product__pair_price'] *a['lot'] if a['extra_info_bool'] else a['product__unit_price'] *a['lot']}
+                    context1[product['product__i_d']]={"name":product['product__name'],"i_d":product['product__i_d'],"lot":product['lot'],"money":product['product__pair_price'] *product['lot'] if product['extra_info_bool'] else product['product__unit_price'] *product['lot']}
             context.update({"products":context1})    
-            return context
-        return None
+        else:
+            context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0}
+        return context
     try:
-        
         if request.method=="GET":
             if "QR" in request.GET:
                 #visits=Visits.objects.update(F("total_visits") + 1)
@@ -262,7 +290,7 @@ def CajaView(request):
     
     try:
         user=request.user
-        if user:
+        if user.is_authenticated and user.is_admin:
             movements=Movement.objects.filter(Q(type="VP") | Q(type="RD") | Q(type="AD") | Q(type="rP")).order_by('-date')[:20]
             if "RetireMoney" in request.POST:
                 retire_product=request.POST.dict()
@@ -285,8 +313,11 @@ def CajaView(request):
                     messages.error(request,"No se han podido agregar {}$".format(lot_agregate))
                 return render(request,"Caja.html",{"movements":movements})
             return render(request,"Caja.html",{"movements":movements})
+        elif user.is_authenticated:
+            messages.error(request,"No tiene Permisos para Acceder a este Sitio")    
+            return redirect('home') 
         else:
-            messages.error(request,"Debe Iniciar Sesion para Aceeder a estos Recursos")    
+            messages.error(request,"Debe Iniciar Sesion para Aceeder a este Sitio")    
             return redirect('home') 
     except Exception as e:
         print(e)
@@ -496,26 +527,6 @@ def ProductoView(request,productoID):
                                         return WarningProduct(no_redirect=True,text="Se han confirmado y agregado {} {} {} {} correctamente, pero aun quedan confirmaciones".format(movement_to_confirm.lot," Pares" if movement_to_confirm.extra_info_int==1 or movement_to_confirm.extra_info_int==2 else "Unidades","+ " + movement_to_confirm.extra_info_int_1.__str__()+" Unidades" if movement_to_confirm.extra_info_int==2 else "","de "+ movement_to_confirm.product.name))
                                         
                         return ErrorProduct("No se ha podido confirmar")
-                    #Form No Confirmar Agregarmodal-dialog
-                    # elif "NoConfirmAddProduct" in request.POST:
-                    #     confirm_no_product=request.POST.dict()
-                    #     lot_no_confirm=int(confirm_no_product.get("cantidad"))
-                    #     id_movement=int(confirm_no_product.get("MovimientoID"))
-                    #     note=confirm_no_product.get("nota")
-                    #     if id_movement:
-                    #         movement_to_no_confirm=Movement.objects.get(id=id_movement)
-                    #         if movement_to_no_confirm:
-                    #             if Movement.NoConfirmAdd(user=user,lot=lot_no_confirm,movement=movement_to_no_confirm,note=note):
-                    #                 print(movements_confirm.count())
-                    #                 if movements_confirm.count()==0:
-                    #                     movement_to_no_confirm.product.confirm=True
-                    #                     movement_to_no_confirm.product.save()
-                    #                     product=Product.objects.get(id=product.id)
-                    #                     return SuccessProduct("Se han denegado la confirmacion de {}{} {} correctamente".format(lot_no_confirm,movement_to_no_confirm.extra_info_int_1 if movement_to_no_confirm.extra_info_int==1 and movement_to_no_confirm.extra_info_int_1!=0 else "" ,movement_to_no_confirm.product.name))
-                    #                 else:
-                    #                     return WarningProduct(no_redirect=True,text="Se han denegado la confirmacion de {} {} correctamente, pero aun quedan confirmaciones".format(movement_to_no_confirm.lot,movement_to_no_confirm.product.name))
-                                       
-                    #             return ErrorProduct("No se han podido no confirmar")
                     #Form Quitar
                     elif "SubProduct" in request.POST:
                         sub_product=request.POST.dict()
@@ -534,15 +545,16 @@ def ProductoView(request,productoID):
                     #Form Reembolsar
                     elif "RefundProduct" in request.POST: 
                         refund_product=request.POST.dict()
-                        lot_refund=int(refund_product.get("cantidad"))
+                        id_movement=int(refund_product.get("RefundProduct"))
                         
-                        pair_action=refund_product.get("AccionPar")
+                        #pair_action=refund_product.get("AccionPar")
                         note=refund_product.get("nota")
-                        if lot_refund > 0:
-                            if pair_action:
-                                result=Movement.Pair_Refund(user=user,product=product,lot=lot_refund,note=note)
-                            else:
-                                result=Movement.Unit_Refund(user=user,product=product,lot=lot_refund,note=note)
+                        #if lot_refund > 0:
+                        
+                        #if pair_action:
+                        movement=Movement.objects.filter(id=id_movement)
+                        if movement:
+                            result=Movement.Refund(user=user,product=product,movement=movement,note=note)
                             if result == "OK0":
                                 return SuccessProduct("Se han reembolsado {} {} {} con un importe de {}$".format(lot_refund,"Pares de " if pair_action else "Unidades de ",product.name,lot_refund * (product.pair_price if pair_action else product.unit_price)))
                             elif result == "OK1":
@@ -551,7 +563,8 @@ def ProductoView(request,productoID):
                                 return ErrorProduct("No se han podido reembolsar {} {}".format(lot_refund,product.name))
                             elif result == "E1":
                                 return ErrorProduct("No hay suficiente dinero en caja para reembolsar {} {}".format(lot_refund,product.name))
-                    
+                        return ErrorProduct("No exsiste id {}".format(id_movement))
+                
                     return ErrorProduct("Ha ocurrido un error inesperado")    
                 return NormalPageProduct()
         else:

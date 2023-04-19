@@ -34,7 +34,7 @@
                                         <div class="col-4 m-2 h6">
                                             Operacion: 
                                         </div>
-                                        <div class="col-4 m-2 h6">
+                                        <div class="col-6 m-2 h6">
                                             {{movement.get_type_display}}
                                         </div>
                                         
@@ -43,7 +43,7 @@
                                             <div class="col-4 m-2 h6">
                                                 Producto: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 <a style="text-decoration:none" class="text-dark border border-2 px-2 py-1 h6 "  href="{% url 'producto' movement.product.id %}">
                                                     {{movement.product.name}}
                                                 </a>
@@ -53,7 +53,7 @@
                                             <div class="col-4 m-2 h6">
                                                 Cantidad Agregada: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {{movement.lot}} 
                                                 {% if movement.extra_info_int == 1 %} 
                                                     Pares 
@@ -68,7 +68,7 @@
                                             <div class="col-4 m-2 h6">
                                                 Confirmado: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {% if movement.extra_info_bool == True %}
                                                     <span class="text-success h6">Si</span> 
                                                 {% else %}
@@ -79,13 +79,13 @@
                                             <div class="col-4 m-2 h6">
                                                 Nombre: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {{movement.product.name}}
                                             </div>
                                             <div class="col-4 m-2 h6">
                                                 Informacion: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {% autoescape off %}
                                                     {{movement.extra_info_str}}
                                                 {% endautoescape %}
@@ -96,28 +96,28 @@
                                             <div class="col-4 m-2 h6">
                                                 Cantidad Quitada: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {{movement.lot}}
                                             </div>      
                                         {% elif movement.type == "RD" %}
                                             <div class="col-4 m-2 h6">
                                                 Cantidad Retirada: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {{movement.lot}}$
                                             </div>
                                         {% elif movement.type == "AD" %}
                                             <div class="col-4 m-2 h6">
                                                 Cantidad Agregada: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {{movement.lot}}$
                                             </div>
                                         {% elif movement.type == "eP" %}    
                                             <div class="col-4 m-2 h6">
                                                 Cambios: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {% autoescape off %}
                                                     {{movement.extra_info_str}}
                                                 {% endautoescape %}
@@ -127,30 +127,30 @@
                                                 Tipo Venta
                                             </div>
                                             {% if movement.product.pair %}
-                                                <div class="col-4 m-2 h6">
+                                                <div class="col-6 m-2 h6">
                                                     Por Pares  
                                                 </div>
                                             {% else %}
-                                                <div class="col-4 m-2 h6">
+                                                <div class="col-6 m-2 h6">
                                                     Por Unidad  
                                                 </div>
                                             {% endif %}
                                             <div class="col-4 m-2 h6">
                                                 Cantidad Vendida: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {{movement.lot}}
                                             </div>
                                             <div class="col-4 m-2 h6">
                                                 Dinero Recaudado: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {% widthratio movement.extra_info_int 1 movement.lot %}$
                                             </div>
                                             <div class="col-4 m-2 h6">
                                                 Pago a Trabajador: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {% widthratio movement.extra_info_int_1 1 movement.lot %}$
                                             </div>
                                             <div class="col-4 m-2 h6">
@@ -162,7 +162,7 @@
                                                 {% endif %}
                                                 : 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {{movement.extra_info_int}}$
                                             </div>
                                             <div class="col-4 m-2 h6">
@@ -174,7 +174,7 @@
                                                 {% endif %}
                                                 : 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {{movement.extra_info_int_1}}$
                                             </div> 
                                             
@@ -240,13 +240,13 @@
                                             <div class="col-4 m-2 h6">
                                                 Proucto Confirmado 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {{movement.product.name}}
                                             </div>
                                             <div class="col-4 m-2 h6">
                                                 Cantidad Confirmada: 
                                             </div>
-                                            <div class="col-4 m-2 h6">
+                                            <div class="col-6 m-2 h6">
                                                 {{movement.lot}}
                                                 {% if movement.extra_info_int == 1 %}
                                                     Pares
@@ -265,7 +265,7 @@
                                                 <div class="col-4 m-2 h6">
                                                     Nota: 
                                                 </div>
-                                                <div class="col-4 m-2 h6">
+                                                <div class="col-6 m-2 h6">
                                                     {{movement.extra_info_str}}
                                                 </div>
                                             {% endif %}
@@ -273,19 +273,19 @@
                                         <div class="col-4 m-2 h6">
                                             Usuario: 
                                         </div>
-                                        <div class="col-4 m-2 h6">
+                                        <div class="col-6 m-2 h6">
                                             {{movement.user}}
                                         </div>
                                         <div class="col-4 m-2 h6">
                                             Id de Operacion: 
                                         </div>
-                                        <div class="col-4 m-2 h6">
+                                        <div class="col-6 m-2 h6">
                                             {{movement.id}}
                                         </div>
                                         <div class="col-4 m-2 h6">
                                             Fecha: 
                                         </div>
-                                        <div class="col-4 m-2 h6">
+                                        <div class="col-6 m-2 h6">
                                             {{movement.date}}
                                         </div>
                                     </div>

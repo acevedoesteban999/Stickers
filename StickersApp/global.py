@@ -3,7 +3,7 @@ from .models import RegisteCash,Visits,SummaryDate
 
 def GlobalElements(request):
     visits=Visits.objects.first()  
-    registe_cash_money=RegisteCash.objects.first()
+    registe_cash=RegisteCash.objects.first()
     summary_date=SummaryDate.objects.first()
     #if request.user.is_superuser:
     #    groups=("Admin","Worker","Users")
@@ -15,11 +15,11 @@ def GlobalElements(request):
         visits=Visits()
         visits.save()
 
-    if not registe_cash_money:
-        registe_cash_money=RegisteCash()
-        registe_cash_money.save()
+    if not registe_cash:
+        registe_cash=RegisteCash()
+        registe_cash.save()
     if not summary_date:
         summary_date=SummaryDate()
         summary_date.save()
-    return {"global_context":{"registe_cash_money":registe_cash_money,"visits":visits,"summary_date":summary_date}}
+    return {"global_context":{"registe_cash":registe_cash,"visits":visits,"summary_date":summary_date}}
     

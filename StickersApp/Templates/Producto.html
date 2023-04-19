@@ -532,8 +532,40 @@
                                 </div>
                                 <form method="POST" action="">
                                     {% csrf_token %}
-                                    
                                     <div class="row">
+                                        <div class="h6 mx-4 p-1">Id de Operacion a Reembolsar</div>
+                                        <div class="input-group mb-3">
+                                            <input type="number" class="form-control" name="RefundIdMovement" min="1"  placeholder="Id" id="inputIdVerifRefund" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                            <div class="input-group-append">
+                                              <button class="btn btn-outline-secondary" onClick="VerifRefund('{% url 'base_post' %}',{{product.id}})" type="button">Verfificar</button>
+                                            </div>
+                                        </div>
+                                        <div id="IdSpiner" class="d-none">
+                                            <div class="row justify-content-center align-items-center text-center">
+                                                <div class="col">
+                                                    <div class="spinner-border" role="status">
+                                                        <span class="sr-only">.</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div  class="h5 p-1 mx-4"id="DivIdInfoRefundAjax">
+                                            
+                                        </div>
+                                    </div>
+                                        {% comment %} <div class="input-group mb-3">
+
+                                            <div class="form-floating">
+                                                <input required type="number" min="0" max="9999" name="cantidad" class="form-control" id="inputIdVerifRefund" placeholder="Id">
+                                                <label for="inputIdVerifRefund">Id</label>       
+                                            </div>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" onClick="VerifRefund()" type="button">Verificar Id</button>
+                                              </div>
+                                        </div> 
+                                    </div>{% endcomment %}
+
+                                    {% comment %} <div class="row">
                                         <div class="input-group mb-3">
                                             <span class="input-group-text">Reembolsar</span>
                                             <div class="form-floating">
@@ -549,7 +581,7 @@
                                                 Reembolso por Pares
                                             </label>
                                         </div>
-                                    {% endif %}
+                                    {% endif %} {% endcomment %}
                                     <div class="form-floating mb-3">
                                         <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
                                         <label for="floatingInput">Nota Adicional</label>
@@ -559,7 +591,7 @@
                                             <input type="reset" class="btn btn-warning float-start" data-bs-dismiss="modal" value="Cancelar">         
                                         </div>
                                         <div class="col-6">
-                                            <input type="submit"  name="RefundProduct" style="background-color: orangered; color: white;" class="btn float-end mx-2" value="Reembolsar">
+                                            <input type="submit" disabled id="RefundProductButton" name="RefundProduct" style="background-color: orangered; color: white;" class="btn float-end mx-2" value="Reembolsar">
                                         </div>
                                     </div>       
                                 </form>  

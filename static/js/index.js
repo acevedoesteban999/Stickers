@@ -1,5 +1,43 @@
 var SearchBool=false
 
+function VerifRefund(addr,product_id)
+{
+    idRefund=document.getElementById("inputIdVerifRefund").value;
+    document.getElementById("IdSpiner").setAttribute("class","d-block");
+    document.getElementById("DivIdInfoRefundAjax").innerHTML="";
+    document.getElementById("RefundProductButton").disabled=true;
+    fetch(addr, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify({ "VerifRefundIdMovement": idRefund,"product_id":product_id})
+        })
+        .then(response => response.text())
+        .then(data => 
+        {
+            document.getElementById("IdSpiner").setAttribute("class","d-none");
+            if (data == "E0" )
+                document.getElementById("DivIdInfoRefundAjax").innerHTML="Ha ocurrido un Error al Verificar";
+            else if (data == "E1" )
+                document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, Id:"+idRefund+" no existente";
+            else if (data == "E2")
+                document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, Operacion de Id:"+idRefund+" no es de tipo Venta";
+            else
+            {
+                document.getElementById("DivIdInfoRefundAjax").innerHTML=data;
+                document.getElementById("RefundProductButton").disabled=false;       
+            }
+        })
+        .catch(error => {
+            document.getElementById("IdSpiner").setAttribute("class","d-none");
+            console.log("Error:",error);
+            document.getElementById("DivIdInfoRefundAjax").innerHTML="Ha ocurrido un Error al Verificar";
+        });
+}
+
 function onPairAddUni()
 {
     pair_add_unit=document.getElementById("PairAddUni").checked;
