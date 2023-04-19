@@ -53,6 +53,7 @@ def BasePost(request):
                     return HttpResponse("NoProducts")
                 elif 'VerifRefundIdMovement' in data:
                     id_refund = data.get('VerifRefundIdMovement') 
+                    id_prouct=data.get("product_id")
                     if id_refund:
                         try:
                             movement=Movement.objects.filter(id=id_refund).values(
@@ -61,6 +62,7 @@ def BasePost(request):
                                 "lot",
                                 "product__name",
                                 "product__i_d",
+                                "product__id",
                                 "user__username",
                                 "extra_info_bool",
                                 "extra_info_int",
@@ -68,10 +70,12 @@ def BasePost(request):
                                 #"extra_info_int_2",
                             )
                             if movement:
-                                print(movement[0])
-                                if movement[0].get('type') =="VP":
-                                    return render(None,"VerifRefundMovement.html",{"movement": movement[0]})
-                                return HttpResponse("E2")
+                                if movement[0].get('product__id')==id_prouct:
+                                    print(movement[0])
+                                    if movement[0].get('type') =="VP":
+                                        return render(None,"VerifRefundMovement.html",{"movement": movement[0]})
+                                    return HttpResponse("E2")
+                                return HttpResponse("E3")
                             return HttpResponse("E1")
                         except Exception as e:
                             print(e)
@@ -547,18 +551,14 @@ def ProductoView(request,productoID):
                         refund_product=request.POST.dict()
                         id_movement=int(refund_product.get("RefundProduct"))
                         
-                        #pair_action=refund_product.get("AccionPar")
                         note=refund_product.get("nota")
-                        #if lot_refund > 0:
-                        
-                        #if pair_action:
                         movement=Movement.objects.filter(id=id_movement)
                         if movement:
                             result=Movement.Refund(user=user,product=product,movement=movement,note=note)
                             if result == "OK0":
-                                return SuccessProduct("Se han reembolsado {} {} {} con un importe de {}$".format(lot_refund,"Pares de " if pair_action else "Unidades de ",product.name,lot_refund * (product.pair_price if pair_action else product.unit_price)))
+                                return SuccessProduct("Se han reembolsado {} {} {} con un importe de {}$".format(movement.lot,"Pares de " if pair_action else "Unidades de ",product.name,movement.lot * (product.pair_price if pair_action else product.unit_price)))
                             elif result == "OK1":
-                                return WarningProduct(no_redirect=True,text="Se han reembolsado {} {} {} con un importe de {}$, el usuario {} no presentaba el dinero suficiente en la cuenta, se ha retirado todo el dinero del usuario".format(lot_refund,"Pares de " if pair_action else "Unidades de ",product.name,lot_refund * (product.pair_price if pair_action else product.unit_price),user.username))
+                                return WarningProduct(no_redirect=True,text="Se han reembolsado {} {} {} con un importe de {}$, el usuario {} no presentaba el dinero suficiente en la cuenta, se ha retirado todo el dinero del usuario".format(movement.lot,"Pares de " if pair_action else "Unidades de ",product.name,movement.lot * (product.pair_price if pair_action else product.unit_price),user.username))
                             elif result == "E0":
                                 return ErrorProduct("No se han podido reembolsar {} {}".format(lot_refund,product.name))
                             elif result == "E1":

@@ -303,19 +303,6 @@ class Movement(models.Model):
                     movement.save()
                     return True
         return False
-    # @classmethod
-    # def NoConfirmAdd(cls,user,movement,lot,note):
-    #     if movement and movement.product.confirm == False:
-    #         if movement.product and movement.lot == lot:
-    #             movement_no_confirm=cls(type="nC",user=user,extra_info_str=note,product=movement.product,lot=lot)
-    #             if movement_no_confirm:
-    #                 movement_no_confirm.product.confirm=True
-    #                 movement.extra_info_bool=False
-    #                 movement_no_confirm.product.save()
-    #                 movement_no_confirm.save()
-    #                 movement.save()
-    #                 return True
-    #     return False
     @classmethod
     def Unit_Sub(cls,user,product,lot,note):
         if product and lot > 0:
@@ -349,62 +336,60 @@ class Movement(models.Model):
             return "E0"
         return False
     @classmethod
-    def Unit_Refund(cls,user,product,lot,note):
-        if product and lot > 0:
-            diff = product.unit_sold - lot 
-            if diff >= 0:
-                r_box=RegisteCash.objects.all().first()
-                if r_box:
-                    amount=lot * product.unit_price
-                    r_box.money -= amount
-                    if r_box.money >= 0:
-                        user.money-=amount
-                        warning_bool=False
-                        if user.money < 0:
-                            user.money=0
-                            warning_bool=True
-                        product.unit_sold = diff
-                        product.unit_stored += lot
-                        movement=cls(type="rP",extra_info_int_1=product.unit_profit_worker,user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=lot)
-                        if movement:
-                            movement.save()
-                            product.save()
-                            r_box.save()
-                            user.save()
-                            return ("OK0" if warning_bool==False else "OK1")
-                        return False
-                    return "E1"
-                return False
-            return "E0"
-        return False
-    @classmethod
-    def Pair_Refund(cls,user,product,lot,note):
-        if product and lot > 0:
-            diff = product.pair_sold - lot 
-            if diff >= 0:
-                r_box=RegisteCash.objects.all().first()
-                if r_box:
-                    amount=lot * product.pair_price
-                    r_box.money -= amount
-                    if r_box.money >= 0:
-                        user.money-=amount
-                        warning_bool=False
-                        if user.money < 0:
-                            user.money=0
-                            warning_bool=True
-                        product.pair_sold = diff
-                        product.pair_stored += lot
-                        movement=cls(type="rP",extra_info_int_1=product.pair_profit_worker,user=user,extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=lot)
-                        if movement:
-                            movement.save()
-                            product.save()
-                            r_box.save()
-                            user.save()
-                            return ("OK0" if warning_bool==False else "OK1")
-                        return False
-                    return "E1"
-                return False
-            return "E0"
+    def Refund(cls,user,product,movement,note):
+        if product and product.id == movement.product.id and movement.type=="VP":
+            if movement.extr_info_bool:
+                diff = product.pair_sold - movement.lot 
+                if diff >= 0:
+                    r_box=RegisteCash.objects.all().first()
+                    if r_box:
+                        amount=movement.lot * product.pair_price
+                        r_box.money -= amount
+                        if r_box.money >= 0:
+                            user.money-=amount
+                            warning_bool=False
+                            if user.money < 0:
+                                user.money=0
+                                warning_bool=True
+                            product.pair_sold = diff
+                            product.pair_stored += movement.lot
+                            movement=cls(type="rP",extra_info_int_1=product.pair_profit,extra_info_int_2=product.pair_profit_worker,user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.pair_price,product=product,lot=movement.lot)
+                            if movement:
+                                movement.save()
+                                product.save()
+                                r_box.save()
+                                user.save()
+                                return ("OK0" if warning_bool==False else "OK1")
+                            return False
+                        return "E1"
+                    return False
+                return "E0"
+            else:
+                diff = product.pair_sold - movement.lot 
+                if diff >= 0:
+                    r_box=RegisteCash.objects.all().first()
+                    if r_box:
+                        amount=movement.lot * product.unit_price
+                        r_box.money -= amount
+                        if r_box.money >= 0:
+                            user.money-=amount
+                            warning_bool=False
+                            if user.money < 0:
+                                user.money=0
+                                warning_bool=True
+                            product.unit_sold = diff
+                            product.unit_stored += movement.lot
+                            movement=cls(type="rP",extra_info_int_2=product.unit_profit_worker,extra_info_int_1=product.unit_profit,user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=movement.lot)
+                            if movement:
+                                movement.save()
+                                product.save()
+                                r_box.save()
+                                user.save()
+                                return ("OK0" if warning_bool==False else "OK1")
+                            return False
+                        return "E1"
+                    return False
+                return "E0"
         return False
     @classmethod
     def RetireMoney(cls,user,lot,note):
