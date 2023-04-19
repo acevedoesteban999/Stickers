@@ -549,7 +549,7 @@ def ProductoView(request,productoID):
                     #Form Reembolsar
                     elif "RefundProduct" in request.POST: 
                         refund_product=request.POST.dict()
-                        id_movement=int(refund_product.get("RefundProduct"))
+                        id_movement=int(refund_product.get("RefundIdMovement"))
                         
                         note=refund_product.get("nota")
                         movement=Movement.objects.filter(id=id_movement)

@@ -25,6 +25,8 @@ function VerifRefund(addr,product_id)
                 document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, Id:"+idRefund+" no existente";
             else if (data == "E2")
                 document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, Operacion de Id:"+idRefund+" no es de tipo Venta";
+            else if (data == "E3")
+                document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, El Producto de la Operacion de Id:"+idRefund+" no Coincide con el Producto en Cuestion";
             else
             {
                 document.getElementById("DivIdInfoRefundAjax").innerHTML=data;

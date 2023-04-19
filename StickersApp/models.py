@@ -337,6 +337,8 @@ class Movement(models.Model):
         return False
     @classmethod
     def Refund(cls,user,product,movement,note):
+        print("A")
+        print(movement)
         if product and product.id == movement.product.id and movement.type=="VP":
             if movement.extr_info_bool:
                 diff = product.pair_sold - movement.lot 
