@@ -266,7 +266,9 @@
                                                     Nota: 
                                                 </div>
                                                 <div class="col-6 m-2 h6">
-                                                    {{movement.extra_info_str}}
+                                                    {% autoescape off %}
+                                                        {{movement.extra_info_str}}
+                                                    {% endautoescape %}    
                                                 </div>
                                             {% endif %}
                                         {% endif %}

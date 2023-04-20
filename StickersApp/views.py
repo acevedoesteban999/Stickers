@@ -66,15 +66,18 @@ def BasePost(request):
                                 "user__username",
                                 "extra_info_bool",
                                 "extra_info_int",
+                                "extra_info_str",
                                 #"extra_info_int_1",
                                 #"extra_info_int_2",
                             )
                             if movement:
                                 if movement[0].get('product__id')==id_prouct:
-                                    print(movement[0])
-                                    if movement[0].get('type') =="VP":
-                                        return render(None,"VerifRefundMovement.html",{"movement": movement[0]})
-                                    return HttpResponse("E2")
+                                    if "<br><div class='text-danger'>Reembolsado</div>" not in movement[0].get('extra_info_str'):
+                                        print(movement[0])
+                                        if movement[0].get('type') =="VP":
+                                            return render(None,"VerifRefundMovement.html",{"movement": movement[0]})
+                                        return HttpResponse("E2")
+                                    return HttpResponse("E4")
                                 return HttpResponse("E3")
                             return HttpResponse("E1")
                         except Exception as e:
@@ -552,17 +555,18 @@ def ProductoView(request,productoID):
                         id_movement=int(refund_product.get("RefundIdMovement"))
                         
                         note=refund_product.get("nota")
-                        movement=Movement.objects.filter(id=id_movement)
+                        
+                        movement=Movement.objects.filter(id=id_movement)[0]
                         if movement:
                             result=Movement.Refund(user=user,product=product,movement=movement,note=note)
                             if result == "OK0":
-                                return SuccessProduct("Se han reembolsado {} {} {} con un importe de {}$".format(movement.lot,"Pares de " if pair_action else "Unidades de ",product.name,movement.lot * (product.pair_price if pair_action else product.unit_price)))
+                                return SuccessProduct("Se han reembolsado {} {} {} con un importe de {}$".format(movement.lot,"Pares de " if movement.extra_info_bool else "Unidades de ",product.name,movement.lot * (product.pair_price if movement.extra_info_bool else product.unit_price)))
                             elif result == "OK1":
-                                return WarningProduct(no_redirect=True,text="Se han reembolsado {} {} {} con un importe de {}$, el usuario {} no presentaba el dinero suficiente en la cuenta, se ha retirado todo el dinero del usuario".format(movement.lot,"Pares de " if pair_action else "Unidades de ",product.name,movement.lot * (product.pair_price if pair_action else product.unit_price),user.username))
+                                return WarningProduct(no_redirect=True,text="Se han reembolsado {} {} {} con un importe de {}$, el usuario {} no presentaba el dinero suficiente en la cuenta, se ha retirado todo el dinero del usuario".format(movement.lot,"Pares de " if movement.extra_info_bool else "Unidades de ",product.name,movement.lot * (product.pair_price if movement.extra_info_bool else product.unit_price),user.username))
                             elif result == "E0":
-                                return ErrorProduct("No se han podido reembolsar {} {}".format(lot_refund,product.name))
+                                return ErrorProduct("No se han podido reembolsar {} {}".format(movement.lot,product.name))
                             elif result == "E1":
-                                return ErrorProduct("No hay suficiente dinero en caja para reembolsar {} {}".format(lot_refund,product.name))
+                                return ErrorProduct("No hay suficiente dinero en caja para reembolsar {} {}".format(movement.lot,product.name))
                         return ErrorProduct("No exsiste id {}".format(id_movement))
                 
                     return ErrorProduct("Ha ocurrido un error inesperado")    

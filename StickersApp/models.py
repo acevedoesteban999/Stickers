@@ -337,10 +337,10 @@ class Movement(models.Model):
         return False
     @classmethod
     def Refund(cls,user,product,movement,note):
-        print("A")
+        print("Amodel")
         print(movement)
         if product and product.id == movement.product.id and movement.type=="VP":
-            if movement.extr_info_bool:
+            if movement.extra_info_bool:
                 diff = product.pair_sold - movement.lot 
                 if diff >= 0:
                     r_box=RegisteCash.objects.all().first()
@@ -355,8 +355,10 @@ class Movement(models.Model):
                                 warning_bool=True
                             product.pair_sold = diff
                             product.pair_stored += movement.lot
-                            movement=cls(type="rP",extra_info_int_1=product.pair_profit,extra_info_int_2=product.pair_profit_worker,user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.pair_price,product=product,lot=movement.lot)
-                            if movement:
+                            movement_refund=cls(type="rP",extra_info_int_1=product.pair_profit,extra_info_int_2=product.pair_profit_worker,user=user,extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=movement.lot)
+                            if movement_refund:
+                                movement_refund.save()
+                                movement.extra_info_str+="<div class='d-none'>R:Y</div>"
                                 movement.save()
                                 product.save()
                                 r_box.save()
@@ -367,7 +369,7 @@ class Movement(models.Model):
                     return False
                 return "E0"
             else:
-                diff = product.pair_sold - movement.lot 
+                diff = product.unit_sold - movement.lot 
                 if diff >= 0:
                     r_box=RegisteCash.objects.all().first()
                     if r_box:
@@ -381,8 +383,10 @@ class Movement(models.Model):
                                 warning_bool=True
                             product.unit_sold = diff
                             product.unit_stored += movement.lot
-                            movement=cls(type="rP",extra_info_int_2=product.unit_profit_worker,extra_info_int_1=product.unit_profit,user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=movement.lot)
-                            if movement:
+                            movement_refund=cls(type="rP",extra_info_int_2=product.unit_profit_worker,extra_info_int_1=product.unit_profit,user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=movement.lot)
+                            if movement_refund:
+                                movement_refund.save()
+                                movement.extra_info_str+="<br><div class='text-danger'>Reembolsado</div>"
                                 movement.save()
                                 product.save()
                                 r_box.save()
