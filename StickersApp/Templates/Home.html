@@ -67,6 +67,7 @@
         
         <a class="text-dark" style="text-decoration: none;" data-bs-toggle="collapse" href="#contentToday" aria-expanded="false" aria-controls="contentToday">
           <div class="display-5 mt-3 ">Hoy</div>
+          <div class="h6 mb-3 "><small>({{context.context_today.today}})</small></div>
         </a>
         <hr>
         <div class="collapse show" id="contentToday">
@@ -129,8 +130,8 @@
                             <tr class="">
                               <td scope="row">{{product.i_d}}</td>
                               <td>{{product.name}}</td>
-                              <td>{{product.lot}}</td>
-                              <td>{{product.money}}$</td>
+                              <td>{{product.lot}} {% if product.Refund %}<span class="text-danger">-R</span>{% endif %} </td>
+                              <td>{{product.money}}$ {% if product.Refund %}<span class="text-danger">-R</span>{% endif %}</td>
                             </tr>
                           {% endfor %}
                         </tbody>
@@ -213,8 +214,8 @@
                               <tr class="">
                                 <td scope="row">{{product.i_d}}</td>
                                 <td>{{product.name}}</td>
-                                <td>{{product.lot}}</td>
-                                <td>{{product.money}}$</td>
+                                <td>{{product.lot}} {% if product.Refund %}<span class="text-danger">-R</span>{% endif %} </td>
+                                <td>{{product.money}}$ {% if product.Refund %}<span class="text-danger">-R</span>{% endif %}</td>
                               </tr>
                             {% endfor %}
                           </tbody>
@@ -295,8 +296,8 @@
                               <tr class="">
                                 <td scope="row">{{product.i_d}}</td>
                                 <td>{{product.name}}</td>
-                                <td>{{product.lot}}</td>
-                                <td>{{product.money}}$</td>
+                                <td>{{product.lot}} {% if product.Refund %}<span class="text-danger">-R</span>{% endif %} </td>
+                                <td>{{product.money}}$ {% if product.Refund %}<span class="text-danger">-R</span>{% endif %}</td>
                               </tr>
                             {% endfor %}
                           </tbody>

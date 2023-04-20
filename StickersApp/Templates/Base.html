@@ -184,7 +184,8 @@
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasRightLabel">
               {% if user.is_authenticated %}
-                {{user.username}}
+                {% comment %} {{user.username}} {% endcomment %}
+                Panel de Usuario
               {% else %}
                 Ingrsar 
               {% endif %}
@@ -195,12 +196,23 @@
           <div class="container h-100">
             {% if user.is_authenticated %}
               <div class="row h5">
-                <span> Cuenta:<strong> {{user.username}}</span></strong>
+                <span class="p-2 py-1 m-1"> Cuenta:   <strong> {{user.username}}</span></strong>
+                <span class="p-2 py-1 m-1" >Permisos: <strong> 
+                  {% if user.is_superuser %}
+                    Super Usuario
+                  {% elif user.is_admin %}
+                    Administrador
+                  {% elif user.is_worker %}
+                    Trabajdor
+                  {% else %}
+                    Usuario
+                  {% endif %}
+                </span></strong>
               </div>
               {% if user.is_admin %}
                 <div class="my-3 m-3 row w-auto justify-content-center text-center">
                   <div class="col">
-                    <a type="button w-50 h2 " href="{% url 'resumen' %}" class="btn btn-primary">Ver Resumen</a>
+                    <a type="button w-50 " href="{% url 'resumen' %}" class="btn btn-primary"> <span class="h4">Resumen de la Tienda</span></a>
                   </div>
                 </div>
               {% endif %}

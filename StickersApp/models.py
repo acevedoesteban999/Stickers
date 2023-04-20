@@ -385,6 +385,7 @@ class Movement(models.Model):
                             product.unit_stored += movement.lot
                             movement_refund=cls(type="rP",extra_info_int_2=product.unit_profit_worker,extra_info_int_1=product.unit_profit,user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=movement.lot)
                             if movement_refund:
+                                movement_refund.extra_info_str+="<br><div class='text-success'>Id de Operacion Reembolsada: {}</div>".format(movement.id)
                                 movement_refund.save()
                                 movement.extra_info_str+="<br><div class='text-danger'>Reembolsado</div>"
                                 movement.save()
