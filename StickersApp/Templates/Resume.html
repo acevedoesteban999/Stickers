@@ -39,7 +39,7 @@
       <div class="col-auto my-2">
         <div class="row justify-content-center">
           <div class="col-auto">
-            <div class="card text-dark bg-light">
+            <div class="card text-dark bg-light" onclick="FilterResumeFunct(1)">
               <div class="card-body">
                 <h4 class="card-title">Hoy</h4>
                 <hr>
@@ -50,37 +50,37 @@
         </div>
       </div>
       {% if context.context_global.SumaryDate == True %}
-      <div class="col-auto my-2">
-        <div class="row justify-content-center">
-          <div class="col-auto">
-            <div class="card text-dark bg-light">
-              <div class="card-body">
-                <h4 class="card-title">
-                  Esta Semana
-                  <span class="h6"><small>{{context.context_this_week.this_week}}/{{context.context_this_week.total_weeks}}</small></span>
-                
+        <div class="col-auto my-2">
+          <div class="row justify-content-center">
+            <div class="col-auto">
+              <div class="card text-dark bg-light" onclick="FilterResumeFunct(2)">
+                <div class="card-body">
+                  <h4 class="card-title">
+                    Esta Semana
+                    <span class="h6"><small>{{context.context_this_week.this_week}}/{{context.context_this_week.total_weeks}}</small></span>
+                  
 
-                </h4>
-                <hr>
-                <div class="card-text h5">{{context.context_this_week.start_date}} ~ {{context.context_this_week.end_date}} </div>
+                  </h4>
+                  <hr>
+                  <div class="card-text h5">{{context.context_this_week.start_date}} ~ {{context.context_this_week.end_date}} </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="col-auto my-2">
-        <div class="row justify-content-center">
-          <div class="col-auto">
-            <div class="card text-dark bg-light">
-              <div class="card-body">
-                <h4 class="card-title">Este Mes</h4>
-                <hr>
-                <div class="card-text h5">{{context.context_this_month.start_date}} ~ {{context.context_this_month.end_date}}</div>
+        <div class="col-auto my-2">
+          <div class="row justify-content-center">
+            <div class="col-auto">
+              <div class="card text-dark bg-light"onclick="FilterResumeFunct(3)">
+                <div class="card-body">
+                  <h4 class="card-title">Este Mes</h4>
+                  <hr>
+                  <div class="card-text h5">{{context.context_this_month.start_date}} ~ {{context.context_this_month.end_date}}</div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>  
-      </div>
+          </div>  
+        </div>
       {% else %}
       <div class="col-auto my-2">
         <div class="row justify-content-center">
@@ -96,7 +96,55 @@
       
       {% endif %}
     </div>
-    
+    {% comment %} Filtro {% endcomment %}
+    <div class="row justify-content-center text-start align-items-center g-2">
+      <div class="col-auto">
+        <div class="card">
+          <div class="card-body">
+            <div class="row text-center" >
+              <h4 class="card-title">Solicitar Resumen</h4>
+            </div>
+            <div class="row justify-content-around align-items-center">
+              <div class="col">
+                <input onClick="FilterResumeFunct()" id="FilterResumeDay" type="radio" checked name="FilterResume" value="1">
+                <label for="FilterResumeDay" class="h6">Dia</label>
+                <br>
+                <input onClick="FilterResumeFunct()" id="FilterResumeWeek" type="radio" name="FilterResume" value="2">
+                <label for="FilterResumeWeek" class="h6">Semana</label>
+                <br>
+                <input onClick="FilterResumeFunct()" id="FilterResumeMonth" type="radio" name="FilterResume" value="3">
+                <label for="FilterResumeMonth" class="h6">Mes</label>
+            
+              </div>
+              <div class="col m-2">
+                <div id="DivIDDay">
+                  <input type="date" name="DateDay" id="date_day">
+                </div>
+                <div id="DivIDWeek" style="display: none;">
+                  <div class="form-floating mb-3">
+                    <input type="number" name="WeekResumeInput"class="form-control" maxlength="4" id="week_resume_input" placeholder="Numero de Semana">
+                    <label for="week_month">Numero de Semana</label>
+                  </div>
+                </div>
+                <div id="DivIDMonth" style="display: none;">
+                  Solicitar Resumen del Mes
+                </div>
+              </div>  
+              <div class="col-12 m-2">
+                <div class="row  justify-content-center">
+                  <div class="col-auto">
+                    <a name="" id="" class="btn btn-primary" onclick="SolicResumInfo('{% url 'base_post' %}')" href="#" role="button">Solicitar</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+          
+      
+      
   </div>
   
   {% comment %} <div class="continer text-center">

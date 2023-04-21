@@ -1,4 +1,75 @@
 var SearchBool=false
+var ResumeBool=false
+
+function SolicResumInfo(addr)
+{
+    var value=0;
+    var radios=document.getElementsByName("FilterResume");
+    radios.forEach(element => {    
+        if (element.checked == true)
+            value=element.value;
+            return;        
+    });
+    fetch(addr, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify({ "Data": "data"})
+        })
+        .then(response => response.text())
+        .then(data => 
+        {
+           
+        })
+        .catch(error => {
+            console.log("Error:",error);
+        });
+
+}
+function FilterResumeFunct(bool_card=false)
+{
+    var value=bool_card;
+    var radios=document.getElementsByName("FilterResume");
+    radios.forEach(element => {
+        if (bool_card != false)
+            if (bool_card == element.value)
+                element.checked=true;
+            else
+                element.checked=false;
+        else
+            if (element.checked == true)
+                value=element.value;
+                return;        
+    });
+    if(value==0)
+    {
+        document.getElementById("DivIDWeek").setAttribute("style","display: none;");
+        document.getElementById("DivIDDay").removeAttribute("style");
+        document.getElementById("DivIDMonth").setAttribute("style","display: none;");
+        document.getElementById("DivIDDay").required=true;
+        document.getElementById("DivIDWeek").required=false;
+    }
+    else if(value==1)
+    {
+        document.getElementById("DivIDDay").setAttribute("style","display: none;");
+        document.getElementById("DivIDMonth").setAttribute("style","display: none;");
+        document.getElementById("DivIDWeek").removeAttribute("style");
+        document.getElementById("DivIDWeek").required=true;
+        document.getElementById("DivIDDay").required=false;
+    }
+    else
+    {
+        document.getElementById("DivIDDay").setAttribute("style","display: none;")
+        document.getElementById("DivIDWeek").setAttribute("style","display: none;")
+        document.getElementById("DivIDMonth").removeAttribute("style");
+        
+        document.getElementById("DivIDWeek").required=false
+        document.getElementById("DivIDDay").required=false
+    }
+}
 
 function VerifRefund(addr,product_id)
 {
@@ -61,54 +132,6 @@ function onPairAddUni()
     }
     console.log(document.getElementById("PairAddUnitInput").min)
 }
-
-// function ChangeSellLot(pair,pair_price,pair_profit,pair_profit_worker,unit_price,unit_profit,unit_profit_worker)
-// {
-//     lot=document.getElementById("idLotatChange").value
-//     max_lot_U=document.getElementById("HiddenInptMaxMin").value
-//     max_lot=parseInt(document.getElementById("idLotatChange").max)
-//     min_lot=parseInt(document.getElementById("idLotatChange").min)
-//     //console.log(max_lot,min_lot,lot,lot_U)
-//     if ( lot > max_lot || lot>max_lot_U)
-//     {
-//         if (pair==false || document.getElementById("VentaPresId").checked==true || lot>max_lot_U )
-//         {
-//             document.getElementById("divIdChangeSellLot").innerHTML= "Cantidad Maxima Superada:"+ String(max_lot);
-//             document.getElementById("divIdChangeProfitLot").innerHTML="-";
-//             document.getElementById("divIdChangeProfitWorkerLot").innerHTML="-";
-//             return
-//         }
-//     }
-
-//     if(!lot ||  lot < min_lot  )
-//     {
-//         document.getElementById("divIdChangeSellLot").innerHTML= "Cantidad Minima Superada:"+ String(min_lot);
-//         document.getElementById("divIdChangeProfitLot").innerHTML="-";
-//         document.getElementById("divIdChangeProfitWorkerLot").innerHTML="-";
-//         //lot=min_lot;
-//         return
-//     }
-//     if(pair=="True")
-//     {
-//         if(pair_price=="None" || unit_price=="None" )
-//             return ;
-//         if(document.getElementById("VentaPresId").checked==true)
-//         {
-//             document.getElementById("divIdChangeSellLot").innerHTML= parseInt(pair_price)*lot;
-//             document.getElementById("divIdChangeProfitLot").innerHTML=parseInt(pair_profit)*lot;
-//             document.getElementById("divIdChangeProfitWorkerLot").innerHTML=parseInt(pair_profit_worker)*lot;
-//             return
-//         }
-//     }
-//     if(pair=="False" || document.getElementById("VentaPresId").checked==false)
-//     {
-//         if(unit_price=="None")
-//             return ;
-//         document.getElementById("divIdChangeSellLot").innerHTML= parseInt(unit_price)*lot;
-//         document.getElementById("divIdChangeProfitLot").innerHTML=parseInt(unit_profit)*lot;
-//         document.getElementById("divIdChangeProfitWorkerLot").innerHTML=parseInt(unit_profit_worker)*lot;
-//     }
-// }
 function SearchProduct(addr)
 {
     if (SearchBool == true)
@@ -122,7 +145,6 @@ function SearchProduct(addr)
             "X-Requested-With": "XMLHttpRequest",
             "X-CSRFToken": getCookie("csrftoken"),
         },
-        //body: JSON.stringify({ "SearchValue": SearchValue})
         body: JSON.stringify({ "SearchValue": SearchValue})
         })
         .then(response => response.text())
