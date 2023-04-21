@@ -60,7 +60,7 @@
         </div>
       </div>
       
-      <div class="display-3 my-3 text-center">  Resumen </div>
+      
       {% comment %} Mini Resumen {% endcomment %}
      
       <div class="container text-center">
@@ -158,21 +158,27 @@
                         <thead>
                           <tr>
                             <th scope="col">Tipo</th>
-                            <th scope="col">Id</th>
-                            <th scope="col">Prod</th>
+                            <th scope="col">Id Prod.</th>
                           </tr>
                         </thead>
                         <tbody>
                           {% for operation in context.context_today.operations %}
                             <tr class="">
-                              <td scope="row">{{operation.get_type_display}}</td>
                               <form id="my_a_form" action="{% url 'operaciones' %}" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" name="IdOpeartionFilter" value="{{operation.id}}">
                                 <input type="hidden" name="FilterMovement">
-                                <td><a style="text-decoration: none;" class="text-dark" href="javascript:{}" onclick="document.getElementById('my_a_form').submit();" type="submit" name="FilterMovement" role="button">{{operation.id}}</a></td>
+                                <td scope="row">
+                                  <a style="text-decoration: none;" class="text-dark border p-1" href="javascript:{}" onclick="document.getElementById('my_a_form').submit();" type="submit" name="FilterMovement" role="button">
+                                    {{operation.get_type_display}}
+                                  </a>
+                                </td>
                               </form>
-                              <td>{{operation.product__name}}
+                              <td>
+                              <a style="text-decoration:none" class="text-dark border border-2 px-2 py-1 h6 "  href="{% url 'producto' operation.product.id %}">
+                                {{operation.product.i_d}}
+                              </a>
+                              </td>
                             </tr>
                           {% endfor %}
                         </tbody>

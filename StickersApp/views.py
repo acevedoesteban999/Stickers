@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.http import JsonResponse
-from .models import MChoise,Product,RegisteCash,Movement,Visits
+from .models import MChoise,Product,RegisteCash,Movement,Visits,SummaryDate
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import FormProduc,FormLot,FormImg
 from datetime import datetime ,timedelta,date
@@ -20,10 +20,10 @@ Internal Functions
 """
 Contiene Reembolso de Producto
 """
-def Summary(movement,products_bool=False,operations_bool=False):
-        if movement:
+def Summary(movements,products_bool=False,operations_bool=False):
+        if movements:
             #context=movement.filter(type="VP").values
-            context=movement.filter(type="VP").values(
+            context=movements.filter(type="VP").values(
                         'lot',
                         'extra_info_int',
                         'extra_info_int_1',
@@ -63,7 +63,7 @@ def Summary(movement,products_bool=False,operations_bool=False):
                         
         )
             if products_bool == True:
-                products=movement.filter(type="VP").values(
+                products=movements.filter(type="VP").values(
                     'product__name',
                     'product__i_d',
                     'lot',
@@ -87,7 +87,7 @@ def Summary(movement,products_bool=False,operations_bool=False):
                         context1[product['product__i_d']]={"name":product['product__name'],"i_d":product['product__i_d'],"lot":product['lot'],"money":product['product__pair_price'] *product['lot'] if product['extra_info_bool'] else product['product__unit_price'] *product['lot']}
                 context.update({"products":context1})   
             if operations_bool:
-                # operations=movement.values(
+                # operations=movements.values(
                 #     "user__username",
                 #     'id',
                 #     "type",
@@ -99,9 +99,8 @@ def Summary(movement,products_bool=False,operations_bool=False):
                 #        if m[0]== operation["type"]:
                 #            operation["type"]=m[1]
                 #            break
-                operations=movement.only("type","product__name","id")
-                print(operations.values())
-                context.update({"operations":movement})
+                
+                context.update({"operations":movements})
         else:
             context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0}
         return context
@@ -336,7 +335,7 @@ def HomeView(request):
                 visits.save()
         context={}
         if request.user.is_authenticated and (request.user.is_admin or request.user.is_worker):
-            context.update({"context_today":Summary(products_bool=True,operations_bool=True,movement=Movement.objects.filter(date__day=date.today().day))})
+            context.update({"context_today":Summary(products_bool=True,operations_bool=True,movements=Movement.objects.filter(date__day=date.today().day))})
             context['context_today'].update({"today":date.today().strftime("%d-%m-%y")})
                   
             # summary_date=SummaryDate.objects.first()
