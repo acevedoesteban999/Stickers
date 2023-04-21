@@ -23,12 +23,14 @@ Contiene Reembolso de Producto
 def Summary(movements,products_bool=False,operations_bool=False,worker_bool=False):
         if movements:
             #context=movement.filter(type="VP").values
+            print(movements.filter(type="VP").values('lot').aggregate(aa=Sum("lot")))
             context=movements.filter(type="VP").values(
                         'lot',
                         'extra_info_int',
                         'extra_info_int_1',
                         'extra_info_int_2',
                         ).annotate(
+                            lOt=Sum('lot'),
                             moNey=Sum(
                                 F('lot')* F('extra_info_int'),
                                 default=0
@@ -46,8 +48,9 @@ def Summary(movements,products_bool=False,operations_bool=False,worker_bool=Fals
                         total_money=Sum('moNey'),
                         total_profit_money=Sum('proFit'),
                         total_worker_profit_money=Sum('worKer_proFit'),
-                        total_lot=Sum('lot'),
+                        total_lot=Sum('lOt'),
         )
+            print(context)
             context.update({"total_total_money":context['total_money']})
             context.update({"total_total_profit_money":context['total_profit_money']})
             context.update({"total_total_worker_profit_money":context['total_worker_profit_money']})
@@ -179,7 +182,7 @@ def Summary(movements,products_bool=False,operations_bool=False,worker_bool=Fals
                 if context_1["total_money"]:
                     context.update({"agregates":context_1})
         else:
-            context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0}
+            context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0,"total_lot":0}
         return context
     
 """
@@ -256,8 +259,7 @@ def BasePost(request):
                             print(e)
                     return HttpResponse("E0")
                 elif 'FilterResumeValue' in data:
-                    print(data)
-                    filter_resume=data.get('FilterResumeValue')
+                    filter_resume=int(data.get('FilterResumeValue'))
                     q=Q()
                     if filter_resume == 1:
                         date_resume=data.get('date_resume')
@@ -266,17 +268,18 @@ def BasePost(request):
                         summary_date=SummaryDate.objects.first()
                         if not summary_date:
                             raise Exception()   
-                        week_resume=data.get('week_resume')
-                        start_date=summary_date.start_date-timedelta(days=summary_date.start_date.weekday())+timedelta(days=7*week_resume)
+                        week_resume=int(data.get('week_resume'))
+                        start_date=summary_date.start_date-timedelta(days=summary_date.start_date.weekday())+timedelta(days=7*week_resume - 1)
                         end_date=start_date+timedelta(days=7)
-                        print(start_date,end_date)
                         q=Q(date__range=(start_date,end_date))
                     else:
                         summary_date=SummaryDate.objects.first()
                         if not summary_date:
                             raise Exception()   
                         q=Q(date__range=(summary_date.start_date,date.today()))
+                    print(q)
                     movements=Movement.objects.filter(q)
+                    print(movements)
                     context={}
                     context.update(Summary(movements=movements,operations_bool=True if filter_resume==1 else False,worker_bool=True))
                     return render(None,"ResumeInfo.html",{"context":context})
@@ -766,21 +769,23 @@ def OperacionesView(request):
                 id_filter=filter_movement.get("IdOpeartionFilter")
                 if id_filter.isdigit():
                     id_filter=int(id_filter)
-                if id_filter:
                     q=Q(id=id_filter)
                 else:
+                    id_filter=None
                     type_filter=filter_movement.get("TypeFilter")
                     date_filter=filter_movement.get("FilterDate")
                     product_filter=filter_movement.get("ProductFilter")
                     #user_filter=filter_movement.get("UserFilter")
+                    
                     if product_filter.isdigit() and product_filter.__len__() == 4:
-                        
                         product_filter=int(product_filter)
-                
+                        q = q & Q(product__i_d=product_filter)
+                    else:
+                        product_filter=None
+                    
                     #print(type_filter,product_filter,date_filter)
                     if date_filter ==  "DD":
                         date_day_filter=filter_movement.get("FilterDateDay")
-                        #print(date_day_filter)
                         q = q & Q(date__date=date_day_filter)
                     elif date_filter ==  "RD":
                         date_start_filter=filter_movement.get("FilterDateStart")
@@ -788,12 +793,8 @@ def OperacionesView(request):
                         date_end_filter=filter_movement.get("FilterDateEnd")
                         end_date=date_end_filter
                         q = q & Q(date__range=(start_date,end_date))
-                    if product_filter != "NF":
-                        q = q & Q(product__i_d=product_filter)
-                        #product_filter=int(product_filter)
                     if type_filter != "NF":
                         q = q & Q(type=type_filter)
-                
         movements=Movement.objects.filter(q).order_by('-date')[:20] 
         date_today_max =datetime.today() + timedelta(days=1)
         return render(request,"Operaciones.html",{"MChoise":MChoise,"date_end_filter":date_end_filter,"date_start_filter":date_start_filter,"date_day_filter":date_day_filter,"id_filter":id_filter,"date_today":datetime.today().strftime("%Y-%m-%d"),"date_today_max":date_today_max.strftime("%Y-%m-%d"),"movements":movements,"product_filter":product_filter,"type_filter":type_filter,"date_filter":date_filter})
