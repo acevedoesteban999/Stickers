@@ -5,7 +5,6 @@ from datetime  import datetime
 from django.contrib.auth.models import AbstractUser
 
 
-
 class UsEr(AbstractUser):
     is_worker=models.BooleanField(default=False)
     is_admin=models.BooleanField(default=False)

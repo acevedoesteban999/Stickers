@@ -49,7 +49,7 @@
       <div class="d-block d-md-none sticky-top" style="top: 70px;">
         <div class="row justify-content-end align-items-center text-center">
           <div class="col-4 col-md-2">
-            <div class="card bg-warning text-dark " style="border-radius: 30px;" >
+            <div class="card bg-warning text-dark " >
               <div class="card-body w-auto p-0 m-0">
                 <div class="card-title p-0 m-0"><span class="h6 p-0 m-0 text-muted"><small>Dinero en Caja</small></span> </div>
                 
@@ -107,7 +107,7 @@
               </div>
             {% endif %}
             <div class="col-12">
-              <div class="card text-dark bg-light" style="border-radius: 50px;">
+              <div class="card my-1 text-dark bg-light" style="border-radius: 10px;">
                 <a class="text-dark" style="text-decoration: none;" data-bs-toggle="collapse" href="#contentProdIdHoy" aria-expanded="false" aria-controls="contentId">
                   <div class="card-body"> 
                     <h4 class="card-title h5">Productos Vendidos</h4>
@@ -130,8 +130,8 @@
                             <tr class="">
                               <td scope="row">{{product.i_d}}</td>
                               <td>{{product.name}}</td>
-                              <td>{{product.lot}} {% if product.Refund %}<span class="text-danger">-R</span>{% endif %} </td>
-                              <td>{{product.money}}$ {% if product.Refund %}<span class="text-danger">-R</span>{% endif %}</td>
+                              <td>{{product.lot}}  </td>
+                              <td>{{product.money}}$ </td>
                             </tr>
                           {% endfor %}
                         </tbody>
@@ -144,11 +144,52 @@
 
               </div>
             </div>
+            <div class="col-12">
+              <div class=" my-1 card text-dark bg-light" style="border-radius: 10px;">
+                <a class="text-dark" style="text-decoration: none;" data-bs-toggle="collapse" href="#contentOpratiHoy" aria-expanded="false" aria-controls="contentOpratiHoy">
+                  <div class="card-body"> 
+                    <h4 class="card-title h5">Operaciones</h4>
+                  </div>
+                </a>
+                <div class="collapse" id="contentOpratiHoy">
+                  {% if context.context_today.products %}
+                    <div class="table-responsive-md pb-4">
+                      <table class="table table-light">
+                        <thead>
+                          <tr>
+                            <th scope="col">Tipo</th>
+                            <th scope="col">Id</th>
+                            <th scope="col">Prod</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for operation in context.context_today.operations %}
+                            <tr class="">
+                              <td scope="row">{{operation.get_type_display}}</td>
+                              <form id="my_a_form" action="{% url 'operaciones' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="IdOpeartionFilter" value="{{operation.id}}">
+                                <input type="hidden" name="FilterMovement">
+                                <td><a style="text-decoration: none;" class="text-dark" href="javascript:{}" onclick="document.getElementById('my_a_form').submit();" type="submit" name="FilterMovement" role="button">{{operation.id}}</a></td>
+                              </form>
+                              <td>{{operation.product__name}}
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  {% else %}
+                    <div class="h2">No hay Operaciones</div>
+                  {% endif %}
+                </div>
+
+              </div>
+            </div>
           </div>
           <hr>
         </div>
 
-        {% if global_context.summary_date.active %}
+        {% comment %} {% if global_context.summary_date.active %}
           <a class="text-dark" style="text-decoration: none;" data-bs-toggle="collapse" href="#contentThisWeek" aria-expanded="false" aria-controls="contentThisWeek">
             <div class="display-5 mt-3 ">  Esta Semana</div>
             <div class="h6 mb-3 "><small>({{context.context_this_week.this_week}}/{{context.context_this_week.total_weeks}})</small></div>
@@ -214,8 +255,8 @@
                               <tr class="">
                                 <td scope="row">{{product.i_d}}</td>
                                 <td>{{product.name}}</td>
-                                <td>{{product.lot}} {% if product.Refund %}<span class="text-danger">-R</span>{% endif %} </td>
-                                <td>{{product.money}}$ {% if product.Refund %}<span class="text-danger">-R</span>{% endif %}</td>
+                                <td>{{product.lot}}  </td>
+                                <td>{{product.money}}$ </td>
                               </tr>
                             {% endfor %}
                           </tbody>
@@ -296,8 +337,8 @@
                               <tr class="">
                                 <td scope="row">{{product.i_d}}</td>
                                 <td>{{product.name}}</td>
-                                <td>{{product.lot}} {% if product.Refund %}<span class="text-danger">-R</span>{% endif %} </td>
-                                <td>{{product.money}}$ {% if product.Refund %}<span class="text-danger">-R</span>{% endif %}</td>
+                                <td>{{product.lot}}  </td>
+                                <td>{{product.money}}$ </td>
                               </tr>
                             {% endfor %}
                           </tbody>
@@ -313,7 +354,7 @@
             </div>
             <hr>  
           </div>
-        {% endif %}
+        {% endif %} {% endcomment %}
       
         <a  class="btn btn-primary m-3 p-3" href="{% url 'resumen' %}" role="button"><span class="h3">Ver Resumen Completo</span></a>
       </div>

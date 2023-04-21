@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.http import JsonResponse
-from .models import MChoise,Product,RegisteCash,Movement,Visits,SummaryDate
+from .models import MChoise,Product,RegisteCash,Movement,Visits
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import FormProduc,FormLot,FormImg
 from datetime import datetime ,timedelta,date
@@ -9,8 +9,106 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate,login,logout
 from django.db import IntegrityError
 from django.contrib import messages
-from django.db.models import Q,F,Count,Sum
+from django.db.models import Q,F,Count,Sum,Choices
 import json
+
+
+"""
+Internal Functions
+"""
+
+"""
+Contiene Reembolso de Producto
+"""
+def Summary(movement,products_bool=False,operations_bool=False):
+        if movement:
+            #context=movement.filter(type="VP").values
+            context=movement.filter(type="VP").values(
+                        'lot',
+                        'extra_info_int',
+                        'extra_info_int_1',
+                        'extra_info_int_2',
+                        ).annotate(
+                            moNey=Sum(
+                                F('lot')* F('extra_info_int'),
+                                #filter=Q(type="VP"),
+                                default=0
+                                ),
+                            #money_refund_worker_profit=Sum(
+                            #    F('lot')* F('extra_info_int_1'),
+                            #    filter=Q(type="rP"),
+                            #    default=0
+                            #    ),
+                            proFit=Sum(
+                                F('lot')* F('extra_info_int_1'),
+                                #filter=Q(type="VP"),
+                                default=0
+                                ),
+                            worKer_proFit=Sum(
+                                F('lot')* F('extra_info_int_2'),
+                                #filter=Q(type="VP"),
+                                default=0
+                                ),
+                            #money_refund=Sum(
+                            #    F('lot')* F('extra_info_int'),
+                            #    filter=Q(type="rP"),
+                            #    default=0
+                            #    )
+                    ).aggregate(
+                        #total_money_worker_profit=Sum('money_sell_worker_profit')-Sum('money_refund_worker_profit'),
+                        #total_sells_money=Sum('money_sell')-Sum('money_refund'),
+                        total_money=Sum('moNey'),
+                        total_profit_money=Sum('proFit'),
+                        total_worker_profit_money=Sum('worKer_proFit')
+                        
+        )
+            if products_bool == True:
+                products=movement.filter(type="VP").values(
+                    'product__name',
+                    'product__i_d',
+                    'lot',
+                    #'type',
+                    'product__pair_price',
+                    'product__unit_price',
+                    'extra_info_bool',
+                )
+                context1={}
+                for product in products:
+                    if context1.get(product['product__i_d']):
+                        #if product['type']=="rP":
+                        #    context1[product['product__i_d']]["Refund"]=True
+                        #    continue
+                        context1[product['product__i_d']]['lot']+=product['lot']
+                        context1[product['product__i_d']]['money']+=product['product__pair_price']*product['lot'] if product['extra_info_bool'] else product['product__unit_price']*product['lot']
+                    else:
+                        #if product['type']=="rP":
+                        #    context1[product['product__i_d']]={"Refund":True,"name":product['product__name'],"i_d":product['product__i_d'],"lot":0,"money":0}
+                        #    continue
+                        context1[product['product__i_d']]={"name":product['product__name'],"i_d":product['product__i_d'],"lot":product['lot'],"money":product['product__pair_price'] *product['lot'] if product['extra_info_bool'] else product['product__unit_price'] *product['lot']}
+                context.update({"products":context1})   
+            if operations_bool:
+                # operations=movement.values(
+                #     "user__username",
+                #     'id',
+                #     "type",
+                #     "product__name",
+                #     "lot",
+                # )
+                #for operation in operations:
+                #    for m in MChoise:
+                #        if m[0]== operation["type"]:
+                #            operation["type"]=m[1]
+                #            break
+                operations=movement.only("type","product__name","id")
+                print(operations.values())
+                context.update({"operations":movement})
+        else:
+            context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0}
+        return context
+    
+"""
+View Functions
+"""
 def RedirectHomeView(request):
     return redirect("home")
 
@@ -100,8 +198,12 @@ def ResumeView(request):
     context['context_today'].update({"today":date.today().strftime("%d-%m-%y")})
     if summary_date.active:
         context['context_global'].update({"SumaryDate":True})
-        context['context_this_week'].update({"this_week":ceil((date.today()-summary_date.start_date).days/7) })
+        context['context_this_week'].update({"start_date":(date.today()-timedelta(days=date.today().weekday())).strftime("%d-%m-%y")})
+        context['context_this_week'].update({"end_date":(date.today()-timedelta(days=date.today().weekday())+timedelta(days=6)).strftime("%d-%m-%y")})
+        context['context_this_week'].update({"this_week":ceil((date.today()-summary_date.start_date).days/7) }) 
         context['context_this_week'].update({"total_weeks":ceil((summary_date.end_date-summary_date.start_date).days/7) })
+        context['context_this_month'].update({"OK":True if summary_date.end_date > date.today() else False})
+        context['context_this_month'].update({"days_ok":(summary_date.end_date- date.today()) if summary_date.end_date > date.today() else (date.today()-summary_date.end_date )})
         context['context_this_month'].update({"start_date":summary_date.start_date.strftime("%d-%m-%y"),"end_date":summary_date.end_date.strftime("%d-%m-%y")})
     else:
         context['context_global'].update({"SumaryDate":False})
@@ -110,186 +212,121 @@ def ResumeView(request):
     #except Exception as e:
     #    print(e)
     #return redirect('home')
-    #try:
-    # if True:
-    #     def Movement_Resume(movements):
-    #         money_sell_profit=movements.filter(
-    #             Q(type='VP')|Q(type='rP')
-    #                 ).annotate(
-    #                     money_sell_worker_profit=Sum(
-    #                         F('lot')* F('extra_info_int_1'),
-    #                         filter=Q(type="VP"),
-    #                         default=0
-    #                         ),
-    #                     money_refund_worker_profit=Sum(
-    #                         F('lot')* F('extra_info_int_1'),
-    #                         filter=Q(type="rP"),
-    #                         default=0
-    #                         ),
-    #                     money_sell=Sum(
-    #                         F('lot')* F('extra_info_int'),
-    #                         filter=Q(type="VP"),
-    #                         default=0
-    #                         ),
-    #                     money_refund=Sum(
-    #                         F('lot')* F('extra_info_int'),
-    #                         filter=Q(type="rP"),
-    #                         default=0
-    #                         )
-    #                 ).aggregate(
-    #                     total_money_worker_profit=Sum('money_sell_worker_profit')-Sum('money_refund_worker_profit'),
-    #                     total_sells_money=Sum('money_sell')-Sum('money_refund'),
-    #                 )
-            
-    #         users_movement=movements.filter(
-    #             Q(type='VP')|Q(type='rP')
-    #             ).annotate(
-    #                 money_worker_profit=Sum(F('lot')* F('extra_info_int_1'),filter=Q(type='VP'),default=0)-Sum(F('lot')* F('extra_info_int_1'),filter=Q(type='rP'),default=0),
-    #                 money_sells=Sum(F('lot')* F('extra_info_int'),filter=Q(type='VP'),default=0)-Sum(F('lot')* F('extra_info_int'),filter=Q(type='rP'),default=0)
-    #                 ).values(
-    #                     'money_worker_profit',
-    #                     'money_sells',
-    #                     'user__username'
-    #                     )
-            
-            
-    #         users_usernames=set(users_movement.values_list('user__username',flat=True))
-    #         users_usernames.discard(None)
-            
-    #         users_profit={}
-    #         for users_username in users_usernames:
-    #             users_profit.update({users_username:users_movement.filter(user__username = users_username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
-    #         #print(users_profit)
-            
-    #         proucts_movements=movements.filter(
-    #             Q(type='VP')|Q(type='rP')
-    #             ).values(
-    #                     'product__name',
-    #                     'product__id',
-    #                     )
-    #         #print(proucts_movements)
-    #         products = {}
-    #         for prouct_movement in proucts_movements:
-    #             if prouct_movement['product__id'] not in products:
-    #                 products.update({prouct_movement['product__id']:prouct_movement})
+    if True:
+        pass
+        #try:
         
-    #         context.update({'movements':movements})
-    #         context.update({'money_sell_profit':money_sell_profit})
-    #         context.update({"movements_count":movements.count()})
-    #         context.update({"workers_profit":users_profit})
-    #         context.update({"users_count":users_usernames.__len__()})
-    #         context.update({"products":products})
-    #         context.update({"proucts_count":products.__len__()})
-    #         return context
-    #         #proucts_sell=movements_today.filter(type='VP').values('product__name','product__id').distinct()
+        #     def Movement_Resume(movements):
+        #         money_sell_profit=movements.filter(
+        #             Q(type='VP')|Q(type='rP')
+        #                 ).annotate(
+        #                     money_sell_worker_profit=Sum(
+        #                         F('lot')* F('extra_info_int_1'),
+        #                         filter=Q(type="VP"),
+        #                         default=0
+        #                         ),
+        #                     money_refund_worker_profit=Sum(
+        #                         F('lot')* F('extra_info_int_1'),
+        #                         filter=Q(type="rP"),
+        #                         default=0
+        #                         ),
+        #                     money_sell=Sum(
+        #                         F('lot')* F('extra_info_int'),
+        #                         filter=Q(type="VP"),
+        #                         default=0
+        #                         ),
+        #                     money_refund=Sum(
+        #                         F('lot')* F('extra_info_int'),
+        #                         filter=Q(type="rP"),
+        #                         default=0
+        #                         )
+        #                 ).aggregate(
+        #                     total_money_worker_profit=Sum('money_sell_worker_profit')-Sum('money_refund_worker_profit'),
+        #                     total_sells_money=Sum('money_sell')-Sum('money_refund'),
+        #                 )
+                
+        #         users_movement=movements.filter(
+        #             Q(type='VP')|Q(type='rP')
+        #             ).annotate(
+        #                 money_worker_profit=Sum(F('lot')* F('extra_info_int_1'),filter=Q(type='VP'),default=0)-Sum(F('lot')* F('extra_info_int_1'),filter=Q(type='rP'),default=0),
+        #                 money_sells=Sum(F('lot')* F('extra_info_int'),filter=Q(type='VP'),default=0)-Sum(F('lot')* F('extra_info_int'),filter=Q(type='rP'),default=0)
+        #                 ).values(
+        #                     'money_worker_profit',
+        #                     'money_sells',
+        #                     'user__username'
+        #                     )
+                
+                
+        #         users_usernames=set(users_movement.values_list('user__username',flat=True))
+        #         users_usernames.discard(None)
+                
+        #         users_profit={}
+        #         for users_username in users_usernames:
+        #             users_profit.update({users_username:users_movement.filter(user__username = users_username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
+        #         #print(users_profit)
+                
+        #         proucts_movements=movements.filter(
+        #             Q(type='VP')|Q(type='rP')
+        #             ).values(
+        #                     'product__name',
+        #                     'product__id',
+        #                     )
+        #         #print(proucts_movements)
+        #         products = {}
+        #         for prouct_movement in proucts_movements:
+        #             if prouct_movement['product__id'] not in products:
+        #                 products.update({prouct_movement['product__id']:prouct_movement})
             
-    #     date=datetime.now() 
-    #     context={}
-    #     movements_today=Movement.objects.filter(date__day=date.day).order_by('-date')
-    #     #context.update({"movements_today_count":movements_today.count()})
-    #     if movements_today:
-    #         context_today=Movement_Resume(movements_today)
-    #         context.update({"context_today":context_today})
-    #         #print(context)
-    #         #context.update({"movements_today":movements_today})
-    #         #money_sell_profit_today=Movement.objects.filter(date__day=date.day,type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sell=Sum(F('lot')* F('extra_info_int'))).aggregate(total_money_worker_profit=Sum('money_worker_profit'),total_sells_money=Sum('money_sell'),total_sells_count=Count('id'))
-    #         #context.update(money_sell_profit_today)
+        #         context.update({'movements':movements})
+        #         context.update({'money_sell_profit':money_sell_profit})
+        #         context.update({"movements_count":movements.count()})
+        #         context.update({"workers_profit":users_profit})
+        #         context.update({"users_count":users_usernames.__len__()})
+        #         context.update({"products":products})
+        #         context.update({"proucts_count":products.__len__()})
+        #         return context
+        #         #proucts_sell=movements_today.filter(type='VP').values('product__name','product__id').distinct()
+                
+        #     date=datetime.now() 
+        #     context={}
+        #     movements_today=Movement.objects.filter(date__day=date.day).order_by('-date')
+        #     #context.update({"movements_today_count":movements_today.count()})
+        #     if movements_today:
+        #         context_today=Movement_Resume(movements_today)
+        #         context.update({"context_today":context_today})
+        #         #print(context)
+        #         #context.update({"movements_today":movements_today})
+        #         #money_sell_profit_today=Movement.objects.filter(date__day=date.day,type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sell=Sum(F('lot')* F('extra_info_int'))).aggregate(total_money_worker_profit=Sum('money_worker_profit'),total_sells_money=Sum('money_sell'),total_sells_count=Count('id'))
+        #         #context.update(money_sell_profit_today)
+                
+        #         #users=movements_today.filter(type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sells=Sum(F('lot')* F('extra_info_int'))).values('money_worker_profit','money_sells','user__username')
+        #         #usersnames=set(users.values_list('user__username',flat=True))
+        #         #print(usersnames)
+        #         #context.update({"users_count":usersnames.__len__()})
+        #         #users_profit={}
+        #         #for username in usersnames:
+        #         #    users_profit.update({username:users.filter(user__username = username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
+        #             #print(users_profit)
+        #             #value=movements_today.filter('user__name'== userna me,type="VP").aggregate(total=Sum('money_worker_profit'))
+        #             #print(value)
+        #         #proucts_sell_today=movements_today.filter(type='VP').values('product__name','product__id').distinct()
+        #         #context.update({"proucts_sell_today":proucts_sell_today})
+        #         #context.update({"proucts_count_today":proucts_sell_today.count()})
+        #         #context.update({"workers_profit":users_profit})
+        #         #print(context)
+        #         #contextUser={}
+                
+        #     #movements_sell_today=Movement.objects.filter(date__day=date.day,type="VP")
+        #     #ids_today=Movement.objects.filter(date__day=date.day).values_list("product__id",flat=True)
+        #     #print(movements_sell_today)
             
-    #         #users=movements_today.filter(type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sells=Sum(F('lot')* F('extra_info_int'))).values('money_worker_profit','money_sells','user__username')
-    #         #usersnames=set(users.values_list('user__username',flat=True))
-    #         #print(usersnames)
-    #         #context.update({"users_count":usersnames.__len__()})
-    #         #users_profit={}
-    #         #for username in usersnames:
-    #         #    users_profit.update({username:users.filter(user__username = username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
-    #             #print(users_profit)
-    #             #value=movements_today.filter('user__name'== userna me,type="VP").aggregate(total=Sum('money_worker_profit'))
-    #             #print(value)
-    #         #proucts_sell_today=movements_today.filter(type='VP').values('product__name','product__id').distinct()
-    #         #context.update({"proucts_sell_today":proucts_sell_today})
-    #         #context.update({"proucts_count_today":proucts_sell_today.count()})
-    #         #context.update({"workers_profit":users_profit})
-    #         #print(context)
-    #         #contextUser={}
+        #     return render(request,"Resume.html",{'context':context})
             
-    #     #movements_sell_today=Movement.objects.filter(date__day=date.day,type="VP")
-    #     #ids_today=Movement.objects.filter(date__day=date.day).values_list("product__id",flat=True)
-    #     #print(movements_sell_today)
-        
-    #     return render(request,"Resume.html",{'context':context})
-        
-    #     #except Exception as e:
-    #     #    print(e)
-    #     return HttpResponse("Ha ocurrido un error insesperado , contacte con los administradores")
+        #     #except Exception as e:
+        #     #    print(e)
+        #     return HttpResponse("Ha ocurrido un error insesperado , contacte con los administradores")
 
 def HomeView(request):
-    def Summary(movement):
-        if movement:
-            context=movement.filter(type="VP").values(
-                        'lot',
-                        'extra_info_int',
-                        'extra_info_int_1',
-                        'extra_info_int_2',
-                        ).annotate(
-                            moNey=Sum(
-                                F('lot')* F('extra_info_int'),
-                                #filter=Q(type="VP"),
-                                default=0
-                                ),
-                            #money_refund_worker_profit=Sum(
-                            #    F('lot')* F('extra_info_int_1'),
-                            #    filter=Q(type="rP"),
-                            #    default=0
-                            #    ),
-                            proFit=Sum(
-                                F('lot')* F('extra_info_int_1'),
-                                #filter=Q(type="VP"),
-                                default=0
-                                ),
-                            worKer_proFit=Sum(
-                                F('lot')* F('extra_info_int_2'),
-                                #filter=Q(type="VP"),
-                                default=0
-                                ),
-                            #money_refund=Sum(
-                            #    F('lot')* F('extra_info_int'),
-                            #    filter=Q(type="rP"),
-                            #    default=0
-                            #    )
-                    ).aggregate(
-                        #total_money_worker_profit=Sum('money_sell_worker_profit')-Sum('money_refund_worker_profit'),
-                        #total_sells_money=Sum('money_sell')-Sum('money_refund'),
-                        total_money=Sum('moNey'),
-                        total_profit_money=Sum('proFit'),
-                        total_worker_profit_money=Sum('worKer_proFit')
-                        
-        )
-            products=movement.values(
-                'product__name',
-                'product__i_d',
-                'lot',
-                'type',
-                'product__pair_price',
-                'product__unit_price',
-                'extra_info_bool',
-            )
-            context1={}
-            for product in products:
-                if context1.get(product['product__i_d']):
-                    if product['type']=="rP":
-                        context1[product['product__i_d']]["Refund"]=True
-                        continue
-                    context1[product['product__i_d']]['lot']+=product['lot']
-                    context1[product['product__i_d']]['money']+=product['product__pair_price']*product['lot'] if product['extra_info_bool'] else product['product__unit_price']*product['lot']
-                else:
-                    if product['type']=="rP":
-                        context1[product['product__i_d']]={"Refund":True,"name":product['product__name'],"i_d":product['product__i_d'],"lot":0,"money":0}
-                        continue
-                    context1[product['product__i_d']]={"name":product['product__name'],"i_d":product['product__i_d'],"lot":product['lot'],"money":product['product__pair_price'] *product['lot'] if product['extra_info_bool'] else product['product__unit_price'] *product['lot']}
-            context.update({"products":context1})    
-        else:
-            context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0}
-        return context
     try:
         if request.method=="GET":
             if "QR" in request.GET:
@@ -299,21 +336,21 @@ def HomeView(request):
                 visits.save()
         context={}
         if request.user.is_authenticated and (request.user.is_admin or request.user.is_worker):
-            context.update({"context_today":Summary(Movement.objects.filter(Q(type="VP")|Q(type="rP"),date__day=date.today().day))})
+            context.update({"context_today":Summary(products_bool=True,operations_bool=True,movement=Movement.objects.filter(date__day=date.today().day))})
             context['context_today'].update({"today":date.today().strftime("%d-%m-%y")})
-                    
-            summary_date=SummaryDate.objects.first()
-            if not summary_date:
-                raise  Exception()
+                  
+            # summary_date=SummaryDate.objects.first()
+            # if not summary_date:
+            #     raise  Exception()
             
-            if summary_date.active:       
-                context.update({"context_this_week":Summary(Movement.objects.filter(Q(type="VP")|Q(type="rP"),date__range=( date.today()-timedelta(days=date.today().weekday() ), date.today()+timedelta(days=1) )))})
-                if context['context_this_week']:
-                    context['context_this_week'].update({"this_week":ceil((date.today()-summary_date.start_date).days/7) })
-                    context['context_this_week'].update({"total_weeks":ceil((summary_date.end_date-summary_date.start_date).days/7) })
-                context.update({"context_this_month":Summary(Movement.objects.filter(Q(type="VP")|Q(type="rP"),date__range=( summary_date.start_date, date.today()+timedelta(days=1) )))})
-                if context['context_this_month']:
-                    context['context_this_month'].update({"start_date":summary_date.start_date.strftime("%d-%m-%y"),"end_date":summary_date.end_date.strftime("%d-%m-%y")})
+            # if summary_date.active:       
+            #     context.update({"context_this_week":Summary(Movement.objects.filter(Q(type="VP")|Q(type="rP"),date__range=( date.today()-timedelta(days=date.today().weekday() ), date.today()+timedelta(days=1) )))})
+            #     if context['context_this_week']:
+            #         context['context_this_week'].update({"this_week":ceil((date.today()-summary_date.start_date).days/7) })
+            #         context['context_this_week'].update({"total_weeks":ceil((summary_date.end_date-summary_date.start_date).days/7) })
+            #     context.update({"context_this_month":Summary(Movement.objects.filter(Q(type="VP")|Q(type="rP"),date__range=( summary_date.start_date, date.today()+timedelta(days=1) )))})
+            #     if context['context_this_month']:
+            #         context['context_this_month'].update({"start_date":summary_date.start_date.strftime("%d-%m-%y"),"end_date":summary_date.end_date.strftime("%d-%m-%y")})
                 
         return render(request,"Home.html",{"context":context})
     except Exception as e:
@@ -613,40 +650,49 @@ def OperacionesView(request):
         type_filter="NF"
         product_filter="NF"
         date_filter="NF"
+        id_filter="NF"
         date_day_filter=datetime.today().strftime("%Y-%m-%d")
         date_start_filter=date_day_filter
         date_end_filter=date_day_filter
         q=Q()
         if request.method  == "POST":
+            print( request.POST)
             if "FilterMovement" in request.POST:
                 filter_movement=request.POST.dict()
-                type_filter=filter_movement.get("TypeFilter")
-                product_filter=filter_movement.get("ProductFilter")
-                date_filter=filter_movement.get("FilterDate")
-                #print(type_filter,product_filter,date_filter)
-                if date_filter ==  "DD":
-                    date_day_filter=filter_movement.get("FilterDateDay")
-                    #print(date_day_filter)
-                    q = q & Q(date__date=date_day_filter)
-                elif date_filter ==  "RD":
-                    date_start_filter=filter_movement.get("FilterDateStart")
-                    start_date=date_start_filter
-                    date_end_filter=filter_movement.get("FilterDateEnd")
-                    end_date=date_end_filter
-                    q = q & Q(date__range=(start_date,end_date))
-                if product_filter != "NF":
-                    q = q & Q(product__id=product_filter)
-                    #product_filter=int(product_filter)
-                if type_filter != "NF":
-                    q = q & Q(type=type_filter)
+                id_filter=filter_movement.get("IdOpeartionFilter")
+                if id_filter.isdigit():
+                    id_filter=int(id_filter)
+                if id_filter:
+                    q=Q(id=id_filter)
+                else:
+                    type_filter=filter_movement.get("TypeFilter")
+                    date_filter=filter_movement.get("FilterDate")
+                    product_filter=filter_movement.get("ProductFilter")
+                    #user_filter=filter_movement.get("UserFilter")
+                    if product_filter.isdigit() and product_filter.__len__() == 4:
+                        
+                        product_filter=int(product_filter)
+                
+                    #print(type_filter,product_filter,date_filter)
+                    if date_filter ==  "DD":
+                        date_day_filter=filter_movement.get("FilterDateDay")
+                        #print(date_day_filter)
+                        q = q & Q(date__date=date_day_filter)
+                    elif date_filter ==  "RD":
+                        date_start_filter=filter_movement.get("FilterDateStart")
+                        start_date=date_start_filter
+                        date_end_filter=filter_movement.get("FilterDateEnd")
+                        end_date=date_end_filter
+                        q = q & Q(date__range=(start_date,end_date))
+                    if product_filter != "NF":
+                        q = q & Q(product__i_d=product_filter)
+                        #product_filter=int(product_filter)
+                    if type_filter != "NF":
+                        q = q & Q(type=type_filter)
+                
         movements=Movement.objects.filter(q).order_by('-date')[:20] 
-        product_filter_name=None
-        if product_filter!="NF":
-            product_filter_name=Product.objects.get(id=product_filter)
-        #print(product_filter_name,product_filter)
-        products=Product.objects.all().exclude(removed=True).values("id","name")
         date_today_max =datetime.today() + timedelta(days=1)
-        return render(request,"Operaciones.html",{"product_filter_name":product_filter_name,"MChoise":MChoise,"date_end_filter":date_end_filter,"date_start_filter":date_start_filter,"date_day_filter":date_day_filter,"date_today":datetime.today().strftime("%Y-%m-%d"),"date_today_max":date_today_max.strftime("%Y-%m-%d"),"movements":movements,"product_filter":product_filter,"type_filter":type_filter,"date_filter":date_filter,"products":products})
+        return render(request,"Operaciones.html",{"MChoise":MChoise,"date_end_filter":date_end_filter,"date_start_filter":date_start_filter,"date_day_filter":date_day_filter,"id_filter":id_filter,"date_today":datetime.today().strftime("%Y-%m-%d"),"date_today_max":date_today_max.strftime("%Y-%m-%d"),"movements":movements,"product_filter":product_filter,"type_filter":type_filter,"date_filter":date_filter})
     except Exception as e:
         print(e)
         messages.error(request,"Algo ha salido mal")    

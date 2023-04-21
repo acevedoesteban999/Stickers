@@ -210,10 +210,13 @@
             <div class="w-auto bg-light my-2 mx-4" style="border-radius: 20px;">
                 <a class="btn px-5"  data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">
                 <span class="h3">Filtro</span>
-                {% if type_filter != 'NF' or product_filter != 'NF' or date_filter != 'NF' %}
                     <div class="col bg-light text-dark p-2">
-                        <div class="row text-start justify-content-center">
-                            <div class="col-6">
+                        <div class="row text-center justify-content-center">
+                            <div class="col-auto">
+                                {% if id_filter and id_filter != 'NF'%}
+                                    <small>Id Operacion:  {{id_filter}}</small>
+                                    <br>
+                                {% endif %}
                                 {% if type_filter != 'NF' %}
                                     {% for value,value_text in MChoise  %}
                                         {% if type_filter == value %}
@@ -222,12 +225,12 @@
                                         {% endif %}
                                     {% endfor %}
                                 {% endif %} 
-                                {% if product_filter != 'NF' %}
-                                    <small >Producto:  {{product_filter_name.name}}</small>
+                                {% if product_filter and product_filter != 'NF' %}
+                                    <small >Id Producto:  {{product_filter}}</small>
                                     <br>
                                 {% endif %}
                             </div>
-                            <div class="col">
+                            <div class="col-auto">
                                 {% if date_filter != 'NF' %}
                                     {% if date_filter == 'DD' %}
                                         <small >Dia:  {{date_day_filter}}</small>
@@ -242,7 +245,7 @@
                         </div>
                         
                     </div>
-                {% endif %}
+                
                 
                 </a>
             </div>
@@ -256,6 +259,12 @@
                             <div class="row cols-1 cols-md-2 cols-lg-3 m-3 justify-content-around text-center align-items-start">
                                 <div class="py-1 mx-1 my-1 col-10 col-md-5 col-lg-3">
                                     <fieldset class="border m-1 p-2">
+                                        <legend  class="float-none w-auto">Id Operacion</legend>
+                                        <input type="text" name="IdOpeartionFilter" {% if id_filter and id_filter != "NF" %}value=" {{id_filter}}"{% endif %} placeholder="Sin Filtro">
+                                    </fieldset>
+                                </div>
+                                <div class="py-1 mx-1 my-1 col-10 col-md-5 col-lg-3">
+                                    <fieldset class="border m-1 p-2">
                                         <legend  class="float-none w-auto">Tipo</legend>
                                         <select name="TypeFilter" class="form-select" aria-label="Default select example">  
                                             <option {% if type_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
@@ -267,13 +276,14 @@
                                 </div>
                                 <div class="py-1 my-1 mx-1 col-10 col-md-5 col-lg-3">
                                     <fieldset class="border m-1 p-2">
-                                        <legend  class="float-none w-auto">Producto</legend> 
-                                        <select name="ProductFilter" class="form-select" aria-label="Default select example">  
+                                        <legend  class="float-none w-auto">Id Producto</legend>
+                                        <input type="text" name="ProductFilter" {% if product_filter and product_filter != "NF" %} value=" {{product_filter}}"{% endif %} placeholder="Sin Filtro"> 
+                                        {% comment %} <select name="ProductFilter" class="form-select" aria-label="Default select example">  
                                             <option {% if product_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
                                             {% for product in products %}
                                                 <option {% if product_filter == product.id %} selected {% endif %} value="{{product.id}}">{{product.name}}</option>
                                             {% endfor %}
-                                        </select>
+                                        </select> {% endcomment %}
                                     </fieldset>
                                 </div>
                                 <div class="py-2 my-1 mx-1 col-10 col-md-5 col-lg-3 ">
