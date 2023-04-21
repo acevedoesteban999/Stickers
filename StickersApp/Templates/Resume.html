@@ -39,7 +39,7 @@
       <div class="col-auto my-2">
         <div class="row justify-content-center">
           <div class="col-auto">
-            <div class="card text-dark bg-light" onclick="FilterResumeFunct(1)">
+            <div class="card text-dark bg-light" onclick="FilterResumeFunct(1,'{{context.context_today.today_w_f}}',false)">
               <div class="card-body">
                 <h4 class="card-title">Hoy</h4>
                 <hr>
@@ -53,13 +53,11 @@
         <div class="col-auto my-2">
           <div class="row justify-content-center">
             <div class="col-auto">
-              <div class="card text-dark bg-light" onclick="FilterResumeFunct(2)">
+              <div class="card text-dark bg-light" onclick="FilterResumeFunct(2,false,{{context.context_this_week.this_week}})">
                 <div class="card-body">
                   <h4 class="card-title">
                     Esta Semana
                     <span class="h6"><small>{{context.context_this_week.this_week}}/{{context.context_this_week.total_weeks}}</small></span>
-                  
-
                   </h4>
                   <hr>
                   <div class="card-text h5">{{context.context_this_week.start_date}} ~ {{context.context_this_week.end_date}} </div>
@@ -104,47 +102,79 @@
             <div class="row text-center" >
               <h4 class="card-title">Solicitar Resumen</h4>
             </div>
-            <div class="row justify-content-around align-items-center">
-              <div class="col">
-                <input onClick="FilterResumeFunct()" id="FilterResumeDay" type="radio" checked name="FilterResume" value="1">
-                <label for="FilterResumeDay" class="h6">Dia</label>
-                <br>
-                <input onClick="FilterResumeFunct()" id="FilterResumeWeek" type="radio" name="FilterResume" value="2">
-                <label for="FilterResumeWeek" class="h6">Semana</label>
-                <br>
-                <input onClick="FilterResumeFunct()" id="FilterResumeMonth" type="radio" name="FilterResume" value="3">
-                <label for="FilterResumeMonth" class="h6">Mes</label>
-            
+            <div class="row justify-content-center text-center align-items-center">
+              <div class="col-12">
+                <div class="row justify-content-center text-start align-items-center">
+                  <div class="col-4">
+                    <input onClick="FilterResumeFunct()" id="FilterResumeDay" type="radio" checked name="FilterResume" value="1">
+                    <label for="FilterResumeDay" class="h6">Dia</label>
+                    <br>
+                    <input onClick="FilterResumeFunct()" id="FilterResumeWeek" type="radio" name="FilterResume" value="2">
+                    <label for="FilterResumeWeek" class="h6">Semana</label>
+                    <br>
+                    <input onClick="FilterResumeFunct()" id="FilterResumeMonth" type="radio" name="FilterResume" value="3">
+                    <label for="FilterResumeMonth" class="h6">Todo el Mes</label>
+                  </div>
+                </div>
               </div>
-              <div class="col m-2">
+              <div class="col-12 m-2">
                 <div id="DivIDDay">
-                  <input type="date" name="DateDay" id="date_day">
+                  <input type="date" value="{{context.context_today.today_w_f}}"name="DateDay" id="date_day">
                 </div>
                 <div id="DivIDWeek" style="display: none;">
-                  <div class="form-floating mb-3">
-                    <input type="number" name="WeekResumeInput"class="form-control" maxlength="4" id="week_resume_input" placeholder="Numero de Semana">
-                    <label for="week_month">Numero de Semana</label>
+                  <div class="row justify-content-center">
+                    <div class="col-auto">
+                      <div class="form-floating mb-3">
+                        <input type="number" value="{{context.context_this_week.this_week}}" name="WeekResumeInput"class="form-control" maxlength="4" id="week_resume_input" placeholder="Numero de Semana">
+                        <label for="week_month">Numero de Semana</label>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div id="DivIDMonth" style="display: none;">
-                  Solicitar Resumen del Mes
+                  Solicitar Resumen de Todo el Mes {% if user.is_admin %} y Realizar el Cierre{% endif %}
                 </div>
               </div>  
               <div class="col-12 m-2">
                 <div class="row  justify-content-center">
                   <div class="col-auto">
-                    <a name="" id="" class="btn btn-primary" onclick="SolicResumInfo('{% url 'base_post' %}')" href="#" role="button">Solicitar</a>
+                    <a name="" id="" class="btn btn-primary" onclick="SolicResumInfo('{% url 'base_post' %}')" role="button">Solicitar</a>
                   </div>
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
       </div>
-          
-      
-      
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="card text-center my-3" id="card_resumeInfo" >
+      <div class="card-body">
+        <div class="" id="idSpinerResume" style="display: none;">
+          <div class="m-3 row justify-content-center">
+            <div class="col-auto d-flex justify-content-start align-items-start">
+              <div class="spinner-border text-primary spinner-border-md"role="status"> </div>
+            </div>
+          </div>
+          <div class="m-2 row text-center">
+            <div class="h3">
+              Solicitando Informacion 
+            </div>
+          </div>
+        </div>
+        <div class=""id="idInfoResume">
+          <div class="row justify-content-center text-center">
+            <div class="col-auto">
+              <div class="h3">
+                No se ha Solicitado Informacion de Resumen
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
   </div>
   
   {% comment %} <div class="continer text-center">

@@ -10,6 +10,10 @@ function SolicResumInfo(addr)
             value=element.value;
             return;        
     });
+    var date_resume=document.getElementById("date_day").value;
+    var week_resume=document.getElementById("week_resume_input").value;
+    document.getElementById("idSpinerResume").removeAttribute("style")
+    document.getElementById("idInfoResume").setAttribute("style","display: none;")
     fetch(addr, {
         method: "POST",
         credentials: "same-origin",
@@ -17,19 +21,25 @@ function SolicResumInfo(addr)
             "X-Requested-With": "XMLHttpRequest",
             "X-CSRFToken": getCookie("csrftoken"),
         },
-        body: JSON.stringify({ "Data": "data"})
-        })
-        .then(response => response.text())
-        .then(data => 
-        {
-           
-        })
-        .catch(error => {
-            console.log("Error:",error);
-        });
+        body: JSON.stringify({ "FilterResumeValue": value,"week_resume":week_resume,"date_resume":date_resume})
+    })
+    .then(response => response.text())
+    .then(data => 
+    {
+        document.getElementById("idSpinerResume").setAttribute("style","display: none;")
+        document.getElementById("idInfoResume").removeAttribute("style")
+        document.getElementById("idInfoResume").innerHTML=data
+        console.log(data);
+    })
+    .catch(error => {
+        document.getElementById("idSpinerResume").setAttribute("style","display: none;")
+        document.getElementById("idInfoResume").removeAttribute("style")
+        document.getElementById("idInfoResume").innerHTML="Error, Ha ocurrido un error"
+        console.log("Error:",error);
+    });
 
 }
-function FilterResumeFunct(bool_card=false)
+function FilterResumeFunct(bool_card=false,day_today=false,this_week=false)
 {
     var value=bool_card;
     var radios=document.getElementsByName("FilterResume");
@@ -44,16 +54,20 @@ function FilterResumeFunct(bool_card=false)
                 value=element.value;
                 return;        
     });
-    if(value==0)
+    if(value==1)
     {
+        if(day_today != false)
+            document.getElementById("date_day").value=day_today;
         document.getElementById("DivIDWeek").setAttribute("style","display: none;");
         document.getElementById("DivIDDay").removeAttribute("style");
         document.getElementById("DivIDMonth").setAttribute("style","display: none;");
         document.getElementById("DivIDDay").required=true;
         document.getElementById("DivIDWeek").required=false;
     }
-    else if(value==1)
+    else if(value==2)
     {
+        if(this_week != false)
+            document.getElementById("week_resume_input").value=this_week;
         document.getElementById("DivIDDay").setAttribute("style","display: none;");
         document.getElementById("DivIDMonth").setAttribute("style","display: none;");
         document.getElementById("DivIDWeek").removeAttribute("style");
@@ -65,12 +79,10 @@ function FilterResumeFunct(bool_card=false)
         document.getElementById("DivIDDay").setAttribute("style","display: none;")
         document.getElementById("DivIDWeek").setAttribute("style","display: none;")
         document.getElementById("DivIDMonth").removeAttribute("style");
-        
         document.getElementById("DivIDWeek").required=false
         document.getElementById("DivIDDay").required=false
     }
 }
-
 function VerifRefund(addr,product_id)
 {
     idRefund=document.getElementById("inputIdVerifRefund").value;
@@ -112,7 +124,6 @@ function VerifRefund(addr,product_id)
             document.getElementById("DivIdInfoRefundAjax").innerHTML="Ha ocurrido un Error al Verificar";
         });
 }
-
 function onPairAddUni()
 {
     pair_add_unit=document.getElementById("PairAddUni").checked;
@@ -165,20 +176,20 @@ function SearchProduct(addr)
     
 }
 function getCookie(name)
-        {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== "") {
-                const cookies = document.cookie.split(";");
-                for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + "=")) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-                }
-            }
-            return cookieValue;
-        }    
+{
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + "=")) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+        }
+        }
+    }
+    return cookieValue;
+}    
 function PrevImg()
 {
     var [file] = document.getElementById('inputImgPre').files
@@ -229,8 +240,6 @@ function RemImgCat()
     input.innerHTML="<input onchange=\"PrevImgCat()\" type=\"file\"  class=\"form-control \" name=\"imagen\" id=\"inputImgPreCat\" placeholder=\"Imagen\">"
     div.appendChild(input)
 }
-
-
 function FilterTime(choiseFilterTime) 
 {
     var RD=document.getElementById("RD")
@@ -271,7 +280,6 @@ function FilterTime(choiseFilterTime)
                           
     }
 }
-
 function VentasParesFunction(VentasParesBool)
 {
     paredId=document.getElementById("ParesDivId");
