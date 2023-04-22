@@ -31,7 +31,7 @@ class SummaryDate(models.Model):
     start_date=models.DateField(blank=True,null=True)
     end_date=models.DateField(blank=True,null=True)
     active=models.BooleanField(default=False)
-    start_money=models.IntegerField(default=0)
+    #start_money=models.IntegerField(default=0)
     def __str__(self):
         return "Active-"+self.start_date.__str__()+" ~ "+self.end_date.__str__() if self.active else "Desactive"
     
@@ -385,29 +385,29 @@ class Movement(models.Model):
                 return "E0"
         return False
     @classmethod
-    def CloseMonth(cls,user,lot,start_money,note,date_start,date_end,date_final_end,total_money,total_profit,total_profit_worker):
-        if lot >= 0 and user.is_admin:
+    def CloseMonth(cls,user,note,date_start,date_end,date_final_end,total_money,total_profit,total_profit_worker):
+        if user.is_admin:
             r_box=RegisteCash.objects.all().first()
             if r_box:
-                dif= r_box.money - lot
-                if dif >= 0:
-                    r_box.money = dif
-                    print("A")
-                    movement=cls(
-                                type="CM",
-                                user=user,
-                                extra_info_str=note,
-                                lot=lot,
-                                extra_info_int=total_money,
-                                extra_info_int_1=total_profit,
-                                extra_info_int_2=total_profit_worker,
-                                #start_money
-                                #extra_info_str="{}~{},{}".format(date_start.strftime("%d-%m-%y"),date_end.strftime("%d-%m-%y"),("Fecha de Realizacion:"+date_final_end.strftime("%d-%m-%y")) if date_final_end!=date_end else "")
+                movement=cls(
+                            type="CM",
+                            user=user,
+                            lot=r_box.money,
+                            extra_info_int=total_money,
+                            extra_info_int_1=total_profit,
+                            extra_info_int_2=total_profit_worker,
+                            extra_info_str="Mes:{}~{} {} <br>Nota:{}".format(
+                                date_start.strftime("%d-%m-%y"),
+                                date_end.strftime("%d-%m-%y"),
+                                "<br>Fecha Real:"+date_final_end.strftime("%d-%m-%y") if date_final_end!=date_end else "",
+                                note if note else "",
                                 )
-                    if movement:
-                        movement.save()
-                        r_box.save()
-                        return True
+                            )
+                if movement:
+                    movement.save()
+                    r_box.money = 0
+                    r_box.save()
+                    return True
         return False
    
     @classmethod

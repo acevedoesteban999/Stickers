@@ -4,7 +4,6 @@
     <table class="table table-dark text-center table-striped  table-hover shadow p-3  mb-0 rounded ">
         <thead>
         <tr>   
-        
         </tr>
         </thead>   
         <tbody >  
@@ -19,6 +18,9 @@
                                 <div class="col-4 h6">  
                                     {% if movement.type == "CP" or movement.type == "RP" or movement.type == "eP" %}
                                         {{movement.product.name}}
+                                    {% elif movement.type == "CM" %}
+                                        {% load static %}
+                                        {{movement.date.date}}
                                     {% else %}
                                         {{movement.lot}}
                                     {% endif %}
@@ -91,7 +93,39 @@
                                                 {% endautoescape %}
                                             </div>
                                             
-                                            
+                                        {% elif movement.type == "CM" %}
+                                            <div class="col-4 m-2 h6">
+                                                Cantidad Retirada: 
+                                            </div>
+                                            <div class="col-6 m-2 h6">
+                                                {{movement.lot}}
+                                            </div>
+                                            <div class="col-4 m-2 h6">
+                                                Total de Ingresos: 
+                                            </div>
+                                            <div class="col-6 m-2 h6">
+                                                {{movement.extra_info_int}}
+                                            </div>
+                                            <div class="col-4 m-2 h6">
+                                                Total de Ganancias: 
+                                            </div>
+                                            <div class="col-6 m-2 h6">
+                                                {{movement.extra_info_int_1}}
+                                            </div>
+                                            <div class="col-4 m-2 h6">
+                                                Total de Pago al Trabajdor: 
+                                            </div>
+                                            <div class="col-6 m-2 h6">
+                                                {{movement.extra_info_int_2}}
+                                            </div>
+                                            <div class="col-4 m-2 h6">
+                                                Informacion: 
+                                            </div>
+                                            <div class="col-6 m-2 h6">
+                                                {% autoescape off %}
+                                                    {{movement.extra_info_str}}
+                                                {% endautoescape %}
+                                            </div>
                                         {% elif movement.type == "SP" %}
                                             <div class="col-4 m-2 h6">
                                                 Cantidad Quitada: 
@@ -232,7 +266,7 @@
                                             </div>
                                         {% endif %}
                                         {% if movement.extra_info_str  %}
-                                            {% if movement.type != "eP" and movement.type != "CP" %}
+                                            {% if movement.type != "eP" and movement.type != "CP" and movement.type != "CM" %}
                                                 <div class="col-4 m-2 h6">
                                                     Nota: 
                                                 </div>

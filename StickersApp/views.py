@@ -11,16 +11,22 @@ from django.db import IntegrityError
 from django.contrib import messages
 from django.db.models import Q,F,Count,Sum,Choices
 import json
-
+"""
+Tamplates Functions
+"""
+#from django import template
+#register=template.Library()
+#@register.filter
+#def aaa(date_to_print):
+#    try:
+#        return date_to_print.strftime("%d-%m-%y")
+#    except:
+#        return ""
 
 """
 Internal Functions
 """
-
-"""
-Contiene Reembolso de Producto
-"""
-def Summary(movements,total_resume_bool=False,products_bool=False,operations_bool=False,worker_bool=False):
+def Summary(movements,inicio_bool=False,products_bool=False,operations_bool=False,worker_bool=False):
         if movements:
             context=movements.filter(type="VP").values(
                         'lot',
@@ -95,10 +101,6 @@ def Summary(movements,total_resume_bool=False,products_bool=False,operations_boo
                 context.update({"total_total_money":context['total_money']})
                 context.update({"total_total_profit_money":context['total_profit_money']})
                 context.update({"total_total_worker_profit_money":context['total_worker_profit_money']})
-                summary_date=SummaryDate.objects.first()
-                if not summary_date:
-                    raise Exception()
-                context['total_total_money']+= summary_date.start_money
                 products=movements.filter(type="VP").values(
                     'product__name',
                     'product__i_d',
@@ -162,7 +164,7 @@ def Summary(movements,total_resume_bool=False,products_bool=False,operations_boo
                         total_worker_profit_money=Sum('worKer_proFit'),
                         total_lot=Sum('lot'),
                     )
-                if context_1["total_money"]:
+                if context_1.get("total_money"):
                     context['total_lot_refunds']=context_1["total_lot"]
                     context['total_total_money']-=context_1["total_money"]
                     context['total_total_profit_money']-=context_1["total_profit_money"]
@@ -173,36 +175,33 @@ def Summary(movements,total_resume_bool=False,products_bool=False,operations_boo
                     ).aggregate(
                         total_money=Sum('lot'),
                     )
-                if context_1["total_money"]:
+                if context_1.get("total_money"):
+                    context['total_total_money']-=context_1["total_money"]
                     context.update({"retires":context_1})
                 context_1=movements.filter(type="AD").values(
                         'lot',
                     ).aggregate(
                         total_money=Sum('lot'),
                     )
-                if context_1["total_money"]:
+                if context_1.get("total_money"):
+                    context['total_total_money']+=context_1["total_money"]
                     context.update({"agregates":context_1})
-                if summary_date.start_money>0:
-                    context.update({"start_money":summary_date.start_money})
-            if total_resume_bool == True:
-                pass
-                # context_1={}
-                # for m in movements:
-                #     if context_1.get(m.date.date()):
-                #         context_1[m.date.date()]={
-                #             'id':m.id,
-                #             'product__i_d':m.product.i_d,
-                #             'get_type_display':m.get_type_display,
-                #             'lot':m.lot,
-                #             'money':m.lot*m.extra_info_int,
-                #             'profit':m.lot*m.extra_info_int_1,
-                #             'profit_worker':m.lot*m.extra_info_int_2,
-                #         }
-                #     else:
-                #         context_1[m.date.date()]={
-                #             'm':m
-                #         }
-                # context.update({"total_resume":context_1})
+                context_1=movements.filter(type="CM").values(
+                        'lot',
+                    ).aggregate(
+                        total_money=Sum('lot'),
+                    )
+                if context_1.get("total_money"):
+                    context['total_total_money']-=context_1["total_money"]
+                    context.update({"closesmonths":context_1})
+                # if inicio_bool == True:
+                #     summary_date=SummaryDate.objects.first()
+                #     if not summary_date:
+                #         raise Exception()
+                #     if summary_date.start_money>0:
+                #         context['total_total_money']+=summary_date.start_money
+                #         context.update({"start_money":summary_date.start_money})
+            
         else:
             context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0,"total_lot":0,"no_movements":True}
         return context
@@ -313,9 +312,9 @@ def BasePost(request):
                         context.update({"start_date":datetime.strptime(start_date_month,"%Y-%m-%d").date().strftime("%d-%m-%y")})
                         context.update({"end_date":end_date_month.strftime("%d-%m-%y")})
                         q=Q(date__range=(start_date_month,end_date_month+timedelta(days=1)))
-                    q=q&(Q(type="VP")|Q(type="rP")|Q(type="RD")|Q(type="AD"))
+                    q=q&(Q(type="VP")|Q(type="rP")|Q(type="RD")|Q(type="AD")|Q(type="CM"))
                     movements=Movement.objects.filter(q)
-                    context.update(Summary(movements=movements,worker_bool=True))
+                    context.update(Summary(movements=movements,worker_bool=True,inicio_bool=True if filter_resume == 3 else False ))
                     return render(None,"ResumeInfo.html",{"context":context})
                 return HttpResponse("Error")
         return render(request,"Home.html")
@@ -330,7 +329,7 @@ def ResumeView(request):
             if "CloseMonth" in request.POST:
                 pass
                 close_month=request.POST.dict()
-                money_retire=int(close_month.get("RetireMoneyCloseMonth"))
+                #money_retire=int(close_month.get("RetireMoneyCloseMonth"))
                 next_date_start=close_month.get("NextDateStart")
                 next_date_end=close_month.get("NextDateEnd")
                 note=close_month.get("nota")
@@ -344,11 +343,9 @@ def ResumeView(request):
                 context=Summary(
                     movements=Movement.objects.filter(type="VP",date__range=(summary_date.start_date,date.today()+timedelta(days=1)))
                 )
-                print(money_retire,next_date_start,next_date_end,context)
                 result=Movement.CloseMonth(
                     user=request.user,
-                    lot=money_retire,
-                    start_money=summary_date.start_money,
+                    #start_money=summary_date.start_money,
                     note=note,
                     date_start=summary_date.start_date,
                     date_end=summary_date.end_date,
@@ -357,10 +354,14 @@ def ResumeView(request):
                     total_profit=context["total_profit_money"],
                     total_profit_worker=context["total_worker_profit_money"]
                     )
-                print(result)
-            #raise Exception("No request.POST info")        
-        
-        
+                if result==True:
+                    summary_date.start_date=datetime.strptime(next_date_start,"%Y-%m-%d").date()
+                    summary_date.end_date=datetime.strptime(next_date_end,"%Y-%m-%d").date()
+                    #summary_date.start_money=0
+                    summary_date.save()
+                    messages.success(request,"Se ha Realizado el Cierre, Nuevo Mes: {}~{}".format(summary_date.start_date.strftime("%d-%m-%y"),summary_date.end_date.strftime("%d-%m-%y")))
+                    return redirect("resumen")
+            raise Exception()
         context={'context_global':{},'context_today':{},'context_this_week':{},'context_this_month':{}}
         summary_date=SummaryDate.objects.first()
         if not summary_date:
@@ -371,14 +372,15 @@ def ResumeView(request):
             context['context_global'].update({"SumaryDate":True})
             context['context_this_week'].update({"start_date":(date.today()-timedelta(days=date.today().weekday())).strftime("%d-%m-%y")})
             context['context_this_week'].update({"end_date":(date.today()-timedelta(days=date.today().weekday())+timedelta(days=6)).strftime("%d-%m-%y")})
-            context['context_this_week'].update({"this_week":floor((date.today()-summary_date.start_date).days/7) }) 
+            context['context_this_week'].update({"this_week":floor((date.today()-summary_date.start_date).days/7) if date.today()>summary_date.start_date else 0}) 
             context['context_this_week'].update({"total_weeks":floor((summary_date.end_date-summary_date.start_date).days/7) })
             context['context_this_month'].update({"next_start_date":(date.today()+timedelta(days=1)).strftime("%Y-%m-%d")})
-            context['context_this_month'].update({"next_end_date":(date.today()+timedelta(days=1+35)).strftime("%Y-%m-%d")})
-            context['context_this_month'].update({"OK":True if summary_date.end_date > date.today() else False})
+            context['context_this_month'].update({"next_end_date":(date.today()+timedelta(days=35)).strftime("%Y-%m-%d")})
+            context['context_this_month'].update({"OK":True if summary_date.end_date >= date.today() else False})
             context['context_this_month'].update({"days_ok":(summary_date.end_date- date.today()) if summary_date.end_date > date.today() else (date.today()-summary_date.end_date )})
             context['context_this_month'].update({"start_date":summary_date.start_date.strftime("%d-%m-%y"),"end_date":summary_date.end_date.strftime("%d-%m-%y")})
             context['context_this_month'].update({"start_date_w_f":summary_date.start_date.strftime("%Y-%m-%d")})
+            context['context_this_month'].update({"end_date_w_f":summary_date.end_date.strftime("%Y-%m-%d") if summary_date.end_date > date.today() else date.today().strftime("%Y-%m-%d") })
         else:
             context['context_global'].update({"SumaryDate":False})
         #print(context)          
