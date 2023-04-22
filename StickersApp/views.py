@@ -1,10 +1,10 @@
 from django.shortcuts import render,redirect,HttpResponse
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponseNotFound
 from .models import MChoise,Product,RegisteCash,Movement,Visits,SummaryDate
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import FormProduc,FormLot,FormImg
 from datetime import datetime ,timedelta,date
-from math import ceil
+from math import ceil,floor
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate,login,logout
 from django.db import IntegrityError
@@ -20,10 +20,8 @@ Internal Functions
 """
 Contiene Reembolso de Producto
 """
-def Summary(movements,products_bool=False,operations_bool=False,worker_bool=False):
+def Summary(movements,total_resume_bool=False,products_bool=False,operations_bool=False,worker_bool=False):
         if movements:
-            #context=movement.filter(type="VP").values
-            print(movements.filter(type="VP").values('lot').aggregate(aa=Sum("lot")))
             context=movements.filter(type="VP").values(
                         'lot',
                         'extra_info_int',
@@ -50,7 +48,7 @@ def Summary(movements,products_bool=False,operations_bool=False,worker_bool=Fals
                         total_worker_profit_money=Sum('worKer_proFit'),
                         total_lot=Sum('lOt'),
         )
-            print(context)
+            
             context.update({"total_total_money":context['total_money']})
             context.update({"total_total_profit_money":context['total_profit_money']})
             context.update({"total_total_worker_profit_money":context['total_worker_profit_money']})
@@ -181,8 +179,27 @@ def Summary(movements,products_bool=False,operations_bool=False,worker_bool=Fals
                     )
                 if context_1["total_money"]:
                     context.update({"agregates":context_1})
+            if total_resume_bool == True:
+                pass
+                # context_1={}
+                # for m in movements:
+                #     if context_1.get(m.date.date()):
+                #         context_1[m.date.date()]={
+                #             'id':m.id,
+                #             'product__i_d':m.product.i_d,
+                #             'get_type_display':m.get_type_display,
+                #             'lot':m.lot,
+                #             'money':m.lot*m.extra_info_int,
+                #             'profit':m.lot*m.extra_info_int_1,
+                #             'profit_worker':m.lot*m.extra_info_int_2,
+                #         }
+                #     else:
+                #         context_1[m.date.date()]={
+                #             'm':m
+                #         }
+                # context.update({"total_resume":context_1})
         else:
-            context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0,"total_lot":0}
+            context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0,"total_lot":0,"no_movements":True}
         return context
     
 """
@@ -260,38 +277,48 @@ def BasePost(request):
                     return HttpResponse("E0")
                 elif 'FilterResumeValue' in data:
                     filter_resume=int(data.get('FilterResumeValue'))
+                    context={}
                     q=Q()
                     if filter_resume == 1:
                         date_resume=data.get('date_resume')
+                        if not date_resume:
+                            return HttpResponseNotFound("<div>Error,Fecha Invalida<div>")
+                        
+                        context.update({"start_date":datetime.strptime(date_resume,"%Y-%m-%d").date().strftime("%d-%m-%y")})
                         q=Q(date__date=date_resume)
                     elif filter_resume == 2:
                         summary_date=SummaryDate.objects.first()
                         if not summary_date:
                             raise Exception()   
                         week_resume=int(data.get('week_resume'))
-                        start_date=summary_date.start_date-timedelta(days=summary_date.start_date.weekday())+timedelta(days=7*week_resume - 1)
-                        end_date=start_date+timedelta(days=7)
-                        q=Q(date__range=(start_date,end_date))
+                        if week_resume<0:
+                            return HttpResponseNotFound("<div>Error,la Semana no puede ser Negativa<div>")
+                        start_date=summary_date.start_date-timedelta(days=summary_date.start_date.weekday())+timedelta(days=7*week_resume)
+                        end_date=start_date+timedelta(days=6)
+                        context.update({"week":week_resume})
+                        context.update({"start_date":start_date.strftime("%d-%m-%y")})
+                        context.update({"end_date":end_date.strftime("%d-%m-%y")})
+                        q=Q(date__range=(start_date,end_date+timedelta(days=1)))
                     else:
-                        summary_date=SummaryDate.objects.first()
-                        if not summary_date:
-                            raise Exception()   
-                        q=Q(date__range=(summary_date.start_date,date.today()))
-                    print(q)
+                        start_date_month=data.get("start_date_month")
+                        end_date_month=data.get("end_date_month")
+                        if not start_date_month or not end_date_month:
+                            return HttpResponseNotFound("<div>Error,Fecha Invalida<div>")
+                        end_date_month=datetime.strptime(end_date_month,"%Y-%m-%d").date()
+                        context.update({"start_date":datetime.strptime(start_date_month,"%Y-%m-%d").date().strftime("%d-%m-%y")})
+                        context.update({"end_date":end_date_month.strftime("%d-%m-%y")})
+                        q=Q(date__range=(start_date_month,end_date_month+timedelta(days=1)))
                     movements=Movement.objects.filter(q)
-                    print(movements)
-                    context={}
-                    context.update(Summary(movements=movements,operations_bool=True if filter_resume==1 else False,worker_bool=True))
-                    return render(None,"ResumeInfo.html",{"context":context})
                     
-                    return HttpResponse("OK")
+                    context.update(Summary(movements=movements,worker_bool=True))
+                    return render(None,"ResumeInfo.html",{"context":context})
                 return HttpResponse("Error")
         return render(request,"Home.html")
     except Exception as e:
         print(e)
         messages.error(request,"Algo ha salido mal")    
-    return redirect('productos')
-
+        return HttpResponseNotFound("Error, Algo Salio mal<br>Error:"+e.__str__())
+    
 def ResumeView(request):
     #try:
     #s=Summary(movements=Movement.objects.filter(date__date=date.today()),worker_bool=True)
@@ -307,11 +334,12 @@ def ResumeView(request):
         context['context_global'].update({"SumaryDate":True})
         context['context_this_week'].update({"start_date":(date.today()-timedelta(days=date.today().weekday())).strftime("%d-%m-%y")})
         context['context_this_week'].update({"end_date":(date.today()-timedelta(days=date.today().weekday())+timedelta(days=6)).strftime("%d-%m-%y")})
-        context['context_this_week'].update({"this_week":ceil((date.today()-summary_date.start_date).days/7) }) 
-        context['context_this_week'].update({"total_weeks":ceil((summary_date.end_date-summary_date.start_date).days/7) })
+        context['context_this_week'].update({"this_week":floor((date.today()-summary_date.start_date).days/7) }) 
+        context['context_this_week'].update({"total_weeks":floor((summary_date.end_date-summary_date.start_date).days/7) })
         context['context_this_month'].update({"OK":True if summary_date.end_date > date.today() else False})
         context['context_this_month'].update({"days_ok":(summary_date.end_date- date.today()) if summary_date.end_date > date.today() else (date.today()-summary_date.end_date )})
         context['context_this_month'].update({"start_date":summary_date.start_date.strftime("%d-%m-%y"),"end_date":summary_date.end_date.strftime("%d-%m-%y")})
+        context['context_this_month'].update({"start_date_w_f":summary_date.start_date.strftime("%Y-%m-%d")})
     else:
         context['context_global'].update({"SumaryDate":False})
     #print(context)          
@@ -319,120 +347,7 @@ def ResumeView(request):
     #except Exception as e:
     #    print(e)
     #return redirect('home')
-    if True:
-        pass
-        #try:
-        
-        #     def Movement_Resume(movements):
-        #         money_sell_profit=movements.filter(
-        #             Q(type='VP')|Q(type='rP')
-        #                 ).annotate(
-        #                     money_sell_worker_profit=Sum(
-        #                         F('lot')* F('extra_info_int_1'),
-        #                         filter=Q(type="VP"),
-        #                         default=0
-        #                         ),
-        #                     money_refund_worker_profit=Sum(
-        #                         F('lot')* F('extra_info_int_1'),
-        #                         filter=Q(type="rP"),
-        #                         default=0
-        #                         ),
-        #                     money_sell=Sum(
-        #                         F('lot')* F('extra_info_int'),
-        #                         filter=Q(type="VP"),
-        #                         default=0
-        #                         ),
-        #                     money_refund=Sum(
-        #                         F('lot')* F('extra_info_int'),
-        #                         filter=Q(type="rP"),
-        #                         default=0
-        #                         )
-        #                 ).aggregate(
-        #                     total_money_worker_profit=Sum('money_sell_worker_profit')-Sum('money_refund_worker_profit'),
-        #                     total_sells_money=Sum('money_sell')-Sum('money_refund'),
-        #                 )
-                
-        #         users_movement=movements.filter(
-        #             Q(type='VP')|Q(type='rP')
-        #             ).annotate(
-        #                 money_worker_profit=Sum(F('lot')* F('extra_info_int_1'),filter=Q(type='VP'),default=0)-Sum(F('lot')* F('extra_info_int_1'),filter=Q(type='rP'),default=0),
-        #                 money_sells=Sum(F('lot')* F('extra_info_int'),filter=Q(type='VP'),default=0)-Sum(F('lot')* F('extra_info_int'),filter=Q(type='rP'),default=0)
-        #                 ).values(
-        #                     'money_worker_profit',
-        #                     'money_sells',
-        #                     'user__username'
-        #                     )
-                
-                
-        #         users_usernames=set(users_movement.values_list('user__username',flat=True))
-        #         users_usernames.discard(None)
-                
-        #         users_profit={}
-        #         for users_username in users_usernames:
-        #             users_profit.update({users_username:users_movement.filter(user__username = users_username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
-        #         #print(users_profit)
-                
-        #         proucts_movements=movements.filter(
-        #             Q(type='VP')|Q(type='rP')
-        #             ).values(
-        #                     'product__name',
-        #                     'product__id',
-        #                     )
-        #         #print(proucts_movements)
-        #         products = {}
-        #         for prouct_movement in proucts_movements:
-        #             if prouct_movement['product__id'] not in products:
-        #                 products.update({prouct_movement['product__id']:prouct_movement})
-            
-        #         context.update({'movements':movements})
-        #         context.update({'money_sell_profit':money_sell_profit})
-        #         context.update({"movements_count":movements.count()})
-        #         context.update({"workers_profit":users_profit})
-        #         context.update({"users_count":users_usernames.__len__()})
-        #         context.update({"products":products})
-        #         context.update({"proucts_count":products.__len__()})
-        #         return context
-        #         #proucts_sell=movements_today.filter(type='VP').values('product__name','product__id').distinct()
-                
-        #     date=datetime.now() 
-        #     context={}
-        #     movements_today=Movement.objects.filter(date__day=date.day).order_by('-date')
-        #     #context.update({"movements_today_count":movements_today.count()})
-        #     if movements_today:
-        #         context_today=Movement_Resume(movements_today)
-        #         context.update({"context_today":context_today})
-        #         #print(context)
-        #         #context.update({"movements_today":movements_today})
-        #         #money_sell_profit_today=Movement.objects.filter(date__day=date.day,type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sell=Sum(F('lot')* F('extra_info_int'))).aggregate(total_money_worker_profit=Sum('money_worker_profit'),total_sells_money=Sum('money_sell'),total_sells_count=Count('id'))
-        #         #context.update(money_sell_profit_today)
-                
-        #         #users=movements_today.filter(type='VP').annotate(money_worker_profit=Sum(F('lot')* F('extra_info_int_1')),money_sells=Sum(F('lot')* F('extra_info_int'))).values('money_worker_profit','money_sells','user__username')
-        #         #usersnames=set(users.values_list('user__username',flat=True))
-        #         #print(usersnames)
-        #         #context.update({"users_count":usersnames.__len__()})
-        #         #users_profit={}
-        #         #for username in usersnames:
-        #         #    users_profit.update({username:users.filter(user__username = username).aggregate(total_sells=Sum('money_sells'),total_profit=Sum('money_worker_profit'))})
-        #             #print(users_profit)
-        #             #value=movements_today.filter('user__name'== userna me,type="VP").aggregate(total=Sum('money_worker_profit'))
-        #             #print(value)
-        #         #proucts_sell_today=movements_today.filter(type='VP').values('product__name','product__id').distinct()
-        #         #context.update({"proucts_sell_today":proucts_sell_today})
-        #         #context.update({"proucts_count_today":proucts_sell_today.count()})
-        #         #context.update({"workers_profit":users_profit})
-        #         #print(context)
-        #         #contextUser={}
-                
-        #     #movements_sell_today=Movement.objects.filter(date__day=date.day,type="VP")
-        #     #ids_today=Movement.objects.filter(date__day=date.day).values_list("product__id",flat=True)
-        #     #print(movements_sell_today)
-            
-        #     return render(request,"Resume.html",{'context':context})
-            
-        #     #except Exception as e:
-        #     #    print(e)
-        #     return HttpResponse("Ha ocurrido un error insesperado , contacte con los administradores")
-
+    
 def HomeView(request):
     try:
         if request.method=="GET":
@@ -786,12 +701,19 @@ def OperacionesView(request):
                     #print(type_filter,product_filter,date_filter)
                     if date_filter ==  "DD":
                         date_day_filter=filter_movement.get("FilterDateDay")
+                        if not date_day_filter:
+                            messages.error(request,"Error, Fecha Invalida")    
+                            return redirect('home')
+                        
                         q = q & Q(date__date=date_day_filter)
                     elif date_filter ==  "RD":
                         date_start_filter=filter_movement.get("FilterDateStart")
-                        start_date=date_start_filter
                         date_end_filter=filter_movement.get("FilterDateEnd")
-                        end_date=date_end_filter
+                        if not date_start_filter or not date_end_filter:
+                            messages.error(request,"Error, Fecha Invalida")    
+                            return redirect('home')
+                        start_date=date_start_filter
+                        end_date=datetime.strptime(date_end_filter,"%Y-%m-%d").date()+timedelta(days=1)
                         q = q & Q(date__range=(start_date,end_date))
                     if type_filter != "NF":
                         q = q & Q(type=type_filter)

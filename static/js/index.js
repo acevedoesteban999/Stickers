@@ -3,6 +3,9 @@ var ResumeBool=false
 
 function SolicResumInfo(addr)
 {
+    if(ResumeBool == true)
+        return
+    ResumeBool=true;
     var value=0;
     var radios=document.getElementsByName("FilterResume");
     radios.forEach(element => {    
@@ -12,6 +15,8 @@ function SolicResumInfo(addr)
     });
     var date_resume=document.getElementById("date_day").value;
     var week_resume=document.getElementById("week_resume_input").value;
+    var start_date_month=document.getElementById("date_month_start_date").value
+    var end_date_month=document.getElementById("date_month_end_date").value
     document.getElementById("idSpinerResume").removeAttribute("style")
     document.getElementById("idInfoResume").setAttribute("style","display: none;")
     fetch(addr, {
@@ -21,15 +26,15 @@ function SolicResumInfo(addr)
             "X-Requested-With": "XMLHttpRequest",
             "X-CSRFToken": getCookie("csrftoken"),
         },
-        body: JSON.stringify({ "FilterResumeValue": value,"week_resume":week_resume,"date_resume":date_resume})
+        body: JSON.stringify({ "FilterResumeValue": value,"start_date_month":start_date_month,"end_date_month":end_date_month,"week_resume":week_resume,"date_resume":date_resume})
     })
     .then(response => response.text())
     .then(data => 
     {
-        document.getElementById("idSpinerResume").setAttribute("style","display: none;")
-        document.getElementById("idInfoResume").removeAttribute("style")
-        document.getElementById("idInfoResume").innerHTML=data
-        console.log(data);
+        document.getElementById("idSpinerResume").setAttribute("style","display: none;");
+        document.getElementById("idInfoResume").removeAttribute("style");
+        document.getElementById("idInfoResume").innerHTML=data;
+        
     })
     .catch(error => {
         document.getElementById("idSpinerResume").setAttribute("style","display: none;")
@@ -38,8 +43,10 @@ function SolicResumInfo(addr)
         console.log("Error:",error);
     });
 
+    ResumeBool=false;
+
 }
-function FilterResumeFunct(bool_card=false,day_today=false,this_week=false)
+function FilterResumeFunct(bool_card=false,day_today=false,this_week=false,strat_date=false,end_date=false)
 {
     var value=bool_card;
     var radios=document.getElementsByName("FilterResume");
@@ -76,6 +83,11 @@ function FilterResumeFunct(bool_card=false,day_today=false,this_week=false)
     }
     else
     {
+        if (strat_date != false && end_date != false)
+        {
+            document.getElementById("date_month_start_date").value=strat_date;
+            document.getElementById("date_month_end_date").value=end_date;
+        }
         document.getElementById("DivIDDay").setAttribute("style","display: none;")
         document.getElementById("DivIDWeek").setAttribute("style","display: none;")
         document.getElementById("DivIDMonth").removeAttribute("style");
