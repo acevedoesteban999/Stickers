@@ -320,33 +320,37 @@ def BasePost(request):
         return HttpResponseNotFound("Error, Algo Salio mal<br>Error:"+e.__str__())
     
 def ResumeView(request):
-    #try:
-    #s=Summary(movements=Movement.objects.filter(date__date=date.today()),worker_bool=True)
-    #return render(request,"ResumeInfo.html",{"context":s})
-    context={'context_global':{},'context_today':{},'context_this_week':{},'context_this_month':{}}
-    
-    summary_date=SummaryDate.objects.first()
-    if not summary_date:
-        raise Exception()
-    context['context_today'].update({"today":date.today().strftime("%d-%m-%y")})
-    context['context_today'].update({"today_w_f":date.today().strftime("%Y-%m-%d")})
-    if summary_date.active:
-        context['context_global'].update({"SumaryDate":True})
-        context['context_this_week'].update({"start_date":(date.today()-timedelta(days=date.today().weekday())).strftime("%d-%m-%y")})
-        context['context_this_week'].update({"end_date":(date.today()-timedelta(days=date.today().weekday())+timedelta(days=6)).strftime("%d-%m-%y")})
-        context['context_this_week'].update({"this_week":floor((date.today()-summary_date.start_date).days/7) }) 
-        context['context_this_week'].update({"total_weeks":floor((summary_date.end_date-summary_date.start_date).days/7) })
-        context['context_this_month'].update({"OK":True if summary_date.end_date > date.today() else False})
-        context['context_this_month'].update({"days_ok":(summary_date.end_date- date.today()) if summary_date.end_date > date.today() else (date.today()-summary_date.end_date )})
-        context['context_this_month'].update({"start_date":summary_date.start_date.strftime("%d-%m-%y"),"end_date":summary_date.end_date.strftime("%d-%m-%y")})
-        context['context_this_month'].update({"start_date_w_f":summary_date.start_date.strftime("%Y-%m-%d")})
-    else:
-        context['context_global'].update({"SumaryDate":False})
-    #print(context)          
-    return render(request,"Resume.html",{'context':context})
-    #except Exception as e:
-    #    print(e)
-    #return redirect('home')
+    try:
+        if request.method == "POST":
+            if "CloseMonth" in request.POST:
+                pass
+            raise Exception("No request.POST info")        
+        
+        
+        context={'context_global':{},'context_today':{},'context_this_week':{},'context_this_month':{}}
+        summary_date=SummaryDate.objects.first()
+        if not summary_date:
+            raise Exception()
+        context['context_today'].update({"today":date.today().strftime("%d-%m-%y")})
+        context['context_today'].update({"today_w_f":date.today().strftime("%Y-%m-%d")})
+        if summary_date.active:
+            context['context_global'].update({"SumaryDate":True})
+            context['context_this_week'].update({"start_date":(date.today()-timedelta(days=date.today().weekday())).strftime("%d-%m-%y")})
+            context['context_this_week'].update({"end_date":(date.today()-timedelta(days=date.today().weekday())+timedelta(days=6)).strftime("%d-%m-%y")})
+            context['context_this_week'].update({"this_week":floor((date.today()-summary_date.start_date).days/7) }) 
+            context['context_this_week'].update({"total_weeks":floor((summary_date.end_date-summary_date.start_date).days/7) })
+            context['context_this_month'].update({"OK":True if summary_date.end_date > date.today() else False})
+            context['context_this_month'].update({"days_ok":(summary_date.end_date- date.today()) if summary_date.end_date > date.today() else (date.today()-summary_date.end_date )})
+            context['context_this_month'].update({"start_date":summary_date.start_date.strftime("%d-%m-%y"),"end_date":summary_date.end_date.strftime("%d-%m-%y")})
+            context['context_this_month'].update({"start_date_w_f":summary_date.start_date.strftime("%Y-%m-%d")})
+        else:
+            context['context_global'].update({"SumaryDate":False})
+        #print(context)          
+        return render(request,"Resume.html",{'context':context})
+    except Exception as e:
+        print(e)
+        messages.error(request,"Ha ocurrido un error inesperado")
+    return redirect('home')
     
 def HomeView(request):
     try:
@@ -628,10 +632,7 @@ def ProductoView(request,productoID):
                         
                         pair_action=sub_product.get("AccionPar")
                         note=sub_product.get("nota")
-                        if pair_action:
-                            result=Movement.Pair_Sub(user=user,product=product,lot=lot_sub,note=note)
-                        else:
-                            result=Movement.Unit_Sub(user=user,product=product,lot=lot_sub,note=note)
+                        result=Movement.Sub(user=user,product=product,lot=lot_sub,note=note,pair=True if pair_action else False)
                         if result == True:
                             return SuccessProduct("Se han quitado {} {} {} correctamente".format(lot_sub,"Pares de " if pair_action else "Unidades de",product.name))
                         elif result == "E0":

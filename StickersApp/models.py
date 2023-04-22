@@ -62,7 +62,7 @@ MChoise = [
     ("RP","Removido de Producto"),
     ('EP','Agregado de Productos'),
     ("cP","Confirmado de Producto"),
-    ("nC","No Confirmado de Producto"),
+    ("CM","Cierre de Mes"),
     ("VP","Venta de Productos"),
     ("rP","Reembolso de Productos"),
     ('SP','Quitado de Productos'),
@@ -303,30 +303,15 @@ class Movement(models.Model):
                     return True
         return False
     @classmethod
-    def Unit_Sub(cls,user,product,lot,note):
-        if product and lot > 0:
-            diff= product.unit_stored - lot
-            if diff >= 0:
-                product.unit_stored = diff
-                movement=cls(type="SP",user=user,extra_info_str=note,extra_info_bool=False,product=product,lot=lot)
-                if movement:
-                    
-                    movement.save()
-                    product.save()
-                    
-                    return True
-                return False
-            return "E0"
-        return False
-    @classmethod
-    def Pair_Sub(cls,user,product,lot,note):
+    def Sub(cls,user,product,lot,note,pair):
         if product and lot > 0:
             diff= product.pair_stored - lot
             if diff >= 0:
                 product.pair_stored = diff
-                movement=cls(type="SP",user=user,extra_info_str=note,extra_info_bool=True,product=product,lot=lot)
+                movement=cls(type="SP",user=user,extra_info_str=note,extra_info_bool=pair,product=product,lot=lot)
+                
                 if movement:
-                   
+                
                     movement.save()
                     product.save()
                     
@@ -334,6 +319,7 @@ class Movement(models.Model):
                 return False
             return "E0"
         return False
+    
     @classmethod
     def Refund(cls,user,product,movement,note):
         print("Amodel")
@@ -397,6 +383,30 @@ class Movement(models.Model):
                     return False
                 return "E0"
         return False
+    @classmethod
+    def CloseMonth(cls,user,lot,note,date_start,date_end,date_final_end,total_money,total_profit,total_profit_worker):
+        if lot > 0:
+            r_box=RegisteCash.objects.all().first()
+            if r_box:
+                dif= r_box.money - lot
+                if dif >= 0:
+                    r_box.money = dif
+                    movement=cls(
+                                type="CM",
+                                user=user,
+                                extra_info_str=note,
+                                lot=lot,
+                                extra_info_int=total_money,
+                                extra_info_int_1=total_profit,
+                                extra_info_int_2=total_profit_worker,
+                                #extra_info_str="{}~{},{}".format(date_start.strftime("%d-%m-%y"),date_end.strftime("%d-%m-%y"),("Fecha de Realizacion:"+date_final_end.strftime("%d-%m-%y")) if date_final_end!=date_end else "")
+                                )
+                    if movement:
+                        movement.save()
+                        r_box.save()
+                        return True
+        return False
+    
     @classmethod
     def RetireMoney(cls,user,lot,note):
         if lot > 0:

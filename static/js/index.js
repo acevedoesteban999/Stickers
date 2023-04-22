@@ -1,6 +1,13 @@
 var SearchBool=false
 var ResumeBool=false
 
+function ContiueCloseMoth()
+{
+    document.getElementById("idDivMonthOKNo0").setAttribute("class","col-auto d-none")
+    document.getElementById("idDivMonthNoOK0").setAttribute("class","col-auto d-block")
+    document.getElementById("DivIdRowOKNo0").setAttribute("class","row d-none")
+    document.getElementById("DivOdRowNoOk0").setAttribute("class","row d-block")
+}
 function SolicResumInfo(addr)
 {
     if(ResumeBool == true)

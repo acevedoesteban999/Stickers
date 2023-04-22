@@ -35,6 +35,17 @@
       </div>
       
     {% endif %}
+    <div class="row justify-content-end align-items-center text-center " >
+      <div class="col-5 col-md-2">
+        <div class="card bg-warning text-dark " style="border-radius: 30px;" >
+          <div class="card-body w-auto">
+            <h4 class="card-title h5">Dinero en Caja</h4>
+            <div class="row"></div>
+            <p class="card-text  text-success h3">{{global_context.registe_cash.money}}$</p>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row row-cols-1 row-md-cols-3 m-3 justify-content-center justify-content-md-between align-items-center text-center">
       <div class="col-auto my-2">
         <div class="row justify-content-center">
@@ -182,6 +193,79 @@
       </div>
     </div>
   </div>
+  {% if context.context_global.SumaryDate == True %}
+    <div class="container">
+      <div class="row justify-content-end">
+        <div class="col-auto">
+          <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#modalCloseMonth">
+            Hacer Cierre de Mes
+          </button>
+        </div>
+      </div>
+    </div>
+    {% comment %} ========================MODAL=========================== {% endcomment %}
+    <div class="modal fade" id="modalCloseMonth" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitleId">Cierre de Mes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+          <div class="modal-body">
+            <form action="/" method="post">
+            {% csrf_token %}
+              {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}
+                <div class="row" id="DivIdRowOKNo0">
+                  <div class="col-auto">
+                    <div class="h5 text-danger text-center">
+                      Aun Quedan {{context.context_this_month.days_ok.days}} Dias para Llegar al Fin del Mes
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+              <div class="row d-none" id="DivOdRowNoOk0">
+                <div class="col-12 text-start">
+                  {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}
+                    <div class="h4 text-danger">
+                      Cierre de Mes<span class="h6 mx-2"><small>{{context.context_this_month.days_ok.days}} Dias</small></span> 
+                    </div>
+                  {% elif context.context_this_month.OK == False %}
+                    <div class="h4 text-warning">
+                      Cierre de Mes <span class="h6 mx-2"><small>{{context.context_this_month.days_ok.days}} Dias</small></span> 
+                    </div>
+                  {% else %}
+                    <div class="h4 text-success">
+                      Cierre de Mes 
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="row">
+                  <input type="date" name="" id="">
+                  <input type="date" name="" id="">
+                </div>
+              
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <div class="row justify-content-between">
+              <div class="col-auto">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+              <div id="idDivMonthOKNo0" class="col-auto {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}d-block{% else %}d-none{% endif %}">
+                <button onclick="ContiueCloseMoth()" type="button" class="btn btn-danger">Continuar</button>
+              </div>
+              <div id="idDivMonthNoOK0" class="col-auto {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}d-none{% else %}d-block{% endif %}">
+                <button type="button" class="btn {% if context.context_this_month.days_ok.days == 0 %}btn-success{% else %}btn-warning{% endif %}">Hacer Cierre</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  
   
   {% comment %} <div class="continer text-center">
     <div class="display-2 my-2">Hoy</div>
