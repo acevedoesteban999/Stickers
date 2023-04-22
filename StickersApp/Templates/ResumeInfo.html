@@ -93,6 +93,7 @@
                                         <td>{{context.retires.total_money}}$</td>
                                     </tr>    
                                 {% endif %}
+                                
                                 {% if context.agregates %}
                                     <tr class="table-active">
                                         <td scope="row">Agregado de Dinero</td>
@@ -111,7 +112,24 @@
                                         <td>{{context.agregates.total_money}}$</td>
                                     </tr>    
                                 {% endif %}
-                                
+                                {% if context.start_money %}
+                                    <tr class="table-active">
+                                        <td scope="row">Inicio</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class="table-warning">
+                                        <td scope="row"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>{{context.start_money}}$</td>
+                                    </tr>    
+                                {% endif %}
                                 <tr class="table-active">
                                     <td scope="row">Total Final</td>
                                     <td></td>

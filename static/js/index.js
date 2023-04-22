@@ -1,6 +1,21 @@
 var SearchBool=false
 var ResumeBool=false
-
+function  CalcMoneyNextonth(total_money)
+{
+    money_next=total_money-parseInt(document.getElementById("retire_money_close_month").value);
+    if (money_next<0)
+        document.getElementById("NextMonthInitColor").setAttribute("class","h5 text-danger");   
+    else if( money_next>0)
+        document.getElementById("NextMonthInitColor").setAttribute("class","h5 text-success");
+    else if (money_next==0)
+        document.getElementById("NextMonthInitColor").setAttribute("class","h5 text-dark");
+    else
+    {
+        money_next="";
+        document.getElementById("NextMonthInitColor").setAttribute("class","h5 text-dark");
+    }
+    document.getElementById("NextMonthInit").innerHTML=money_next;
+}
 function ContiueCloseMoth()
 {
     document.getElementById("idDivMonthOKNo0").setAttribute("class","col-auto d-none")

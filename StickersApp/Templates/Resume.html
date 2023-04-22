@@ -207,13 +207,14 @@
     <div class="modal fade" id="modalCloseMonth" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
+          <form action="" method="post">
+            {% csrf_token %}  
+            {{context}}
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTitleId">Cierre de Mes</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-          <div class="modal-body">
-            <form action="/" method="post">
-            {% csrf_token %}
+              <h4 class="modal-title" id="modalTitleId">Cierre</h4>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
               {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}
                 <div class="row" id="DivIdRowOKNo0">
                   <div class="col-auto">
@@ -239,28 +240,58 @@
                     </div>
                   {% endif %}
                 </div>
-                <div class="row">
-                  <input type="date" name="" id="">
-                  <input type="date" name="" id="">
+                <div class="row justify-content-center">
+                  <div class="h4 text-center">
+                    Total Dinero en Caja: <span class="text-success h4">{{global_context.registe_cash.money}}$</span> 
+                  </div>
+                  <div class="h4 m-3">
+                    Este Mes:
+                  </div>
+                  
+                  <div class="col-auto">
+                    <div class="h5">Retirar antes de Cerrar</div>
+                    <div class="form-floating mb-3">
+                      <input oninput="CalcMoneyNextonth({{global_context.registe_cash.money}})" type="number" value="0" name="RetireMoneyCloseMonth"class="form-control" id="retire_money_close_month" placeholder="Retirar Dinero">
+                      <label for="retire_money_close_month">Retirar Dinero</label>
+                    </div>
+                  </div>
                 </div>
-              
+                <div class="row justify-content-center">
+                  <div class="h4 m-3">
+                    Siguiente Mes:
+                  </div>
+                  <div class="h5 text-center">Inico: <span class="text-dark h5" id="NextMonthInitColor"><span  id="NextMonthInit"></span>$</span></div>
+                  
+                  <div class="col-auto">
+                    <div class="h5">Desde</div>
+                    <input type="date" name="NextDateStart"  value={{context.context_this_month.next_start_date}} required>
+                  </div>
+                  <div class="col-auto">
+                    <div class="h5">Hasta</div>
+                    <input type="date" name="NextDateEnd"  value={{context.context_this_month.next_end_date}} required>
+                  </div>
+                </div>
               </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <div class="row justify-content-between">
-              <div class="col-auto">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <div class="form-floating mb-3">
+                <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                <label for="floatingInput">Nota Adicional</label>
               </div>
-              <div id="idDivMonthOKNo0" class="col-auto {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}d-block{% else %}d-none{% endif %}">
-                <button onclick="ContiueCloseMoth()" type="button" class="btn btn-danger">Continuar</button>
-              </div>
-              <div id="idDivMonthNoOK0" class="col-auto {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}d-none{% else %}d-block{% endif %}">
-                <button type="button" class="btn {% if context.context_this_month.days_ok.days == 0 %}btn-success{% else %}btn-warning{% endif %}">Hacer Cierre</button>
+            
+            </div>
+            <div class="modal-footer">
+              <div class="row justify-content-between">
+                <div class="col-auto">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+                <div id="idDivMonthOKNo0" class="col-auto {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}d-block{% else %}d-none{% endif %}">
+                  <button onclick="ContiueCloseMoth()" type="button" class="btn btn-danger">Continuar</button>
+                </div>
+                <div id="idDivMonthNoOK0" class="col-auto {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}d-none{% else %}d-block{% endif %}">
+                  <button type="submit" name="CloseMonth" class="btn {% if context.context_this_month.days_ok.days == 0 %}btn-success{% else %}btn-warning{% endif %}">Hacer Cierre</button>
+                </div>
               </div>
             </div>
-          </div>
-
+          </form>
         </div>
       </div>
     </div>
