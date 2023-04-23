@@ -775,21 +775,73 @@ def OperacionesView(request):
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
 
-def WorkersView(request):
+def UsersView(request):
     try:
-        # newUser=UsEr(
-        #     username="Juanito1",
+        # newUser=UsEr.objects.create_user(
+        #     username="Juanito2",
         #     password="JuanitoPassWord",
         #     is_worker=True,
         #     )
-        newUser=UsEr.objects.create_user(
-            username="Juanito1",
-            password="JuanitoPassWord",
-            is_worker=True,
-            )
-        newUser.save()
-        #(newUser.values())
-    except Exception as e:
-        print("E:",e)
+        context={}
+        admins=UsEr.objects.filter(is_active=True,is_admin=True).values(
+            "id",
+            "username",
+            "last_login",
+            
+        )
+        for a in admins:
+            print(a["last_login"].date())
+        workers=UsEr.objects.filter(is_active=True,is_worker=True,is_superuser=False).values(
+            "id",
+            "username",
+            "last_login",
+            
+        )
+        users_desactivated=UsEr.objects.filter(is_active=False).values(
+            "id",
+            "username",
+            "is_admin",
+            "is_worker",
+        )
+        context.update({"admins":admins})
+        context.update({"workers":workers})
+        if users_desactivated.__len__():
+            context.update({"users_desactivated":users_desactivated})
         
-    return render(request,"Trabajadores.html",{})
+    except Exception as e:
+        print(e)
+        
+    return render(request,"Usuarios.html",{"context":context})
+
+def UserView(request,usuarioID):
+    try:
+                
+        user=UsEr.objects.get(id=usuarioID)
+        
+        if request.method=="POST":
+            if "ActvateDesactivateUser" in request.POST:
+                if Movement.EditUser(user=request.user,user_activ_desact=user):
+                    messages.success(request,"Se ha {} el Usuario {} Correctamente".format("Activado" if user.is_active else "Desactivado",user.username))
+                else:
+                    raise Exception()
+            if "EditUser" in request.POST:
+                edit_user=request.POST.dict()
+                files=FormImg(request.POST,request.FILES)
+                files.is_valid()
+                username=edit_user.get("UserName")
+                image=files.cleaned_data.get("imagen")
+                result=Movement.EditUser(user=request.user,user_edit=user,username=username,image=image)
+                if result==True:
+                    messages.success(request,"Se ha editado el Usuario {} Correctamente".format(username))
+                elif result=="E0":    
+                    messages.error(request,"Error, Ya existe un Usuario con nombre {}".format(username))
+                else:
+                    raise Exception()
+        context={}
+        return render(request,"Usuario.html",{"UsEr":user,"context":context})
+    except Exception as e:
+        print(e)
+        messages.error(request,"Ha ocurrido un error inesperado")
+    except ObjectDoesNotExist:
+        messages.error(request,"Error, Usuario inexistente")  
+    return redirect("usuarios")

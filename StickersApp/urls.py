@@ -11,7 +11,8 @@ urlpatterns = [
     path('Producto/<int:productoID>/', views.ProductoView,name='producto'),
     path('Operaciones/', views.OperacionesView,name='operaciones'),
     path('Caja/', views.CajaView,name='caja'),
-    path('Trabajadores/', views.WorkersView,name='trabajadores'),
+    path('Usuario/<int:usuarioID>', views.UserView,name='usuario'),
+    path('Usuarios/', views.UsersView,name='usuarios'),
     path('BasePost',views.BasePost,name='base_post'),
     path('Resumen/',views.ResumeView,name='resumen'), 
 ]

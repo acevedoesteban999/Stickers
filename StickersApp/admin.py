@@ -19,7 +19,7 @@ class UsErAdmin(UserAdmin ):
                 ),
             },
         ),
-        (_("Important dates"), {"fields": ("last_login", "date_joined","is_admin","is_worker")}),
+        (_("Important dates"), {"fields": ("last_login", "date_joined","is_admin","is_worker","image")}),
     )
 admin.site.register(UsEr, UsErAdmin)
 # Register your models here.

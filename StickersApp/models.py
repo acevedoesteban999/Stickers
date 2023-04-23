@@ -9,7 +9,8 @@ class UsEr(AbstractUser):
     is_worker=models.BooleanField(default=False)
     is_admin=models.BooleanField(default=False)
     money=models.IntegerField(default=0)
-    #REQUIRED_FIELDS = ['username']
+    image=models.ImageField(blank=True,null=True,upload_to='usuarios',default="no_user_imagen.jpg", height_field=None, width_field=None, max_length=None)
+    
     
 class Visits(models.Model):
     # today_date=models.DateField( auto_now=False, auto_now_add=False)
@@ -58,17 +59,20 @@ class Product(models.Model):
     
     
 MChoise = [
+    
+    ('AD','Agregado de Dinero'),
+    ('EP','Agregado de Productos'),
+    ("CM","Cierre de Mes"),
+    ("cP","Confirmado de Producto"),
     ('CP','Creado de Producto'),
     ("eP","Editado de Producto"),
-    ("RP","Removido de Producto"),
-    ('EP','Agregado de Productos'),
-    ("cP","Confirmado de Producto"),
-    ("CM","Cierre de Mes"),
-    ("VP","Venta de Productos"),
-    ("rP","Reembolso de Productos"),
+    ('eU','Editado de Usuario'),
     ('SP','Quitado de Productos'),
-    ('AD','Agregado de Dinero'),
+    ("rP","Reembolso de Productos"),
+    ("RP","Removido de Producto"),
     ('RD','Retiro de Dinero'),
+    ("VP","Venta de Productos"),
+    
     ]
 
 class Movement(models.Model):
@@ -252,6 +256,35 @@ class Movement(models.Model):
                     return "E0"
         return False
     @classmethod
+    def EditUser(cls,user,user_edit=None,username=None,image=None,user_activ_desact=None):
+        if user.is_admin:
+            str_info=""
+            if user_activ_desact:
+                user_activ_desact.is_active=not user_activ_desact.is_active
+                str_info="{} de Usuario".format("Activado" if user_activ_desact.is_active==True else "Desactivado")
+                
+            else:
+                if user_edit.username!=username:
+                    str_info+="Nombre: {} editado a {}<br>".format(user_edit.username,username)
+                    user_edit.username=username
+                if image:
+                    str_info+="Imagen Editada<br>"
+                    user_edit.image=image
+                
+            
+            movement=cls(type="eU",user=user,extra_info_str=str_info)
+            if movement:
+                try:
+                    if user_activ_desact:
+                        user_activ_desact.save()
+                    else:
+                        user_edit.save()
+                    movement.save()                   
+                    return True
+                except:
+                    return "E0"
+        return False
+    @classmethod
     def Add(cls,user,product,lot,lot_1,pair_action,note):
         if product and lot>0  :
             extra_info_int=None
@@ -320,7 +353,6 @@ class Movement(models.Model):
                 return False
             return "E0"
         return False
-    
     @classmethod
     def Refund(cls,user,product,movement,note):
         print("Amodel")
@@ -409,7 +441,6 @@ class Movement(models.Model):
                     r_box.save()
                     return True
         return False
-   
     @classmethod
     def RetireMoney(cls,user,lot,note):
         if lot > 0:
@@ -436,4 +467,3 @@ class Movement(models.Model):
                     r_box.save()
                     return True
         return False
-   
