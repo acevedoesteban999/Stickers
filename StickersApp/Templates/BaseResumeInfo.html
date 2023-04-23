@@ -1,9 +1,7 @@
 <div class="display-4 text-center">{% if context.week %}Semana {{context.week}}<br>{% endif %}{{context.start_date}}{% if context.end_date %} ~ {{context.end_date}}{% endif %}</div>
-            
-{% if not context.no_movements %}
-    {% if context.workers %}
+{% if context.movements_exists %}
+    {% if context.workers_exists %}
         <div class="container">
-            
             <div class="row justify-content-center text-center">
                 <div class="col">
                     <div class="table-responsive">
@@ -132,7 +130,9 @@
                                 {% if context.closesmonths %}
                                     <tr class="table-active">
                                         <td scope="row">Cierre de Mes</td>
-                                        <td></td>
+                                        <td> <span class="h6"><small>{% if context.sub_CM == False%}
+                                            No Repercute para Total Final
+                                            {% endif %}</small></span></td>
                                         <td></td>
                                         <td></td>
                                         <td></td>

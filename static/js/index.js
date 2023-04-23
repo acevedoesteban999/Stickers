@@ -1,5 +1,58 @@
 var SearchBool=false
 var ResumeBool=false
+function IputIdOfOperation()
+{
+    value_id=document.getElementById("IdInputOperation").value
+    if (value_id)
+    {
+        document.getElementById("SelectTypeId").disabled=true;
+        document.getElementById("ImputIdProduct").disabled=true;
+        document.getElementById("SelectUserId").disabled=true;
+        document.getElementById("InputDateID0").disabled=true;
+        document.getElementById("InputDateID1").disabled=true;
+        document.getElementById("InputDateID2").disabled=true;
+        document.getElementById("filter__day").disabled=true;
+        document.getElementById("filter__start").disabled=true;
+        document.getElementById("filter__end").disabled=true;
+    }
+    else
+    {
+        document.getElementById("SelectTypeId").disabled=false;
+        document.getElementById("ImputIdProduct").disabled=false;
+        document.getElementById("SelectUserId").disabled=false;
+        document.getElementById("InputDateID0").disabled=false;
+        document.getElementById("InputDateID1").disabled=false;
+        document.getElementById("InputDateID2").disabled=false;
+        document.getElementById("filter__day").disabled=false;
+        document.getElementById("filter__start").disabled=false;
+        document.getElementById("filter__end").disabled=false;
+    }
+
+}
+function LoadTodayInfo(addr)
+{
+    fetch(addr, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify({ "TodayInfo": true})
+    })
+    .then(response => response.text())
+    .then(data => 
+    {
+        document.getElementById("IdDivTodayReadyInfo").innerHTML=data
+        document.getElementById("IdDivTodayLoadingInfo").setAttribute("class","d-none")
+        document.getElementById("IdDivTodayReadyInfo").setAttribute("class","d-block")
+    })
+    .catch(error => {
+        alert(error)
+        console.log("Error:",error);
+    });
+}
+
 // function  CalcMoneyNextonth(total_money)
 // {
 //     money_next=total_money-parseInt(document.getElementById("retire_money_close_month").value);
@@ -63,6 +116,7 @@ function SolicResumInfo(addr)
         document.getElementById("idInfoResume").removeAttribute("style")
         document.getElementById("idInfoResume").innerHTML="Error, Ha ocurrido un error"
         console.log("Error:",error);
+        alert(error)
     });
 
     ResumeBool=false;
@@ -137,15 +191,30 @@ function VerifRefund(addr,product_id)
         {
             document.getElementById("IdSpiner").setAttribute("class","d-none");
             if (data == "E0" )
+            {
                 document.getElementById("DivIdInfoRefundAjax").innerHTML="Ha ocurrido un Error al Verificar";
+                alert("Ha ocurrido un Error al Verificar");
+            }
             else if (data == "E1" )
+            {
                 document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, Id:"+idRefund+" no existente";
+                alert("Error, Id:"+idRefund+" no existente");
+            }
             else if (data == "E2")
+            {
                 document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, Operacion de Id:"+idRefund+" no es de tipo Venta";
+                alert("Error, Operacion de Id:"+idRefund+" no es de tipo Venta");
+            }
             else if (data == "E3")
+            {
                 document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, El Producto de la Operacion de Id:"+idRefund+" no Coincide con el Producto en la Pagina ";
+                alert("Error, El Producto de la Operacion de Id:"+idRefund+" no Coincide con el Producto en la Pagina");
+            }
             else if (data == "E4")
+            {
                 document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, La Operacion de Id:"+idRefund+" ya ha sido Reembolsada";
+                alert("Error, La Operacion de Id:"+idRefund+" ya ha sido Reembolsada");
+            }
             else
             {
                 document.getElementById("DivIdInfoRefundAjax").innerHTML=data;
@@ -156,6 +225,7 @@ function VerifRefund(addr,product_id)
             document.getElementById("IdSpiner").setAttribute("class","d-none");
             console.log("Error:",error);
             document.getElementById("DivIdInfoRefundAjax").innerHTML="Ha ocurrido un Error al Verificar";
+            alert(error)
         });
 }
 function onPairAddUni()
@@ -204,7 +274,8 @@ function SearchProduct(addr)
             
         })
         .catch(error => {
-        console.log("Error:",error)
+            console.log("Error:",error)
+            alert(error)
         });
     setTimeout(()=>{ SearchBool=false;} ,100)    
     

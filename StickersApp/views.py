@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.http import JsonResponse,HttpResponseNotFound
-from .models import MChoise,Product,RegisteCash,Movement,Visits,SummaryDate
+from .models import MChoise,Product,RegisteCash,Movement,Visits,SummaryDate,UsEr
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import FormProduc,FormLot,FormImg
 from datetime import datetime ,timedelta,date
@@ -26,7 +26,7 @@ Tamplates Functions
 """
 Internal Functions
 """
-def Summary(movements,inicio_bool=False,products_bool=False,operations_bool=False,worker_bool=False):
+def Summary(movements,sub_CM_bool=False,products_bool=False,operations_bool=False,worker_bool=False):
         if movements:
             context=movements.filter(type="VP").values(
                         'lot',
@@ -54,6 +54,9 @@ def Summary(movements,inicio_bool=False,products_bool=False,operations_bool=Fals
                         total_worker_profit_money=Sum('worKer_proFit'),
                         total_lot=Sum('lOt'),
         )
+            if context.get("total_money")==None:
+                context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0,"total_lot":0}
+            context.update({"movements_exists":True})
             if products_bool == True:
                 products=movements.filter(type="VP").values(
                     'product__name',
@@ -81,23 +84,9 @@ def Summary(movements,inicio_bool=False,products_bool=False,operations_bool=Fals
                             'profit_worker':product['extra_info_int_2']*product['lot'],
                             }
                 context.update({"products":context1})   
-            if operations_bool == True:
-                pass
-                # operations=movements.values(
-                #     "user__username",
-                #     'id',
-                #     "type",
-                #     "product__name",
-                #     "lot",
-                # )
-                #for operation in operations:
-                #    for m in MChoise:
-                #        if m[0]== operation["type"]:
-                #            operation["type"]=m[1]
-                #            break
-                
-                #context.update({"operations":movements})
+            
             if worker_bool == True:
+                context.update({"workers_exists":True})
                 context.update({"total_total_money":context['total_money']})
                 context.update({"total_total_profit_money":context['total_profit_money']})
                 context.update({"total_total_worker_profit_money":context['total_worker_profit_money']})
@@ -111,6 +100,7 @@ def Summary(movements,inicio_bool=False,products_bool=False,operations_bool=Fals
                     'extra_info_bool',
                     'user__username',
                 )
+                
                 context1={}
                 for product in products:
                     if context1.get(product['user__username']):
@@ -140,6 +130,7 @@ def Summary(movements,inicio_bool=False,products_bool=False,operations_bool=Fals
                             }
                         }
                 context.update({"workers":context1})
+                
                 context_1=movements.filter(type="rP").values(
                         'lot',
                         'extra_info_int',
@@ -170,6 +161,7 @@ def Summary(movements,inicio_bool=False,products_bool=False,operations_bool=Fals
                     context['total_total_profit_money']-=context_1["total_profit_money"]
                     context['total_total_worker_profit_money']-=context_1["total_worker_profit_money"]
                     context.update({"refunds":context_1})
+                
                 context_1=movements.filter(type="RD").values(
                         'lot',
                     ).aggregate(
@@ -178,6 +170,7 @@ def Summary(movements,inicio_bool=False,products_bool=False,operations_bool=Fals
                 if context_1.get("total_money"):
                     context['total_total_money']-=context_1["total_money"]
                     context.update({"retires":context_1})
+                
                 context_1=movements.filter(type="AD").values(
                         'lot',
                     ).aggregate(
@@ -186,24 +179,38 @@ def Summary(movements,inicio_bool=False,products_bool=False,operations_bool=Fals
                 if context_1.get("total_money"):
                     context['total_total_money']+=context_1["total_money"]
                     context.update({"agregates":context_1})
+                
                 context_1=movements.filter(type="CM").values(
                         'lot',
                     ).aggregate(
                         total_money=Sum('lot'),
                     )
                 if context_1.get("total_money"):
-                    context['total_total_money']-=context_1["total_money"]
+                    context.update({"sub_CM":sub_CM_bool})
+                    if sub_CM_bool== True:
+                        
+                        context['total_total_money']-=context_1["total_money"]
                     context.update({"closesmonths":context_1})
-                # if inicio_bool == True:
-                #     summary_date=SummaryDate.objects.first()
-                #     if not summary_date:
-                #         raise Exception()
-                #     if summary_date.start_money>0:
-                #         context['total_total_money']+=summary_date.start_money
-                #         context.update({"start_money":summary_date.start_money})
+                
+            if operations_bool == True:
+                pass
+                # operations=movements.values(
+                #     "user__username",
+                #     'id',
+                #     "type",
+                #     "product__name",
+                #     "lot",
+                # )
+                #for operation in operations:
+                #    for m in MChoise:
+                #        if m[0]== operation["type"]:
+                #            operation["type"]=m[1]
+                #            break
+                
+                #context.update({"operations":movements})
             
         else:
-            context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0,"total_lot":0,"no_movements":True}
+            context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0,"total_lot":0}
         return context
     
 """
@@ -243,7 +250,7 @@ def BasePost(request):
                             q=Q(removed=False) & (Q(name__contains=search_value) | Q(i_d__contains=search_value))
                             products=Product.objects.filter(q)[:5]
                             if products:
-                                return render(None,"SearchProducts.html",{"products": products})
+                                return render(None,"BaseSearchProducts.html",{"products": products})
                     except Exception as e:
                         print(e)
                     return HttpResponse("NoProducts")
@@ -271,7 +278,7 @@ def BasePost(request):
                                     if "<br><div class='text-danger'>Reembolsado</div>" not in movement[0].get('extra_info_str'):
                                         print(movement[0])
                                         if movement[0].get('type') =="VP":
-                                            return render(None,"VerifRefundMovement.html",{"movement": movement[0]})
+                                            return render(None,"BaseVerifRefundMovement.html",{"movement": movement[0]})
                                         return HttpResponse("E2")
                                     return HttpResponse("E4")
                                 return HttpResponse("E3")
@@ -314,8 +321,12 @@ def BasePost(request):
                         q=Q(date__range=(start_date_month,end_date_month+timedelta(days=1)))
                     q=q&(Q(type="VP")|Q(type="rP")|Q(type="RD")|Q(type="AD")|Q(type="CM"))
                     movements=Movement.objects.filter(q)
-                    context.update(Summary(movements=movements,worker_bool=True,inicio_bool=True if filter_resume == 3 else False ))
-                    return render(None,"ResumeInfo.html",{"context":context})
+                    context.update(Summary(movements=movements,worker_bool=True,sub_CM_bool=True if filter_resume == 3 else False ))
+                    return render(None,"BaseResumeInfo.html",{"context":context})
+                elif  "TodayInfo" in data:
+                    context={}
+                    context.update(Summary(products_bool=True,movements=Movement.objects.filter(type="VP",date__day=date.today().day)))
+                    return render(None,"BaseHomeInfo.html",{"context":context,"user":request.user})
                 return HttpResponse("Error")
         return render(request,"Home.html")
     except Exception as e:
@@ -400,8 +411,8 @@ def HomeView(request):
                 visits.save()
         context={}
         if request.user.is_authenticated and (request.user.is_admin or request.user.is_worker):
-            context.update({"context_today":Summary(products_bool=True,operations_bool=True,movements=Movement.objects.filter(type="VP",date__day=date.today().day))})
-            context['context_today'].update({"today":date.today().strftime("%d-%m-%y")})
+            #context.update({"context_today":Summary(products_bool=True,operations_bool=True,movements=Movement.objects.filter(type="VP",date__day=date.today().day))})
+            context.update({'context_today':{"today":date.today().strftime("%d-%m-%y")}})
                   
             # summary_date=SummaryDate.objects.first()
             # if not summary_date:
@@ -713,6 +724,7 @@ def OperacionesView(request):
         product_filter="NF"
         date_filter="NF"
         id_filter="NF"
+        user_filter="NF"
         date_day_filter=datetime.today().strftime("%Y-%m-%d")
         date_start_filter=date_day_filter
         date_end_filter=date_day_filter
@@ -729,13 +741,10 @@ def OperacionesView(request):
                     type_filter=filter_movement.get("TypeFilter")
                     date_filter=filter_movement.get("FilterDate")
                     product_filter=filter_movement.get("ProductFilter")
-                    #user_filter=filter_movement.get("UserFilter")
-                    
+                    user_filter=filter_movement.get("UserFilter")
                     if product_filter.isdigit() and product_filter.__len__() == 4:
                         product_filter=int(product_filter)
                         q = q & Q(product__i_d=product_filter)
-                    else:
-                        product_filter=None
                     
                     #print(type_filter,product_filter,date_filter)
                     if date_filter ==  "DD":
@@ -756,10 +765,31 @@ def OperacionesView(request):
                         q = q & Q(date__range=(start_date,end_date))
                     if type_filter != "NF":
                         q = q & Q(type=type_filter)
+                    if user_filter != "NF":
+                        q = q & Q(user__username=user_filter)
         movements=Movement.objects.filter(q).order_by('-date')[:20] 
         date_today_max =datetime.today() + timedelta(days=1)
-        return render(request,"Operaciones.html",{"MChoise":MChoise,"date_end_filter":date_end_filter,"date_start_filter":date_start_filter,"date_day_filter":date_day_filter,"id_filter":id_filter,"date_today":datetime.today().strftime("%Y-%m-%d"),"date_today_max":date_today_max.strftime("%Y-%m-%d"),"movements":movements,"product_filter":product_filter,"type_filter":type_filter,"date_filter":date_filter})
+        return render(request,"Operaciones.html",{"users":UsEr.objects.values_list("username",flat=True),"MChoise":MChoise,"date_end_filter":date_end_filter,"date_start_filter":date_start_filter,"date_day_filter":date_day_filter,"id_filter":id_filter,"date_today":datetime.today().strftime("%Y-%m-%d"),"date_today_max":date_today_max.strftime("%Y-%m-%d"),"movements":movements,"product_filter":product_filter,"type_filter":type_filter,"user_filter":user_filter,"date_filter":date_filter})
     except Exception as e:
         print(e)
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
+
+def WorkersView(request):
+    try:
+        # newUser=UsEr(
+        #     username="Juanito1",
+        #     password="JuanitoPassWord",
+        #     is_worker=True,
+        #     )
+        newUser=UsEr.objects.create_user(
+            username="Juanito1",
+            password="JuanitoPassWord",
+            is_worker=True,
+            )
+        newUser.save()
+        #(newUser.values())
+    except Exception as e:
+        print("E:",e)
+        
+    return render(request,"Trabajadores.html",{})

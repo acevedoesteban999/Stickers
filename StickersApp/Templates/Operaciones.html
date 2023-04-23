@@ -2,207 +2,7 @@
 {% load static %}
 {% block contenido %}
 {% if user.is_authenticated %}
-    {% comment %} <div class="container md ">
-        {% if movements or date_filter != "NF" or type_filter != "NF" or product_filter != "NF" %}
-            <div class="container m-4"style="text-align: center;">
-                <div class="d-grid gap-2 col-6 mx-auto m-2">
-                    <a class="btn btn-light" data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">
-                        Filtro
-                    </a>
-                </div>
-                <div class="collapse" id="collapseFilter">
-                    <div class="card">
-                        <div class="card-body">
-                            <p class="card-text">
-                                <form method="POST" action="">
-                                    {% csrf_token %}
-                                    <div class="row m-3">
-                                        <div class="col-4">
-                                            <div class="h4">
-                                                Tipo 
-                                            </div>
-                                            <select name="TypeFilter" class="form-select" aria-label="Default select example">  
-                                                <option {% if type_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
-                                                {% for value,value_text in MChoise  %}
-                                                    <option {% if type_filter == "value" %} selected {% endif %} value="{{value}}">{{value_text}}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="h4">
-                                                Producto
-                                            </div>
-                                            <select name="ProductFilter" class="form-select" aria-label="Default select example">  
-                                                <option {% if product_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
-                                                {% for product in products %}
-                                                    <option {% if product_filter == product.id %} selected {% endif %} value="{{product.id}}">{{product.name}}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="row">
-                                                <div class="col-6 text-start">
-                                                    <fieldset>
-                                                        <div class="h4">
-                                                            Fecha:
-                                                        </div>
-                                                        <div>
-                                                            <input onClick="FilterTime('NF')" type="radio"  name="FilterDate" value="NF" {% if date_filter == "NF" %}checked{% endif %} >
-                                                            <label for="NF">Sin Filtro</label>
-                                                        </div>
-                                                        <div>
-                                                            <input onClick="FilterTime('DD')" type="radio"  name="FilterDate" value="DD" {% if date_filter == "DD" %}checked{% endif %}>
-                                                            <label for="FD">Dia</label>
-                                                        </div>
-                                                        <div>
-                                                            <input onClick="FilterTime('RD')" type="radio"  name="FilterDate" value="RD" {% if date_filter == "RD" %}checked{% endif %}>
-                                                            <label for="FD">Rango</label>
-                                                        </div>
-                                                    </fieldset>
-                                                </div>
-                                                <div class="col-6" >
-                                                    <div {% if date_filter != "DD" %} style="display: none" {% endif %} id="DD">
-                                                    <label for="filter__day">Fecha:</label>
-                                                        <input {% if date_filter == "DD" %}required{% endif %} type="date" id="filter__day" value="{{date_day_filter}}" max="{{date_today_max}}" name="FilterDateDay" ></input>
-                                                    </div>
-                                                    
-                                                    <div {% if date_filter != "RD" %} style="display: none" {% endif %} id="RD">
-                                                        <label for="filter__start">Fecha Incial:</label>
-                                                        <input {% if date_filter == "RD" %}required{% endif %} type="date" id="filter__start" max="{{date_today_max}}" value="{{date_start_filter}}"  name="FilterDateStart">
-                                                        <label for="filter__end">Fecha Final:</label>
-                                                        <input {% if date_filter == "RD" %}required{% endif %} type="date" id="filter__end" name="FilterDateEnd" value="{{date_end_filter}}"  max="{{date_today_max}}">
-                                                    </div>
-                                                    
-                                                </div>
-                                            </div>           
-                                        </div>       
-                                    </div>       
-                                    <div class="row">
-                                        <hr></hr>
-                                        <div class="col-4">
-                                            <input type="reset"  value="Cancelar"  class="btn btn-warning float-start" data-bs-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">         
-                                        </div>
-                                        <div class="col-4">
-                                            <input type="submit"  name="FilterRemoveMovement" class="btn btn-danger float-end mx-2" value="Eliminar Filtros">
-                                        </div>
-                                        <div class="col-4">
-                                            <input type="submit"  name="FilterMovement" class="btn btn-info float-end mx-2" value="Filtrar">
-                                        </div>
-                                    </div>       
-                                </form>        
-                            </p>
-                        </div>
-                    </div>
-                </div>     
-            </div>
-            <table class="table table-dark centrado shadow p-3 mb-5 bg-body-tertiary rounded">
-                <thead>
-                <tr> 
-                    <th scope="col" class="h3">Tipo</th>
-                    <th scope="col" class="h3">Producto</th> 
-                    <th scope="col" class="h3">Cantidad</th>
-                    <th scope="col" class="h3">Precio</th>
-                    <th scope="col" class="h3">Importe</th>
-                    <th scope="col" class="h3">Info</th> 
-                    <th scope="col" class="h3">Fecha</th>
-                    
-                </tr>
-                </thead>   
-                <tbody>  
-                    {% for movement in movements %}
-                        <tr>
-                            <th scope="row">
-                                {{movement.get_type_display}}
-                            </th>
-                            {% if movement.type == "VP" or movement.type == "rP" %}
-                                <td>
-                                    <a class="link-light h4" style=" text-decoration: none;" {% if movement.type != "RP" %}href="{% url 'producto' movement.product.id %}"{% endif %} >
-                                        <span
-                                        {% if movement.type == "VP" %}
-                                            class="badge bg-success w-100"
-                                        {% else %}
-                                            class="badge w-100" style="background-color: orangered; color: white;"
-                                        {% endif %}
-                                        >
-                                            {{movement.product.name}}
-                                        </span>
-                                    </a>
-                                </td>
-                                <td>{{movement.lot}}</td>
-                                <td>{{movement.price}}$</td>
-                                <td>{% widthratio movement.price 1 movement.lot %}$</td>
-                            {% elif movement.type == "RD" %}
-                                <td>-</td>
-                                <td>{{movement.lot}}</td>
-                                <td>-</td>
-                                <td>-</td> 
-                            {% elif movement.type == "EP" or movement.type == "SP" %}
-                                <td>
-                                    <a class="link-light h4" style=" text-decoration: none;" href="{% url 'producto' movement.product.id %}">
-                                        <span 
-                                        {% if movement.type == "EP" %}
-                                            class="badge bg-info w-100"
-                                        {% else %}
-                                            class="badge bg-secondary w-100"
-                                        {% endif %}
-                                        >
-                                            {{movement.product.name}}
-                                        </span>
-                                    </a>
-                                </td>
-                                <td>{{movement.lot}}</td>
-                                <td>-</td>
-                                <td>-</td>
-                            {% elif movement.type == "CP" or movement.type == "RP" or movement.type == "AC" or movement.type == "RC" %}
-                                <td>
-                                    <a class="link-light h4" style=" text-decoration: none;" href="{% url 'producto' movement.product.id %}">
-                                        <span 
-                                        {% if movement.type == "CP" %}
-                                            class="badge bg-primary w-100"
-                                        {% elif movement.type == "RP"%}
-                                            class="badge bg-danger w-100"
-                                        {% else%}
-                                            class="badge bg-secondary w-100"
-                                        {% endif %}
-                                        >
-                                            {% if movement.type == "RP" %}
-                                                {{movement.product.description}}
-                                            {% else %}
-                                                {{movement.product.name}}
-                                            {% endif %}
-                                        </span>
-                                    </a>
-                                </td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                            {% elif movement.type == "eP" %}
-                                <td>
-                                    <a class="link-light h4" style=" text-decoration: none;" href="{% url 'producto' movement.product.id %}">
-                                        <span class="badge bg-warning w-100">
-                                            {{movement.product.name}}
-                                        </span>
-                                    </a>
-                                </td>
-                                <td>-</td>
-                                <td>{{movement.price}}$</td>
-                                <td>-</td>
-                            {% endif %}
-                            <th scope="row">
-                                {% firstof movement.extra_info "-" %}
-                            </th>
-                            <th scope="row">
-                                {{movement.date}}
-                            </th>
-                        </tr>
-                    {% endfor %}
-
-                </tbody>
-            </table>
-        {% else %}
-        <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay Operaciones para mostrar<h2></div>
-        {% endif %}
-    </div> {% endcomment %}
+    
     <div class="display-2 my-3 text-center">  Operaciones </div>
     {% comment %} =================  FILTER ==================== {% endcomment %}
     <div class="container justify-content-center mb-3">
@@ -217,6 +17,8 @@
                                     <small>Id Operacion:  {{id_filter}}</small>
                                     <br>
                                 {% endif %}
+                            </div>
+                            <div class="col-auto">
                                 {% if type_filter != 'NF' %}
                                     {% for value,value_text in MChoise  %}
                                         {% if type_filter == value %}
@@ -225,9 +27,16 @@
                                         {% endif %}
                                     {% endfor %}
                                 {% endif %} 
+                            </div>
+                            <div class="col-auto">
                                 {% if product_filter and product_filter != 'NF' %}
                                     <small >Id Producto:  {{product_filter}}</small>
                                     <br>
+                                {% endif %}
+                            </div>
+                            <div class="col-auto">
+                                {% if user_filter != "NF" %}
+                                    <small >Usuario:  {{user_filter}}</small>
                                 {% endif %}
                             </div>
                             <div class="col-auto">
@@ -260,13 +69,13 @@
                                 <div class="py-1 mx-1 my-1 col-10 col-md-5 col-lg-3">
                                     <fieldset class="border m-1 p-2">
                                         <legend  class="float-none w-auto">Id Operacion</legend>
-                                        <input type="text" name="IdOpeartionFilter" {% if id_filter and id_filter != "NF" %}value=" {{id_filter}}"{% endif %} placeholder="Sin Filtro">
+                                        <input type="number" min="0" id="IdInputOperation" oninput="IputIdOfOperation()" name="IdOpeartionFilter" {% if id_filter and id_filter != "NF" %}value="{{id_filter}}"{% endif %} placeholder="Sin Filtro">
                                     </fieldset>
                                 </div>
                                 <div class="py-1 mx-1 my-1 col-10 col-md-5 col-lg-3">
                                     <fieldset class="border m-1 p-2">
                                         <legend  class="float-none w-auto">Tipo</legend>
-                                        <select name="TypeFilter" class="form-select" aria-label="Default select example">  
+                                        <select {% if id_filter and id_filter != "NF" %}disabled{% endif %} id="SelectTypeId"name="TypeFilter" class="form-select" aria-label="Default select example">  
                                             <option {% if type_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
                                             {% for value,value_text in MChoise  %}
                                                 <option {% if type_filter == value %} selected {% endif %} value="{{value}}">{{value_text}}</option>
@@ -277,13 +86,24 @@
                                 <div class="py-1 my-1 mx-1 col-10 col-md-5 col-lg-3">
                                     <fieldset class="border m-1 p-2">
                                         <legend  class="float-none w-auto">Id Producto</legend>
-                                        <input type="text" name="ProductFilter" {% if product_filter and product_filter != "NF" %} value=" {{product_filter}}"{% endif %} placeholder="Sin Filtro"> 
+                                        <input {% if id_filter and id_filter != "NF" %}disabled{% endif %} type="number" min="0" max="9999" id="ImputIdProduct" name="ProductFilter" {% if product_filter and product_filter != "NF" %} value="{{product_filter}}"{% endif %} placeholder="Sin Filtro"> 
                                         {% comment %} <select name="ProductFilter" class="form-select" aria-label="Default select example">  
                                             <option {% if product_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
                                             {% for product in products %}
                                                 <option {% if product_filter == product.id %} selected {% endif %} value="{{product.id}}">{{product.name}}</option>
                                             {% endfor %}
                                         </select> {% endcomment %}
+                                    </fieldset>
+                                </div>
+                                <div class="py-1 mx-1 my-1 col-10 col-md-5 col-lg-3">
+                                    <fieldset class="border m-1 p-2">
+                                        <legend  class="float-none w-auto">Usuario</legend>
+                                        <select {% if id_filter and id_filter != "NF" %}disabled{% endif %}  name="UserFilter" id="SelectUserId"class="form-select" aria-label="Default select example">  
+                                            <option {% if user_filter == "NF" %} selected  {% endif %} value="NF">Sin Filtro</option>
+                                            {% for username in users  %}
+                                                <option {% if user_filter == username %} selected {% endif %} value="{{username}}">{{username}}</option>
+                                            {% endfor %}
+                                        </select>
                                     </fieldset>
                                 </div>
                                 <div class="py-2 my-1 mx-1 col-10 col-md-5 col-lg-3 ">
@@ -296,15 +116,15 @@
                                                 </div> {% endcomment %}
                                                 <div class="row text-start">
                                                     <div>
-                                                        <input onClick="FilterTime('NF')" type="radio"  name="FilterDate" value="NF" {% if date_filter == "NF" %}checked{% endif %} >
+                                                        <input {% if id_filter and id_filter != "NF" %}disabled{% endif %} id="InputDateID0" onClick="FilterTime('NF')" type="radio"  name="FilterDate" value="NF" {% if date_filter == "NF" %}checked{% endif %} >
                                                         <label for="NF" class="h6">Sin Filtro</label>
                                                     </div>
                                                     <div>
-                                                        <input onClick="FilterTime('DD')" type="radio"  name="FilterDate" value="DD" {% if date_filter == "DD" %}checked{% endif %}>
+                                                        <input {% if id_filter and id_filter != "NF" %}disabled{% endif %}  id="InputDateID1" onClick="FilterTime('DD')" type="radio"  name="FilterDate" value="DD" {% if date_filter == "DD" %}checked{% endif %}>
                                                         <label for="FD">Dia</label>
                                                     </div>
                                                     <div>
-                                                        <input onClick="FilterTime('RD')" type="radio"  name="FilterDate" value="RD" {% if date_filter == "RD" %}checked{% endif %}>
+                                                        <input {% if id_filter and id_filter != "NF" %}disabled{% endif %} id="InputDateID2"  onClick="FilterTime('RD')" type="radio"  name="FilterDate" value="RD" {% if date_filter == "RD" %}checked{% endif %}>
                                                         <label for="FD">Rango</label>
                                                     </div>
                                                 </div>
@@ -312,13 +132,13 @@
                                                 <div {% if date_filter != "DD" %} style="display: none" {% endif %} id="DD">
                                                 <label for="filter__day">Fecha:</label>
                                                     <br>
-                                                    <input {% if date_filter == "DD" %}required{% endif %} type="date" id="filter__day" value="{{date_day_filter}}" max="{{date_today_max}}" name="FilterDateDay" ></input>
+                                                    <input {% if id_filter and id_filter != "NF" %}disabled{% endif %} {% if date_filter == "DD" %}required{% endif %} type="date" id="filter__day" value="{{date_day_filter}}" max="{{date_today_max}}" name="FilterDateDay" ></input>
                                                 </div>
                                                 <div {% if date_filter != "RD" %} style="display: none" {% endif %} id="RD">
                                                     <label for="filter__start">Fecha Incial:</label>
-                                                    <input {% if date_filter == "RD" %}required{% endif %} type="date" id="filter__start" max="{{date_today_max}}" value="{{date_start_filter}}"  name="FilterDateStart">
+                                                    <input {% if id_filter and id_filter != "NF" %}disabled{% endif %} {% if date_filter == "RD" %}required{% endif %} type="date" id="filter__start" max="{{date_today_max}}" value="{{date_start_filter}}"  name="FilterDateStart">
                                                     <label for="filter__end">Fecha Final:</label>
-                                                    <input {% if date_filter == "RD" %}required{% endif %} type="date" id="filter__end" name="FilterDateEnd" value="{{date_end_filter}}"  max="{{date_today_max}}">
+                                                    <input {% if id_filter and id_filter != "NF" %}disabled{% endif %} {% if date_filter == "RD" %}required{% endif %} type="date" id="filter__end" name="FilterDateEnd" value="{{date_end_filter}}"  max="{{date_today_max}}">
                                                 </div>
                                             </fieldset>
                                         </div>
