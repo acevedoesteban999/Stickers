@@ -26,37 +26,67 @@ Tamplates Functions
 """
 Internal Functions
 """
-def Summary(movements,sub_CM_bool=False,products_bool=False,operations_bool=False,worker_bool=False):
+def Summary(movements,days_bool=False,products_bool=False,workers_bool=False):
         if movements:
-            context=movements.filter(type="VP").values(
+            context={}
+            context.update({"movements_exists":True})
+            movements_context=movements.filter(Q(type="VP")|Q(type="rP")|Q(type="RD")|Q(type="AD")|Q(type="CM")).values(
                         'lot',
                         'extra_info_int',
                         'extra_info_int_1',
                         'extra_info_int_2',
-                        ).annotate(
-                            lOt=Sum('lot'),
-                            moNey=Sum(
-                                F('lot')* F('extra_info_int'),
-                                default=0
-                                ),
-                            proFit=Sum(
-                                F('lot')* F('extra_info_int_1'),
-                                default=0
-                                ),
-                            worKer_proFit=Sum(
-                                F('lot')* F('extra_info_int_2'),
-                                default=0
-                                ),
-                            
                     ).aggregate(
-                        total_money=Sum('moNey'),
-                        total_profit_money=Sum('proFit'),
-                        total_worker_profit_money=Sum('worKer_proFit'),
-                        total_lot=Sum('lOt'),
-        )
-            if context.get("total_money")==None:
-                context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0,"total_lot":0}
-            context.update({"movements_exists":True})
+                        sales_money=Sum(
+                                F('lot')* F('extra_info_int'),
+                                default=0,
+                                filter=Q(type="VP"),
+                                ),
+                        sales_profit=Sum(
+                                F('lot')* F('extra_info_int_1'),
+                                default=0,
+                                filter=Q(type="VP"),
+                                ),
+                        sales_profit_worker=Sum(
+                                F('lot')* F('extra_info_int_2'),
+                                default=0,
+                                filter=Q(type="VP"),
+                                ),
+                        refund_money=Sum(
+                                F('lot')* F('extra_info_int'),
+                                default=0,
+                                filter=Q(type="rP"),
+                                ),
+                        refund_profit=Sum(
+                                F('lot')* F('extra_info_int_1'),
+                                default=0,
+                                filter=Q(type="rP"),
+                                ),
+                        refund_profit_worker=Sum(
+                                F('lot')* F('extra_info_int_2'),
+                                default=0,
+                                filter=Q(type="rP"),
+                                ),
+                        retire_money=Sum(
+                                'lot',
+                                default=0,
+                                filter=Q(type="RD"),
+                                ),
+                        agregate_money=Sum(
+                                'lot',
+                                default=0,
+                                filter=Q(type="AD"),
+                                ),
+                        close_month_money=Sum(
+                                'lot',
+                                default=0,
+                                filter=Q(type="CM"),
+                                ),
+                    )
+            context.update(movements_context)
+            context.update({"final_money":movements_context["sales_money"]+movements_context["agregate_money"]-movements_context["refund_money"]-movements_context["retire_money"]})
+            context.update({"final_profit":movements_context["sales_profit"]-movements_context["refund_profit"]})
+            context.update({"final_profit_worker":movements_context["sales_profit_worker"]-movements_context["refund_profit_worker"]})
+
             if products_bool == True:
                 products=movements.filter(type="VP").values(
                     'product__name',
@@ -65,15 +95,19 @@ def Summary(movements,sub_CM_bool=False,products_bool=False,operations_bool=Fals
                     'extra_info_int',
                     'extra_info_int_1',
                     'extra_info_int_2',
-                    'extra_info_bool',
                 )
                 context1={}
+                context2={"total_money":0,"total_profit":0,"total_profit_worker":0,"total_lot":0}
                 for product in products:
                     if context1.get(product['product__i_d']):
                         context1[product['product__i_d']]['lot']+=product['lot']
                         context1[product['product__i_d']]['money']+=product['extra_info_int']*product['lot'] 
                         context1[product['product__i_d']]['profit']+=product['extra_info_int_1']*product['lot'] 
                         context1[product['product__i_d']]['profit_worker']+=product['extra_info_int_2']*product['lot'] 
+                        context2['total_money']+=product['extra_info_int']*product['lot'] 
+                        context2['total_profit']+=product['extra_info_int_1']*product['lot'] 
+                        context2['total_profit_worker']+=product['extra_info_int_2']*product['lot'] 
+                        context2['total_lot']+=product['lot'] 
                     else:
                         context1[product['product__i_d']]={
                             "name":product['product__name'],
@@ -83,132 +117,150 @@ def Summary(movements,sub_CM_bool=False,products_bool=False,operations_bool=Fals
                             'profit':product['extra_info_int_1']*product['lot'],
                             'profit_worker':product['extra_info_int_2']*product['lot'],
                             }
-                context.update({"products":context1})   
+                        context2['total_money']+=product['extra_info_int']*product['lot'] 
+                        context2['total_profit']+=product['extra_info_int_1']*product['lot'] 
+                        context2['total_profit_worker']+=product['extra_info_int_2']*product['lot'] 
+                context.update({"products":context1}) 
+                context.update({"products_totals":context2}) 
+                context.update({"products_exists":True})   
             
-            if worker_bool == True:
-                context.update({"workers_exists":True})
-                context.update({"total_total_money":context['total_money']})
-                context.update({"total_total_profit_money":context['total_profit_money']})
-                context.update({"total_total_worker_profit_money":context['total_worker_profit_money']})
-                products=movements.filter(type="VP").values(
-                    'product__name',
-                    'product__i_d',
-                    'lot',
-                    'extra_info_int',
-                    'extra_info_int_1',
-                    'extra_info_int_2',
-                    'extra_info_bool',
-                    'user__username',
-                )
-                
-                context1={}
-                for product in products:
-                    if context1.get(product['user__username']):
-                        if context1[product['user__username']].get(product['product__i_d']):
-                            context1[product['user__username']][product['product__i_d']]['lot']+=product['lot']
-                            context1[product['user__username']][product['product__i_d']]['money']+=product['extra_info_int']*product['lot']
-                            context1[product['user__username']][product['product__i_d']]['profit']+=product['extra_info_int_1']*product['lot']
-                            context1[product['user__username']][product['product__i_d']]['profit_worker']+=product['extra_info_int_2']*product['lot']
-                        else:
-                            context1[product['user__username']][product['product__i_d']]={
-                                "name":product['product__name'],
-                                "i_d":product['product__i_d'],
-                                "lot":product['lot'],
-                                "money":product['extra_info_int'] *product['lot'] ,
-                                "profit":product['extra_info_int_1'] *product['lot'] ,
-                                "profit_worker":product['extra_info_int_2'] *product['lot'] ,
-                            }
-                    else:
-                        context1[product['user__username']]={
-                            product['product__i_d']:{
-                                "name":product['product__name'],
-                                "i_d":product['product__i_d'],
-                                "lot":product['lot'],
-                                "money":product['extra_info_int'] *product['lot'] ,
-                                "profit":product['extra_info_int_1'] *product['lot'] ,
-                                "profit_worker":product['extra_info_int_2'] *product['lot'] ,
-                            }
-                        }
-                context.update({"workers":context1})
-                
-                context_1=movements.filter(type="rP").values(
+            if workers_bool == True:
+                    products=movements.filter(type="VP").values(
+                        'product__name',
+                        'product__i_d',
                         'lot',
                         'extra_info_int',
                         'extra_info_int_1',
                         'extra_info_int_2',
-                        ).annotate(
-                            moNey=Sum(
-                                F('lot')* F('extra_info_int'),
-                                default=0
-                                ),
-                            proFit=Sum(
-                                F('lot')* F('extra_info_int_1'),
-                                default=0
-                                ),
-                            worKer_proFit=Sum(
-                                F('lot')* F('extra_info_int_2'),
-                                default=0
-                                ),
-                    ).aggregate(
-                        total_money=Sum('moNey'),
-                        total_profit_money=Sum('proFit'),
-                        total_worker_profit_money=Sum('worKer_proFit'),
-                        total_lot=Sum('lot'),
+                        'extra_info_bool',
+                        'user__username',
                     )
-                if context_1.get("total_money"):
-                    context['total_lot_refunds']=context_1["total_lot"]
-                    context['total_total_money']-=context_1["total_money"]
-                    context['total_total_profit_money']-=context_1["total_profit_money"]
-                    context['total_total_worker_profit_money']-=context_1["total_worker_profit_money"]
-                    context.update({"refunds":context_1})
-                
-                context_1=movements.filter(type="RD").values(
-                        'lot',
-                    ).aggregate(
-                        total_money=Sum('lot'),
-                    )
-                if context_1.get("total_money"):
-                    context['total_total_money']-=context_1["total_money"]
-                    context.update({"retires":context_1})
-                
-                context_1=movements.filter(type="AD").values(
-                        'lot',
-                    ).aggregate(
-                        total_money=Sum('lot'),
-                    )
-                if context_1.get("total_money"):
-                    context['total_total_money']+=context_1["total_money"]
-                    context.update({"agregates":context_1})
-                
-                context_1=movements.filter(type="CM").values(
-                        'lot',
-                    ).aggregate(
-                        total_money=Sum('lot'),
-                    )
-                if context_1.get("total_money"):
-                    context.update({"sub_CM":sub_CM_bool})
-                    if sub_CM_bool== True:
+                    
+                    context1={}
+                    context2={"total_money":0,"total_profit":0,"total_profit_worker":0,"total_lot":0}
+                    for product in products:
+                        if context1.get(product['user__username']):
+                            if context1[product['user__username']]["products"].get(product['product__i_d']):
+                                context1[product['user__username']]["products"][product['product__i_d']]['lot']+=product['lot']
+                                context1[product['user__username']]["products"][product['product__i_d']]['money']+=product['extra_info_int']*product['lot']
+                                context1[product['user__username']]["products"][product['product__i_d']]['profit']+=product['extra_info_int_1']*product['lot']
+                                context1[product['user__username']]["products"][product['product__i_d']]['profit_worker']+=product['extra_info_int_2']*product['lot']
+                                context1[product['user__username']]["total_money"]+=product['extra_info_int'] *product['lot']
+                                context1[product['user__username']]["total_profit"]+=product['extra_info_int_1'] *product['lot']
+                                context1[product['user__username']]["total_profit_worker"]+=product['extra_info_int_2'] *product['lot']
+                                context1[product['user__username']]["total_lot"]+=product['lot']
+                                context2["total_money"]+=product['extra_info_int'] *product['lot']
+                                context2["total_profit"]+=product['extra_info_int_1'] *product['lot']
+                                context2["total_profit_worker"]+=product['extra_info_int_2'] *product['lot']
+                                context2["total_lot"]+=product['lot']
+                            else:
+                                context1[product['user__username']]["products"][product['product__i_d']]={
+                                    "name":product['product__name'],
+                                    "i_d":product['product__i_d'],
+                                    "lot":product['lot'],
+                                    "money":product['extra_info_int'] *product['lot'] ,
+                                    "profit":product['extra_info_int_1'] *product['lot'] ,
+                                    "profit_worker":product['extra_info_int_2'] *product['lot'],
+                                }
+                                context1[product['user__username']]["total_money"]+=product['extra_info_int'] *product['lot']
+                                context1[product['user__username']]["total_profit"]+=product['extra_info_int_1'] *product['lot']
+                                context1[product['user__username']]["total_profit_worker"]+=product['extra_info_int_2'] *product['lot']
+                                context1[product['user__username']]["total_lot"]+=product['lot']
+                                context2["total_money"]+=product['extra_info_int'] *product['lot']
+                                context2["total_profit"]+=product['extra_info_int_1'] *product['lot']
+                                context2["total_profit_worker"]+=product['extra_info_int_2'] *product['lot']
+                                context2["total_lot"]+=product['lot']
+                                
+                        else:
+                            context1[product['user__username']]={
+                                "products":{
+                                    product['product__i_d']:{
+                                        "name":product['product__name'],
+                                        "i_d":product['product__i_d'],
+                                        "lot":product['lot'],
+                                        "money":product['extra_info_int'] *product['lot'] ,
+                                        "profit":product['extra_info_int_1'] *product['lot'] ,
+                                        "profit_worker":product['extra_info_int_2'] *product['lot'] ,
+                                    }
+                                },
+                                "total_money":product['extra_info_int'] *product['lot'],
+                                "total_profit":product['extra_info_int_1'] *product['lot'],
+                                "total_profit_worker":product['extra_info_int_2'] *product['lot'],
+                                "total_lot":product['lot'],
+                            }
+                            context2["total_money"]+=product['extra_info_int'] *product['lot']
+                            context2["total_profit"]+=product['extra_info_int_1'] *product['lot']
+                            context2["total_profit_worker"]+=product['extra_info_int_2'] *product['lot']
+                            context2["total_lot"]+=product['lot']
+                    print(context1)
+                    print(context2)
+                    context.update({"workers":context1})
+                    context.update({"workers_totals":context2}) 
+                    context.update({"workers_exists":True})
+                    #context.update({"total_total_money":context['total_money']})
+                    #context.update({"total_total_profit_money":context['total_profit_money']})
+                    #context.update({"total_total_worker_profit_money":context['total_worker_profit_money']})
+                    
+                    # context_1=movements.filter(type="rP").values(
+                    #         'lot',
+                    #         'extra_info_int',
+                    #         'extra_info_int_1',
+                    #         'extra_info_int_2',
+                    #         ).annotate(
+                    #             moNey=Sum(
+                    #                 F('lot')* F('extra_info_int'),
+                    #                 default=0
+                    #                 ),
+                    #             proFit=Sum(
+                    #                 F('lot')* F('extra_info_int_1'),
+                    #                 default=0
+                    #                 ),
+                    #             worKer_proFit=Sum(
+                    #                 F('lot')* F('extra_info_int_2'),
+                    #                 default=0
+                    #                 ),
+                    #     ).aggregate(
+                    #         total_money=Sum('moNey'),
+                    #         total_profit_money=Sum('proFit'),
+                    #         total_worker_profit_money=Sum('worKer_proFit'),
+                    #         total_lot=Sum('lot'),
+                    #     )
+                    # if context_1.get("total_money"):
+                    #     context['total_lot_refunds']=context_1["total_lot"]
+                    #     context['total_total_money']-=context_1["total_money"]
+                    #     context['total_total_profit_money']-=context_1["total_profit_money"]
+                    #     context['total_total_worker_profit_money']-=context_1["total_worker_profit_money"]
+                    #     context.update({"refunds":context_1})
+                    
+                    # context_1=movements.filter(type="RD").values(
+                    #         'lot',
+                    #     ).aggregate(
+                    #         total_money=Sum('lot'),
+                    #     )
+                    # if context_1.get("total_money"):
+                    #     context['total_total_money']-=context_1["total_money"]
+                    #     context.update({"retires":context_1})
+                    
+                    # context_1=movements.filter(type="AD").values(
+                    #         'lot',
+                    #     ).aggregate(
+                    #         total_money=Sum('lot'),
+                    #     )
+                    # if context_1.get("total_money"):
+                    #     context['total_total_money']+=context_1["total_money"]
+                    #     context.update({"agregates":context_1})
+                    
+                    # context_1=movements.filter(type="CM").values(
+                    #         'lot',
+                    #     ).aggregate(
+                    #         total_money=Sum('lot'),
+                    #     )
+                    # if context_1.get("total_money"):
                         
-                        context['total_total_money']-=context_1["total_money"]
-                    context.update({"closesmonths":context_1})
+                    #     context['total_total_money']-=context_1["total_money"]
+                    #     context.update({"closesmonths":context_1})
+                    
                 
-            if operations_bool == True:
-                pass
-                # operations=movements.values(
-                #     "user__username",
-                #     'id',
-                #     "type",
-                #     "product__name",
-                #     "lot",
-                # )
-                #for operation in operations:
-                #    for m in MChoise:
-                #        if m[0]== operation["type"]:
-                #            operation["type"]=m[1]
-                #            break
-                
-                #context.update({"operations":movements})
-            
         else:
             context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0,"total_lot":0}
         return context
@@ -319,13 +371,21 @@ def BasePost(request):
                         context.update({"start_date":datetime.strptime(start_date_month,"%Y-%m-%d").date().strftime("%d-%m-%y")})
                         context.update({"end_date":end_date_month.strftime("%d-%m-%y")})
                         q=Q(date__range=(start_date_month,end_date_month+timedelta(days=1)))
+                    
+                    #product_bool=True if data.get("filter_product") else False
+                    #worker_bool=True if data.get("filter_worker") else False
+                    #day_bool=True if data.get("filter_day") else False
+                    
+                    products_bool=data.get("filter_product")
+                    workers_bool= data.get("filter_worker") 
+                    #days_bool=data.get("filter_day") 
                     q=q&(Q(type="VP")|Q(type="rP")|Q(type="RD")|Q(type="AD")|Q(type="CM"))
                     movements=Movement.objects.filter(q)
-                    context.update(Summary(movements=movements,worker_bool=True,sub_CM_bool=True if filter_resume == 3 else False ))
+                    context.update(Summary(movements=movements,workers_bool=workers_bool,products_bool=products_bool ))
                     return render(None,"BaseResumeInfo.html",{"context":context})
                 elif  "TodayInfo" in data:
                     context={}
-                    context.update(Summary(products_bool=True,movements=Movement.objects.filter(type="VP",date__day=date.today().day)))
+                    #context.update(Summary(products_bool=True,movements=Movement.objects.filter(date__day=date.today().day)))
                     return render(None,"BaseHomeInfo.html",{"context":context,"user":request.user})
                 return HttpResponse("Error")
         return render(request,"Home.html")
@@ -438,7 +498,7 @@ def CajaView(request):
     try:
         user=request.user
         if user.is_authenticated and user.is_admin:
-            movements=Movement.objects.filter(Q(type="VP") | Q(type="RD") | Q(type="AD") | Q(type="rP")).order_by('-date')[:20]
+            movements=Movement.objects.filter(Q(type="VP") | Q(type="CM") | Q(type="RD") | Q(type="AD") | Q(type="rP")).order_by('-date')[:20]
             if "RetireMoney" in request.POST:
                 retire_product=request.POST.dict()
                 lot_retire=int(retire_product.get("cantidad"))
@@ -570,34 +630,23 @@ def ProductoView(request,productoID):
                         files.is_valid()
                         name=edit_product.get("name")
                         i_d=edit_product.get("i_d")
-                        pair_stored=None
-                        pair_sold=None
                         pair_price=None
                         pair_profit_worker=None
                         if product.pair:
-                            pair_stored=int(edit_product.get("almacenado pares"))
-                            pair_sold=int(edit_product.get("vendido pares"))
                             pair_price=int(edit_product.get("precio pares"))
                             pair_profit=int(edit_product.get("ganancia pares"))
                             pair_profit_worker=int(edit_product.get("ganancia pares trabajador"))
-                        unit_stored=int(edit_product.get("almacenado unitario"))
-                        unit_sold=int(edit_product.get("vendido unitario"))
                         unit_price=int(edit_product.get("precio unitario"))
                         unit_profit=int(edit_product.get("ganancia unitario"))
                         unit_profit_worker=int(edit_product.get("ganancia unitario trabajador"))
-                        #price=edit_product.get("precio")
                         description=edit_product.get("descripcion")
                         image=files.cleaned_data.get("imagen")
                         result=Movement.Edit(user=user,product=product,
                                             name=name,
                                             i_d=i_d,
-                                            pair_stored=pair_stored,
-                                            pair_sold=pair_sold,
                                             pair_price=pair_price,
                                             pair_profit=pair_profit,
                                             pair_profit_worker=pair_profit_worker,
-                                            unit_stored=unit_stored,
-                                            unit_sold=unit_sold,
                                             unit_price=unit_price,
                                             unit_profit=unit_profit,
                                             unit_profit_worker=unit_profit_worker,
@@ -783,26 +832,9 @@ def UsersView(request):
         #     is_worker=True,
         #     )
         context={}
-        admins=UsEr.objects.filter(is_active=True,is_admin=True).values(
-            "id",
-            "username",
-            "last_login",
-            
-        )
-        for a in admins:
-            print(a["last_login"].date())
-        workers=UsEr.objects.filter(is_active=True,is_worker=True,is_superuser=False).values(
-            "id",
-            "username",
-            "last_login",
-            
-        )
-        users_desactivated=UsEr.objects.filter(is_active=False).values(
-            "id",
-            "username",
-            "is_admin",
-            "is_worker",
-        )
+        admins=UsEr.objects.filter(is_active=True,is_admin=True,is_superuser=False)
+        workers=UsEr.objects.filter(is_active=True,is_worker=True,is_superuser=False)
+        users_desactivated=UsEr.objects.filter(is_active=False)
         context.update({"admins":admins})
         context.update({"workers":workers})
         if users_desactivated.__len__():

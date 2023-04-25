@@ -7,43 +7,43 @@
             {% comment %}=================================== Product Info =================================  {% endcomment %}
             <div class="card my-3" style="max-width: auto;">
                 <div class="row justify-content-center cols-1 cols-md-2 mb-4 ">
-                    <div class="col-12 col-md-6 mb-1 ">
+                    <div class="col-12 col-md-6 mb-1">
                         <div class="row h-100 justify-content-center align-items-center pt-3 mt-3">
-                            {% if product.image  %}
-                                <div id="carouselExampleIndicators" class="carousel slide carousel-dark">    
-                                    
-                                        <div class="carousel-indicators">
-                                            {% if product.image %}
-                                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>     
-                                            {% endif %}
-                                            
-                                        </div>
-                                    
-                                    <div class="row justify-content-center">
-                                        <div class="col-8 col-md-12 col-lg-12 col-xl-12 text-center">
-                                            <div class="carousel-inner  m-2 px-1">
-                                                {% if product.image  %}
-                                                    <div class="carousel-item active" >
-                                                        <img src="{{product.image.url}}" style="max-width: 320px;max-height: 280px;"  class="img-fluid  border border-0 " alt="...">
-                                                    </div> 
+                            <div class="col-12 col-md-8">
+                                {% if product.image  %}
+                                    <div id="carouselExampleIndicators" class="carousel slide carousel-dark">    
+                                        
+                                            <div class="carousel-indicators">
+                                                {% if product.image %}
+                                                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>     
                                                 {% endif %}
+                                                
+                                            </div>
+                                        
+                                        <div class="row justify-content-center">
+                                            <div class="col-8 col-md-12 col-lg-12 col-xl-12 text-center">
+                                                <div class="carousel-inner  m-2 px-1">
+                                                    {% if product.image  %}
+                                                        <div class="carousel-item active" >
+                                                            <img src="{{product.image.url}}" class="img-fluid img-thumbnail" alt="...">
+                                                        </div> 
+                                                    {% endif %}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>  
-                            {% else %}
-                                <img src="" class="card-img-top img-fluid img-thumbnail border border-0" alt="{{Product.name}} no tiene imagen asignada">
-                            {% endif %} 
-                                
+                                    </div>  
+                                {% else %}
+                                    <img src="" class="card-img-top img-fluid img-thumbnail border border-0" alt="{{Product.name}} no tiene imagen asignada">
+                                {% endif %} 
+                            </div>
                         </div>
                     </div>
-                    <div class="col">
-                        <div class="continer text-center">
-                            <div class="row justify-content-center">
-                                <div class="my-2 px-4 mt-md-5 border border-dark border-3 w-auto">
-                                    <strong class="h1 px-1 ">
-                                        {{product.name}}
-                                    </strong>
+                    <div class="col-12 col-md-6">
+                        <div class="row justify-content-center align-items-center h-100 text-center">
+                            <div class="col-12 my-2 px-4 mt-md-5 border border-dark border-3 w-auto">
+                                <strong class="h1 px-1 ">
+                                    {{product.name}}
+                                </strong>
                                 {% if user.is_authenticated %}
                                     <span>
                                         <small class="text-muted pl-2">
@@ -51,82 +51,81 @@
                                         </small>
                                     </span>
                                 {% endif %}
-                                </div>
-                                
-                                <div class="m-2">
-                                    <div class="px-4">
-                                        {% if product.pair %}
-                                            <span class="h2 m-1">
-                                                {{product.pair_price}}$
-                                            </span>
-                                            <span>
-                                                <small class="text-muted pl-2">
-                                                    el Par
-                                                </small>
-                                            </span>
-                                            <div class="row justify-content-center align-items-center text-center">
+                            </div>
+                            <div class="col-12 m-2">
+                                <div class="px-4">
+                                    {% if product.pair %}
+                                        <span class="h2 m-1">
+                                            {{product.pair_price}}$
+                                        </span>
+                                        <span>
+                                            <small class="text-muted pl-2">
+                                                el Par
+                                            </small>
+                                        </span>
+                                        <div class="row justify-content-center align-items-center text-center">
 
-                                           
+                                        
 
+                                            {% if user.is_admin or user.is_worker %}
+                                                <div class="col-6 mt-3 w-auto">
+                                                    <fieldset class="border">
+                                                        <legend class="float-none w-auto">Pares Almacenadas</legend>
+                                                        <div class="h4">
+                                                            {{product.pair_stored}}
+                                                        </div>
+                                                    </fieldset>
+                                                </div>        
+                                            {% endif %}   
+                                                
+                                            {% if product.unit_stored != 0 %}      
                                                 {% if user.is_admin or user.is_worker %}
                                                     <div class="col-6 mt-3 w-auto">
                                                         <fieldset class="border">
-                                                            <legend class="float-none w-auto">Pares Almacenadas</legend>
+                                                            <legend class="float-none w-auto">Unidades Almacenadas</legend>
                                                             <div class="h4">
-                                                                {{product.pair_stored}}
+                                                                {{product.unit_stored}}
+                                                                
                                                             </div>
                                                         </fieldset>
-                                                    </div>        
-                                                {% endif %}   
-                                                    
-                                                {% if product.unit_stored != 0 %}      
-                                                    {% if user.is_admin or user.is_worker %}
-                                                        <div class="col-6 mt-3 w-auto">
-                                                            <fieldset class="border">
-                                                                <legend class="float-none w-auto">Unidades Almacenadas</legend>
-                                                                <div class="h4">
-                                                                    {{product.unit_stored}}
-                                                                    
-                                                                </div>
-                                                            </fieldset>
-                                                        </div>                   
-                                                    {% endif %}
+                                                    </div>                   
                                                 {% endif %}
-                                            </div>
-
-                                        {% else %}
-                                            <span class="h2 m-1">
-                                                {{product.unit_price}}$
-                                            </span>
-                                            <span>
-                                                <small class="text-muted pl-2">
-                                                    la Unidad
-                                                </small>
-                                            </span>
-                                            {% if user.is_admin or user.is_worker %}
-                                                <div class="row justify-content-center mt-3">
-                                                    <fieldset class="border w-auto">
-                                                        <legend class="float-none">Unidades Almacenadas</legend>
-                                                        <div class="h4">
-                                                            {{product.unit_stored}}
-                                                            
-                                                        </div>
-                                                    </fieldset>
-                                                </div>                   
                                             {% endif %}
+                                        </div>
+
+                                    {% else %}
+                                        <span class="h2 m-1">
+                                            {{product.unit_price}}$
+                                        </span>
+                                        <span>
+                                            <small class="text-muted pl-2">
+                                                la Unidad
+                                            </small>
+                                        </span>
+                                        {% if user.is_admin or user.is_worker %}
+                                            <div class="row justify-content-center mt-3">
+                                                <fieldset class="border w-auto">
+                                                    <legend class="float-none">Unidades Almacenadas</legend>
+                                                    <div class="h4">
+                                                        {{product.unit_stored}}
+                                                        
+                                                    </div>
+                                                </fieldset>
+                                            </div>                   
                                         {% endif %}
-                                                                         
-                                        
-                                        
-                                    </div>
+                                    {% endif %}
+                                                                        
+                                    
+                                    
                                 </div>
-                                <p class=" m-2 my-2 py-1 w-75 text-center text-break">
-                                    <small class="text-muted">
-                                        {{product.description}}
-                                    </small>
-                                </p>
                             </div>
+                            <p class="col-12 m-2 my-2 py-1 w-75 text-center text-break">
+                                <small class="text-muted">
+                                    {{product.description}}
+                                </small>
+                            </p>
                         </div>
+                        
                     </div>
                 </div>
                 {% if user.is_admin or user.is_worker %}
@@ -367,14 +366,7 @@
                                                     <input required min="0" type="number" value="{{product.pair_profit_worker}}"  class="form-control"  name="ganancia pares trabajador" id="ParesGanancia" placeholder="Pago a Trabajador">
                                                     <label for="floatingInput">Pago a Trabajador por Par</label>
                                                 </div>
-                                                <div class="form-floating mb-3">
-                                                    <input required min="0" type="number" value="{{product.pair_stored}}"  class="form-control"  name="almacenado pares" placeholder="Precio">
-                                                    <label for="floatingInput">Pares Almacenados </label>
-                                                </div>
-                                                <div class="form-floating mb-3">
-                                                    <input required min="0" type="number" value="{{product.pair_sold}}"  class="form-control"  name="vendido pares" placeholder="Precio">
-                                                    <label for="floatingInput">Pares Vendidos </label>
-                                                </div>
+                                                
                                                     
                                                 </fieldset>
                                         {% endif %}
@@ -393,14 +385,7 @@
                                                 <input required min="0" type="number" value="{{product.unit_profit_worker}}"  class="form-control"  name="ganancia unitario trabajador" id="ParesGanancia" placeholder="Pago a Trabajador">
                                                 <label for="floatingInput">Pago a Trabajador por Unidad </label>
                                             </div>    
-                                            <div class="form-floating mb-3">
-                                                <input required min="0" type="number" value="{{product.unit_stored}}"  class="form-control"  name="almacenado unitario" placeholder="Precio">
-                                                <label for="floatingInput">Unidades Almacenadas  </label>
-                                            </div>
-                                            <div class="form-floating mb-3">
-                                                <input required min="0" type="number" value="{{product.unit_sold}}"  class="form-control"  name="vendido unitario" placeholder="Precio">
-                                                <label for="floatingInput">Unidades Vendidas </label>
-                                            </div>
+                                            
                                             
                                         </fieldset>
 
@@ -418,12 +403,10 @@
                                                         <input src="{% if product.image %} {{product.image.url}} {% endif %}" onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Imagen">
                                                     </div>
                                                 </div> 
-                                                {% comment %} <div class="col-3">
-                                                    <a class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
-                                                </div>     {% endcomment %}
+                                                
                                             </div>
                                             <div class="d-flex justify-content-around m-3">
-                                                <img id="imgPre" src="{% if product.image %} {{product.image.url}} {% endif %}" width="200" height="200"  alt=" " >
+                                                <img id="imgPre" src="{% if product.image %} {{product.image.url}} {% endif %}" class="img-fluid"  alt=" " >
                                             </div>
                                         </div>
                                     </div>
@@ -473,41 +456,6 @@
                                         <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
                                         <label for="floatingInput">Nota Adicional</label>
                                     </div>
-
-                                    {% comment %}   Labels Money 
-                                     <div class="continer my-2 text-center h5">
-                                        Importe: <span id="divIdChangeSellLot" class="text-success h5">
-                                        {% if product.pair %}
-                                                {{product.pair_price}}
-                                            {% else %}
-                                                {{product.unit_price}}
-                                        {% endif %} 
-                                        </span>$
-                                        <br>
-                                        {% if user.is_admin %}
-                                            <div class="h6">
-                                                Ganancia: 
-                                                <span id="divIdChangeProfitLot" class="text-success h5">
-                                                    {% if product.pair %}
-                                                            {{product.pair_profit}}
-                                                        {% else %}
-                                                            {{product.unit_profit}}
-                                                    {% endif %} 
-                                                </span>$
-                                            </div>
-                                        {% endif %}
-                                            
-                                        <div class="h6">
-                                            Pago a Trabajador: 
-                                            <span id="divIdChangeProfitWorkerLot" class="text-success h5">
-                                                {% if product.pair %}
-                                                        {{product.pair_profit_worker}}
-                                                    {% else %}
-                                                        {{product.unit_profit_worker}}
-                                                {% endif %} 
-                                            </span>$
-                                        </div>
-                                    </div> {% endcomment %}
                                     <div class="row justify-content-around m-2">
                                         <div class="col-6 ">
                                             <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         

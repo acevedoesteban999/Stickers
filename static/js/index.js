@@ -48,7 +48,7 @@ function LoadTodayInfo(addr)
         document.getElementById("IdDivTodayReadyInfo").setAttribute("class","d-block")
     })
     .catch(error => {
-        alert(error)
+        //alert(error)
         console.log("Error:",error);
     });
 }
@@ -92,6 +92,9 @@ function SolicResumInfo(addr)
     var week_resume=document.getElementById("week_resume_input").value;
     var start_date_month=document.getElementById("date_month_start_date").value
     var end_date_month=document.getElementById("date_month_end_date").value
+    var filter_worker=document.getElementById("filter_worker").checked
+    //var filter_day=document.getElementById("filter_day").checked
+    var filter_product=document.getElementById("filter_product").checked
     document.getElementById("idSpinerResume").removeAttribute("style")
     document.getElementById("idInfoResume").setAttribute("style","display: none;")
     fetch(addr, {
@@ -101,7 +104,16 @@ function SolicResumInfo(addr)
             "X-Requested-With": "XMLHttpRequest",
             "X-CSRFToken": getCookie("csrftoken"),
         },
-        body: JSON.stringify({ "FilterResumeValue": value,"start_date_month":start_date_month,"end_date_month":end_date_month,"week_resume":week_resume,"date_resume":date_resume})
+        body: JSON.stringify({ 
+            "FilterResumeValue": value,
+            "start_date_month":start_date_month,
+            "end_date_month":end_date_month,
+            "week_resume":week_resume,
+            "date_resume":date_resume,
+            "filter_worker":filter_worker,
+            //"filter_day":filter_day,
+            "filter_product":filter_product,
+        })
     })
     .then(response => response.text())
     .then(data => 
@@ -144,6 +156,10 @@ function FilterResumeFunct(bool_card=false,day_today=false,this_week=false,strat
         document.getElementById("DivIDWeek").setAttribute("style","display: none;");
         document.getElementById("DivIDDay").removeAttribute("style");
         document.getElementById("DivIDMonth").setAttribute("style","display: none;");
+        //document.getElementById("IdDivFilterDia").setAttribute("class","d-none");
+        //document.getElementById("filter_day").checked=false;
+        document.getElementById("filter_worker").checked=false;
+        document.getElementById("filter_product").checked=false;
         document.getElementById("DivIDDay").required=true;
         document.getElementById("DivIDWeek").required=false;
     }
@@ -153,6 +169,10 @@ function FilterResumeFunct(bool_card=false,day_today=false,this_week=false,strat
             document.getElementById("week_resume_input").value=this_week;
         document.getElementById("DivIDDay").setAttribute("style","display: none;");
         document.getElementById("DivIDMonth").setAttribute("style","display: none;");
+        //document.getElementById("IdDivFilterDia").setAttribute("class","d-block");
+        //document.getElementById("filter_day").checked=false;
+        document.getElementById("filter_worker").checked=false;
+        document.getElementById("filter_product").checked=false;
         document.getElementById("DivIDWeek").removeAttribute("style");
         document.getElementById("DivIDWeek").required=true;
         document.getElementById("DivIDDay").required=false;
@@ -166,6 +186,10 @@ function FilterResumeFunct(bool_card=false,day_today=false,this_week=false,strat
         }
         document.getElementById("DivIDDay").setAttribute("style","display: none;")
         document.getElementById("DivIDWeek").setAttribute("style","display: none;")
+        //document.getElementById("IdDivFilterDia").setAttribute("class","d-block");
+        //document.getElementById("filter_day").checked=false;
+        document.getElementById("filter_worker").checked=false;
+        document.getElementById("filter_product").checked=false;
         document.getElementById("DivIDMonth").removeAttribute("style");
         document.getElementById("DivIDWeek").required=false
         document.getElementById("DivIDDay").required=false

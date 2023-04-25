@@ -109,48 +109,87 @@
       <div class="col-auto">
         <div class="card">
           <div class="card-body">
+            
             <div class="row text-center" >
-              <h4 class="card-title">Solicitar Resumen</h4>
+              <h4 class="card-title">Solicitar</h4>
             </div>
             <div class="row justify-content-center text-center align-items-center">
               <div class="col-12">
                 <div class="row justify-content-center text-start align-items-center">
-                  <div class="col-4">
-                    <input onClick="FilterResumeFunct()" id="FilterResumeDay" type="radio" checked name="FilterResume" value="1">
-                    <label for="FilterResumeDay" class="h6">Dia</label>
-                    <br>
-                    <input onClick="FilterResumeFunct()" id="FilterResumeWeek" type="radio" name="FilterResume" value="2">
-                    <label for="FilterResumeWeek" class="h6">Semana</label>
-                    <br>
-                    <input onClick="FilterResumeFunct()" id="FilterResumeMonth" type="radio" name="FilterResume" value="3">
-                    <label for="FilterResumeMonth" class="h6">Mes</label>
+                  <div class="col-auto">
+                    <fieldset class="border px-3 my-3">
+                      <legend class="float-none w-auto h5">Solicitar Filtro</legend>
+                      <input onClick="FilterResumeFunct()" id="FilterResumeDay" type="radio" checked name="FilterResume" value="1">
+                      <label for="FilterResumeDay" class="h6">Dia</label>
+                      <br>
+                      <input onClick="FilterResumeFunct()" id="FilterResumeWeek" type="radio" name="FilterResume" value="2">
+                      <label for="FilterResumeWeek" class="h6">Semana</label>
+                      <br>
+                      <input onClick="FilterResumeFunct()" id="FilterResumeMonth" type="radio" name="FilterResume" value="3">
+                      <label for="FilterResumeMonth" class="h6">Mes</label>
+                    </fieldset>
                   </div>
                 </div>
               </div>
-              <div class="col-12 m-2">
-                <div id="DivIDDay">
-                  <div class="h5 my-2">Dia:</div>
-                  <input type="date" value="{{context.context_today.today_w_f}}"name="DateDay" id="date_day">
-                </div>
-                <div id="DivIDWeek" style="display: none;">
-                  <div class="row justify-content-center">
-                    <div class="col-auto">
-                      <div class="h5 my-2">Semana:</div>
-                      <div class="form-floating mb-3">
-                        <input type="number" value="{{context.context_this_week.this_week}}" name="WeekResumeInput"class="form-control" maxlength="4" id="week_resume_input" placeholder="Numero de Semana">
-                        <label for="week_month">Numero de Semana</label>
+              <div class="col-12">
+                <div class="row justify-content-center">
+                  <div class="col-12 col-md-6 order-1 order-md-2">
+                    <div id="DivIDDay">
+                      <div class="h5 my-2">Dia:</div>
+                      <input type="date" value="{{context.context_today.today_w_f}}"name="DateDay" id="date_day">
+                    </div>
+                    <div id="DivIDWeek" style="display: none;">
+                      <div class="row justify-content-center">
+                        <div class="col-auto">
+                          <div class="h5 my-2">Semana:</div>
+                          <div class="form-floating mb-3">
+                            <input type="number" value="{{context.context_this_week.this_week}}" name="WeekResumeInput"class="form-control" maxlength="4" id="week_resume_input" placeholder="Numero de Semana">
+                            <label for="week_month">Numero de Semana</label>
+                          </div>
+                        </div>
                       </div>
                     </div>
+                    <div id="DivIDMonth" style="display: none;">
+                      <div class="h5 my-2">Desde:</div>
+                      <input type="date" value="{{context.context_this_month.start_date_w_f}}" name="DateMonthStart" id="date_month_start_date">
+                      <br>
+                      <div class="h5 my-2">Hasta:</div>
+                      <input type="date" value="{{context.context_this_month.end_date_w_f}}"name="DateMonthEnd" id="date_month_end_date">
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6 order-2 order-md-1">
+                    <div class="row justify-content-center">
+                      <div class="col-auto ">
+                        <fieldset class="border px-3 my-3">
+                          <legend class="float-none w-auto h5 mx-auto">Informacion Adicional</legend>
+                          <div class="form-check form-switch mb-3 m-1" id="IdDivFilterWorker">
+                            <input  id="filter_worker" type="checkbox" class="form-check-input" name="FilterWorker">
+                            <label class="form-check-label">                   
+                                <div class="h6">Por Trabajdor</div> 
+                            </label>
+                          </div>
+                          <div class="form-check form-switch mb-3 m-1">
+                            <input  id="filter_product" type="checkbox" class="form-check-input" name="FilterProduct">
+                            <label class="form-check-label">                   
+                              <div class="h6">Por Producto</div> 
+                            </label>
+                          </div>
+                          {% comment %} <div class="d-none" id="IdDivFilterDia">
+                            <div class="form-check form-switch mb-3 m-1">
+                              <input  id="filter_day" type="checkbox" class="form-check-input" name="FilterDay">
+                              <label class="form-check-label">                   
+                                <div class="h6">Por Dia</div> 
+                              </label>
+                            </div>
+                          </div> {% endcomment %}
+                        </fieldset>
+                      
+                      </div>
+                    </div>  
                   </div>
                 </div>
-                <div id="DivIDMonth" style="display: none;">
-                  <div class="h5 my-2">Desde:</div>
-                  <input type="date" value="{{context.context_this_month.start_date_w_f}}" name="DateMonthStart" id="date_month_start_date">
-                  <br>
-                  <div class="h5 my-2">Hasta:</div>
-                  <input type="date" value="{{context.context_this_month.end_date_w_f}}"name="DateMonthEnd" id="date_month_end_date">
-                </div>
-              </div>  
+              </div>
+              
               <div class="col-12 m-2">
                 <div class="row  justify-content-center">
                   <div class="col-auto">
