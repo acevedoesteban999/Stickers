@@ -70,11 +70,11 @@
                   <div class="row h-100 justify-content-around ">
                     
                     <div class="align-self-start my-2 col-4 col-md-11 my-md-2 pt-md-3">
-                      <span class="h3 border border-3 px-5 my-2"><strong>{{product.name}}</strong></span>
+                      <span class="h3 px-5 my-2"><strong>{{product.name}}</strong></span>
                     </div>
                     <div class="col-3 m-0 p-0 col-md-11 ">
                       {% if product.image %}
-                          <img src="{{product.image.url}}"  class="img-fluid w-auto h-auto" alt="...">
+                          <img src="{{product.image.url}}"  class="img-fluid" alt="...">
                       {% else %}
                           <img src="" max-width="200" max-height="400" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
                       {% endif %}  

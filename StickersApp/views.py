@@ -192,75 +192,9 @@ def Summary(movements,days_bool=False,products_bool=False,workers_bool=False):
                             context2["total_profit"]+=product['extra_info_int_1'] *product['lot']
                             context2["total_profit_worker"]+=product['extra_info_int_2'] *product['lot']
                             context2["total_lot"]+=product['lot']
-                    print(context1)
-                    print(context2)
                     context.update({"workers":context1})
                     context.update({"workers_totals":context2}) 
                     context.update({"workers_exists":True})
-                    #context.update({"total_total_money":context['total_money']})
-                    #context.update({"total_total_profit_money":context['total_profit_money']})
-                    #context.update({"total_total_worker_profit_money":context['total_worker_profit_money']})
-                    
-                    # context_1=movements.filter(type="rP").values(
-                    #         'lot',
-                    #         'extra_info_int',
-                    #         'extra_info_int_1',
-                    #         'extra_info_int_2',
-                    #         ).annotate(
-                    #             moNey=Sum(
-                    #                 F('lot')* F('extra_info_int'),
-                    #                 default=0
-                    #                 ),
-                    #             proFit=Sum(
-                    #                 F('lot')* F('extra_info_int_1'),
-                    #                 default=0
-                    #                 ),
-                    #             worKer_proFit=Sum(
-                    #                 F('lot')* F('extra_info_int_2'),
-                    #                 default=0
-                    #                 ),
-                    #     ).aggregate(
-                    #         total_money=Sum('moNey'),
-                    #         total_profit_money=Sum('proFit'),
-                    #         total_worker_profit_money=Sum('worKer_proFit'),
-                    #         total_lot=Sum('lot'),
-                    #     )
-                    # if context_1.get("total_money"):
-                    #     context['total_lot_refunds']=context_1["total_lot"]
-                    #     context['total_total_money']-=context_1["total_money"]
-                    #     context['total_total_profit_money']-=context_1["total_profit_money"]
-                    #     context['total_total_worker_profit_money']-=context_1["total_worker_profit_money"]
-                    #     context.update({"refunds":context_1})
-                    
-                    # context_1=movements.filter(type="RD").values(
-                    #         'lot',
-                    #     ).aggregate(
-                    #         total_money=Sum('lot'),
-                    #     )
-                    # if context_1.get("total_money"):
-                    #     context['total_total_money']-=context_1["total_money"]
-                    #     context.update({"retires":context_1})
-                    
-                    # context_1=movements.filter(type="AD").values(
-                    #         'lot',
-                    #     ).aggregate(
-                    #         total_money=Sum('lot'),
-                    #     )
-                    # if context_1.get("total_money"):
-                    #     context['total_total_money']+=context_1["total_money"]
-                    #     context.update({"agregates":context_1})
-                    
-                    # context_1=movements.filter(type="CM").values(
-                    #         'lot',
-                    #     ).aggregate(
-                    #         total_money=Sum('lot'),
-                    #     )
-                    # if context_1.get("total_money"):
-                        
-                    #     context['total_total_money']-=context_1["total_money"]
-                    #     context.update({"closesmonths":context_1})
-                    
-                
         else:
             context={"total_money":0,"total_profit_money":0,"total_worker_profit_money":0,"total_lot":0}
         return context

@@ -2,10 +2,236 @@
 {% load static %}
 {% block contenido %}
     {% if product and product.removed == False %}
-        <div class="container ">  
+        <div class="container">  
             <div class="display-2 my-2 text-center">  Producto </div>
             {% comment %}=================================== Product Info =================================  {% endcomment %}
-            <div class="card my-3" style="max-width: auto;">
+            <div class="row justify-content-center">
+                <div class="card text-center p-3">
+                    <div class="col-auto">
+                        <div class="row justify-content-center">
+                            <div class="col-8 col-md-6">
+                                <div class="row justify-content-center h-100 align-items-center">
+                                    <div class="col-12 col-md-8">
+                                        <img src="{{product.image.url}}" class="img-fluid img-thumbnail rounded-top" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-5 m-2 mt-4">
+                                <div class="row justify-content-center align-items-center h-100 ">
+                                    <div class="row justify-content-center">
+                                        <div class="col-auto border border-2  p-2 pb-0">
+                                            <div class="row  justify-content-center ">
+                                                <div class="col-auto pb-0 mb-0">
+                                                    <div class="h2">
+                                                        <strong>
+                                                            {{product.name}}
+                                                        </strong>
+                                                    </div>
+                                                </div>
+                                                <div class="col-auto pt-0 mt-0 align-self-end">
+                                                    <div class="h6 text-muted">
+                                                        Id:{{product.i_d}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row justify-content-center my-3">
+                                        {% if product.pair %}
+                                            <div class="col-12">
+                                                <span class="h2">
+                                                    {{product.pair_price}}$
+                                                </span>
+                                                <span>
+                                                    <small class="text-muted pl-2">
+                                                        el Par
+                                                    </small>
+                                                </span>
+                                            </div>
+                                            {% if user.is_admin or user.is_worker %}
+                                                <div class="row justify-content-center">
+                                                    
+                                                    <div class="col-auto">
+                                                        <div class="row justify-content-center">
+                                                            <div class="col-auto">
+                                                                <fieldset class="border px-3 my-3">
+                                                                    <legend class="float-none w-auto h6 mx-auto">Pares Almacenados</legend>
+                                                                    <div class="h5">
+                                                                        {{product.pair_stored}}
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </div>        
+                                                            
+                                                    {% if product.unit_stored != 0 %}      
+                                                        
+                                                        <div class="col-auto">
+                                                            <div class="row justify-content-center">
+                                                                <div class="col-auto">
+                                                                    <fieldset class="border px-3 my-3">
+                                                                        <legend class="float-none w-auto h6 mx-auto">Unidades Almacenadas</legend>
+                                                                        <div class="h5">
+                                                                            {{product.unit_stored}}
+                                                                        </div>
+                                                                    </fieldset>
+                                                                </div>
+                                                            </div>
+                                                        </div>                   
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="col-12">
+                                                <span class="h2">
+                                                    {{product.unit_price}}$
+                                                </span>
+                                                <span>
+                                                    <small class="text-muted pl-2">
+                                                        la Unidad
+                                                    </small>
+                                                </span>
+                                            </div>
+                                            {% if user.is_admin or user.is_worker %}
+                                                <div class="row justify-content-center">
+                                                    <div class="col-auto">
+                                                        <fieldset class="border px-3 my-3">
+                                                            <legend class="float-none w-auto h5 mx-auto">Unidades Almacenadas</legend>
+                                                            <div class="h4">
+                                                                {{product.unit_stored}}
+                                                            </div>
+                                                        </fieldset>
+                                                    </div>                   
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    <div class="col-12 text-break">
+                                        <small class="text-muted">
+                                            {{product.description}}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% comment %} CONFIRM & Adicional Info  {% endcomment %}
+                        <div class="row justify-content-center align-items-center my-4">
+                            {% if not product.confirm %}
+                                <div class="col-12">
+                                    <a type="button" class="w-auto m-2 p-2 btn btn-info" data-bs-toggle="modal" data-bs-target="#ConfirmAddModal" data-bs-whatever="1">
+                                        <span class="h2">Realizar Confirmaciones</span>
+                                    </a>    
+                                </div>
+                            {% endif %}
+                            {% if product.confirm or user.is_admin %} 
+                                <div class="col-12">
+                                    <button class="btn m-2  btn-sm btn-outline-secondary w-auto" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
+                                        <span class="h-1"> Informacion Adicional </span>
+                                    </button>
+                                    <div class="collapse" id="collapseMoreInfo">
+                                        <div class="row justify-content-center">
+                                            <table class="w-50 border border-1 p-2 m-2 table table-ligth table-borderless">  
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col h3"></th>
+                                                        {% if product.pair %}
+                                                            <th scope="col  h3">Por Par</th>
+                                                        {% endif %}
+                                                        <th scope="col h3">Por Unidad</th>
+                                                    </tr>
+                                                    <tbody>
+                                                        <tr>
+                                                            <th scope="row h3">Precio</th>
+                                                            {% if product.pair %}
+                                                                    <td class="h3">{{product.pair_price}}$</td>
+                                                            {% endif %}
+                                                            <td class="h3">{{product.unit_price}}$</td>
+                                                        </tr>
+                                                        
+                                                        {% if user.is_admin %}  
+                                                            <tr>
+                                                                <th scope="row h3">Ganancia</th>
+                                                                {% if product.pair %}
+                                                                        <td class="h3">{{product.pair_profit}}$</td>
+                                                                {% endif %}
+                                                                <td class="h3">{{product.unit_profit}}$</td>
+                                                            </tr>
+                                                        {% endif %}
+                                                        <tr>
+                                                            <th scope="row h3">Pago a Trabajdor</th>
+                                                            {% if product.pair %}
+                                                                    <td class="h3">{{product.pair_profit_worker}}$</td>
+                                                            {% endif %}
+                                                            <td class="h3">{{product.unit_profit_worker}}$</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row h3">Total Vendido</th>
+                                                            {% if product.pair %}
+                                                                <td class="h3">{{product.pair_sold}}</td>
+                                                            {% endif %}
+                                                            <td class="h3">{{product.unit_sold}}</td>
+                                                        </tr>
+                                                        
+                                                    </tbody>
+                                                    
+                                                </thead>  
+                                            </table>
+                                        </div>
+                                    </div> 
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% comment %} BUTONS {% endcomment %}
+                        {% if user.is_admin or user.is_worker %}
+                            <hr>
+                            <div class="row justify-content-around align-items-center">
+                                {% if user.is_admin %}
+                                    <div class="col-auto">
+                                        <a type="button" class=" btn btn-info" data-bs-toggle="modal" data-bs-target="#AddModal" data-bs-whatever="1">
+                                            Agregar
+                                        </a>      
+                                    </div>
+                                {% endif %}
+                                {% if product.unit_stored > 0 or product.pair_stored > 0 %}
+                                    <div class="col-auto ">
+                                        <a type="button" class=" btn btn-success" data-bs-toggle="modal" data-bs-target="#SellModal" data-bs-whatever="1">
+                                            Vender
+                                        </a>  
+                                    </div>
+                                {% endif %}
+                                {% if user.is_admin %}
+                                    <div class="col-auto ">
+                                        <button type="button" class=" btn btn-warning" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">
+                                            Editar
+                                        </button> 
+                                    </div>
+                                {% endif %}
+                                {% if product.unit_sold > 0 or product.pair_sold > 0 %}
+                                    <div class="col-auto ">
+                                        <a type="button" style="background-color: orangered; color: white;" class=" btn " data-bs-toggle="modal" data-bs-target="#RefundModal" data-bs-whatever="1">
+                                            Reembolsar
+                                        </a>  
+                                    </div>
+                                {% endif %}
+                                {% if user.is_admin %}
+                                    {% if product.unit_stored > 0 or product.pair_stored > 0 %}
+                                        <div class="col-auto ">
+                                            <a type="button" class=" btn btn-danger" data-bs-toggle="modal" data-bs-target="#SubModal" data-bs-whatever="1">
+                                                Quitar
+                                            </a>  
+                                        </div>
+                                    {% endif %}
+                                {% endif %}    
+                            </div>            
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            {% comment %} <div class="card ">
+                
                 <div class="row justify-content-center cols-1 cols-md-2 mb-4 ">
                     <div class="col-12 col-md-6 mb-1">
                         <div class="row h-100 justify-content-center align-items-center pt-3 mt-3">
@@ -39,18 +265,24 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
-                        <div class="row justify-content-center align-items-center h-100 text-center">
-                            <div class="col-12 my-2 px-4 mt-md-5 border border-dark border-3 w-auto">
-                                <strong class="h1 px-1 ">
-                                    {{product.name}}
-                                </strong>
-                                {% if user.is_authenticated %}
-                                    <span>
-                                        <small class="text-muted pl-2">
-                                            Id: {{product.i_d}}
-                                        </small>
-                                    </span>
-                                {% endif %}
+                        <div class="row justify-content-center align-items-center h-100">
+                            <div class="col-12 my-2 mt-md-5">
+                                <div class="row justify-content-center">
+                                    <div class="col-auto">
+                                        <strong class="h1 px-1 ">
+                                            {{product.name}}
+                                        </strong>
+                                    </div>
+                                    <div class="col-auto">
+                                        {% if user.is_authenticated %}
+                                            <span>
+                                                <small class="text-muted pl-2">
+                                                    Id: {{product.i_d}}
+                                                </small>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-12 m-2">
                                 <div class="px-4">
@@ -127,7 +359,7 @@
                         </div>
                         
                     </div>
-                </div>
+                </div> 
                 {% if user.is_admin or user.is_worker %}
                     <div class="row text-center justify-content-center m-1">
                         {% if not product.confirm %}
@@ -179,13 +411,6 @@
                                                         {% endif %}
                                                         <td class="h3">{{product.unit_profit_worker}}$</td>
                                                     </tr>
-                                                    {% comment %} <tr>
-                                                        <th scope="row h5">Total Almacenado</th>
-                                                        {% if product.pair %}
-                                                            <td class="h3">{{product.pair_stored}}</td>
-                                                        {% endif %}
-                                                        <td class="h3">{{product.unit_stored}}</td>
-                                                    </tr> {% endcomment %}
                                                     <tr>
                                                         <th scope="row h3">Total Vendido</th>
                                                         {% if product.pair %}
@@ -203,9 +428,8 @@
                             </div>
                         {% endif %}
                     </div>
-                {% endif %}
+                {% endif %} 
                 
-                {% comment %} =============== BUTTONS ======================== {% endcomment %}
                 {% if user.is_admin or user.is_worker %}
                     <div class="card-footer">
                         {% if product.confirm or user.is_admin %}        
@@ -251,8 +475,8 @@
                             </div>
                         {% endif %}
                     </div>            
-                {% endif %}
-            </div>   
+                {% endif %} 
+            </div>    {% endcomment %}
             {% comment %}=================================== MODALS =================================  {% endcomment %}
             {% if user.is_admin or user.is_worker %}
                 {% if user.is_admin %}
