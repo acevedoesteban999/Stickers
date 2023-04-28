@@ -29,12 +29,14 @@ class RegisteCash(models.Model):
         return self.money.__str__()
 
 class SummaryDate(models.Model):
-    start_date=models.DateField(blank=True,null=True)
-    end_date=models.DateField(blank=True,null=True)
+    #start_date=models.DateField(blank=True,null=True)
+    #end_date=models.DateField(blank=True,null=True)
+    start_date=models.DateTimeField(blank=True,null=True)
+    end_date=models.DateTimeField(blank=True,null=True)
     active=models.BooleanField(default=False)
     #start_money=models.IntegerField(default=0)
     def __str__(self):
-        return "Active-"+self.start_date.__str__()+" ~ "+self.end_date.__str__() if self.active else "Desactive"
+        return "Active-"+self.start_date.strftime("%d-%m-%y %H:%M")+" ~ "+self.end_date.strftime("%d-%m-%y %H:%M") if self.active else "Desactive"
     
 class Product(models.Model):
     i_d=models.CharField(max_length=4, unique=True)
@@ -419,7 +421,7 @@ class Movement(models.Model):
                 return "E0"
         return False
     @classmethod
-    def CloseMonth(cls,user,note,date_start,date_end,date_final_end,total_money,total_profit,total_profit_worker):
+    def CloseMonth(cls,user,note,date_start,date_end,next_date_end,total_money,total_profit,total_profit_worker):
         if user.is_admin:
             r_box=RegisteCash.objects.all().first()
             if r_box:
@@ -433,15 +435,21 @@ class Movement(models.Model):
                             extra_info_str="Mes:{}~{} {} <br>Nota:{}".format(
                                 date_start.strftime("%d-%m-%y"),
                                 date_end.strftime("%d-%m-%y"),
-                                "<br>Fecha Real:"+date_final_end.strftime("%d-%m-%y") if date_final_end!=date_end else "",
+                                "<br>Fecha De Cierre:"+datetime.today().strftime("%d-%m-%y"),
                                 note if note else "",
                                 )
                             )
                 if movement:
-                    movement.save()
-                    r_box.money = 0
-                    r_box.save()
-                    return True
+                    summary_date=SummaryDate.objects.first()
+                    if summary_date:
+                        movement.save()
+                        summary_date.start_date=datetime.now()
+                        summary_date.end_date=next_date_end
+                        summary_date.save()
+                        
+                        r_box.money = 0
+                        r_box.save()
+                        return True
         return False
     @classmethod
     def RetireMoney(cls,user,lot,note):

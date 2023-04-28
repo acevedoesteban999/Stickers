@@ -1,33 +1,21 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
-{% if  user.is_admin %}
+{% if  user.is_admin or user.is_worker %}
   <div class="container ">
     {% if context.context_global.SumaryDate == True %}
       <div class="container-md p-3">
         <div class="row row-cols-1 justify-content-center ">
           <div class="col-auto text-center m-2" >
-            <div class="alert px-5 {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days == 0 %}alert-success{% elif context.context_this_month.OK == True %}alert-info {% else %}alert-danger {% endif %} " role="alert">
-              {% if context.context_this_month.OK == True %}
+            <div class="alert px-5 {% if context.context_this_month.days_ok == 0 %}alert-success{% elif context.context_this_month.days_ok > 0 %}alert-info {% else %}alert-danger {% endif %} " role="alert">
                   <div class="alert-heading"><span class="h5">Proximo Cierre de Mes</span> </div>
-                  <hr>  
-                                 
-                  {% if context.context_this_month.days_ok.days > 0 %}
-                    <p class="mb-0 h5">
-                      {{context.context_this_month.days_ok.days}} Dias
-                    </p>
-                  {% else %}
-                    <p class="mb-0 h5">
-                      Hoy
-                    </p>
-                  {% endif %}      
-              {% else %}  
-                <div class="alert-heading"><span class="h5">Retraso del Cierre de Mes</span> </div>
-                <hr>  
-                <p class="mb-0 h5">
-                  {{context.context_this_month.days_ok.days}} Dias
-                </p>
-              {% endif %}
+                  <hr>   
+                   
+                  <p class="mb-0 h2">
+                    {{context.context_this_month.days_ok}} Dias
+                  </p>
+                  
+              
             </div>
           </div>
         </div>
@@ -46,9 +34,9 @@
       </div>
     </div>
     <div class="row row-cols-1 row-md-cols-3 m-3 justify-content-center justify-content-md-between align-items-center text-center">
-      <div class="col-auto my-2">
+      <div class="col-auto col-md-3 my-2">
         <div class="row justify-content-center">
-          <div class="col-auto">
+          <div class="col-auto ">
             <div class="card text-dark bg-light" onclick="FilterResumeFunct(1,'{{context.context_today.today_w_f}}')">
               <div class="card-body">
                 <h4 class="card-title">Hoy</h4>
@@ -60,7 +48,7 @@
         </div>
       </div>
       {% if context.context_global.SumaryDate == True %}
-        <div class="col-auto my-2">
+        <div class="col-auto col-md-3 my-2">
           <div class="row justify-content-center">
             <div class="col-auto">
               <div class="card text-dark bg-light" onclick="FilterResumeFunct(2,false,{{context.context_this_week.this_week}})">
@@ -76,10 +64,10 @@
             </div>
           </div>
         </div>
-        <div class="col-auto my-2">
+        <div class="col-auto col-md-3 my-2">
           <div class="row justify-content-center">
             <div class="col-auto">
-              <div class="card text-dark bg-light"onclick="FilterResumeFunct(3,false,false,'{{context.context_this_month.start_date_w_f}}','{{context.context_this_month.end_date_w_f}}')">
+              <div class="card text-dark bg-light" onclick="FilterResumeFunct(4)">
                 <div class="card-body">
                   <h4 class="card-title">Este Mes</h4>
                   <hr>
@@ -125,36 +113,46 @@
                       <input onClick="FilterResumeFunct()" id="FilterResumeWeek" type="radio" name="FilterResume" value="2">
                       <label for="FilterResumeWeek" class="h6">Semana</label>
                       <br>
-                      <input onClick="FilterResumeFunct()" id="FilterResumeMonth" type="radio" name="FilterResume" value="3">
+                      <input onClick="FilterResumeFunct()" id="FilterResumeDate" type="radio" name="FilterResume" value="3">
+                      <label for="FilterResumeDate" class="h6">Fecha</label>
+                      <br>
+                      <input onClick="FilterResumeFunct()" id="FilterResumeMonth" type="radio" name="FilterResume" value="4">
                       <label for="FilterResumeMonth" class="h6">Mes</label>
                     </fieldset>
                   </div>
                 </div>
               </div>
               <div class="col-12">
-                <div class="row justify-content-center">
+                <div class="row justify-content-center align-items-center">
                   <div class="col-12 col-md-6 order-1 order-md-2">
                     <div id="DivIDDay">
                       <div class="h5 my-2">Dia:</div>
-                      <input type="date" value="{{context.context_today.today_w_f}}"name="DateDay" id="date_day">
+                      <input type="date" value="{{context.context_today.today_w_f}}" id="date_day">
                     </div>
                     <div id="DivIDWeek" style="display: none;">
                       <div class="row justify-content-center">
                         <div class="col-auto">
                           <div class="h5 my-2">Semana:</div>
                           <div class="form-floating mb-3">
-                            <input type="number" value="{{context.context_this_week.this_week}}" name="WeekResumeInput"class="form-control" maxlength="4" id="week_resume_input" placeholder="Numero de Semana">
+                            <input type="number" value="{{context.context_this_week.this_week}}" class="form-control" maxlength="4" id="week_resume_input" placeholder="Numero de Semana">
                             <label for="week_month">Numero de Semana</label>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div id="DivIDMonth" style="display: none;">
+                    <div id="DivIDDate" style="display: none;">
                       <div class="h5 my-2">Desde:</div>
-                      <input type="date" value="{{context.context_this_month.start_date_w_f}}" name="DateMonthStart" id="date_month_start_date">
+                      <input type="date" value="{{context.context_today.today_w_f}}" id="start_date">
                       <br>
                       <div class="h5 my-2">Hasta:</div>
-                      <input type="date" value="{{context.context_this_month.end_date_w_f}}"name="DateMonthEnd" id="date_month_end_date">
+                      <input type="date" value="{{context.context_today.today_w_f}}" id="end_date">
+                    </div>
+                    <div id="DivIDMonth" style="display: none;">
+                      <div class="h5 my-2">Desde:</div>
+                        {{context.context_this_month.start_date}}
+                      <br>
+                      <div class="h5 my-2">Hasta:</div>
+                        {{context.context_this_month.end_date}}
                     </div>
                   </div>
                   <div class="col-12 col-md-6 order-2 order-md-1">
@@ -162,18 +160,20 @@
                       <div class="col-auto ">
                         <fieldset class="border px-3 my-3">
                           <legend class="float-none w-auto h5 mx-auto">Informacion Adicional</legend>
-                          <div class="form-check form-switch mb-3 m-1" id="IdDivFilterWorker">
-                            <input  id="filter_worker" type="checkbox" class="form-check-input" name="FilterWorker">
-                            <label class="form-check-label">                   
-                                <div class="h6">Por Trabajdor</div> 
-                            </label>
-                          </div>
-                          <div class="form-check form-switch mb-3 m-1">
-                            <input  id="filter_product" type="checkbox" class="form-check-input" name="FilterProduct">
-                            <label class="form-check-label">                   
-                              <div class="h6">Por Producto</div> 
-                            </label>
-                          </div>
+                          {% if user.is_admin %}
+                            <div class="form-check form-switch mb-3 m-1" id="IdDivFilterWorker">
+                              <input  id="filter_worker" type="checkbox" class="form-check-input" name="FilterWorker">
+                              <label class="form-check-label">                   
+                                  <div class="h6">Por Trabajador</div> 
+                              </label>
+                            </div>
+                          
+                            <div class="form-check form-switch mb-3 m-1">
+                              <input  id="filter_product" type="checkbox" class="form-check-input" name="FilterProduct">
+                              <label class="form-check-label">                   
+                                <div class="h6">Por Producto</div> 
+                              </label>
+                            </div>
                           {% comment %} <div class="d-none" id="IdDivFilterDia">
                             <div class="form-check form-switch mb-3 m-1">
                               <input  id="filter_day" type="checkbox" class="form-check-input" name="FilterDay">
@@ -182,6 +182,15 @@
                               </label>
                             </div>
                           </div> {% endcomment %}
+                          {% elif user.is_worker %}
+                            <div class="form-check form-switch mb-3 m-1" id="IdDivFilterWorker">
+                              <input  disabled type="checkbox" checked class="form-check-input">
+                              <label class="form-check-label">                   
+                                  <div class="h6">Por Trabajador</div> 
+                              </label>
+                            </div>
+                          {% endif %}    
+                          
                         </fieldset>
                       
                       </div>
@@ -235,7 +244,7 @@
     <div class="container">
       <div class="row justify-content-end">
         <div class="col-auto my-4">
-          <button type="button" class="btn btn-info btn-lg" data-bs-toggle="modal" data-bs-target="#modalCloseMonth">
+          <button type="button" class="btn btn-{% if context.context_this_month.days_ok > 0 %}warning{% elif context.context_this_month.days_ok == 0 %}success{% else %}danger{% endif %} btn-lg" data-bs-toggle="modal" data-bs-target="#modalCloseMonth">
             Realizar Cierre de Mes
           </button>
         </div>
@@ -252,30 +261,36 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}
+              {% if context.context_this_month.days_ok > 0 %}
                 <div class="row" id="DivIdRowOKNo0">
-                  <div class="col-auto">
+                  <div class="col-12">
                     <div class="h5 text-danger text-center">
-                      Aun Quedan {{context.context_this_month.days_ok.days}} Dias para Llegar al Fin del Mes
+                      Aun Quedan {{context.context_this_month.days_ok}} Dias para Llegar al Fin del Mes
+                      <br>
+                      <span class="h6"><small>Desea Continuar?</small></span>
                     </div>
                   </div>
                 </div>
               {% endif %}
-              <div class="row {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}d-none{% else %}d-block{% endif %}" id="DivOdRowNoOk0">
+              <div class="row {% if context.context_this_month.days_ok > 0 %}d-none{% else %}d-block{% endif %}" id="DivOdRowNoOk0">
                 <div class="col-12 text-start">
-                  {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}
-                    <div class="h4 text-danger">
-                      Cierre de Mes<span class="h6 mx-2"><small>{{context.context_this_month.days_ok.days}} Dias</small></span> 
+                    <div class="row justify-content-center">
+                      
+                      <div class="col-auto">
+                        <div class="p-2 rounded h4 {% if context.context_this_month.days_ok > 0 %}text-dark bg-warning{% elif context.context_this_month.days_ok == 0 %}text-dark bg-success{% else %}text-dark bg-danger{% endif %}">
+                          Cierre de Mes
+                          {% if context.context_this_month.days_ok != 0 %}
+                            <span class="h6 mx-2"><small>{{context.context_this_month.days_ok}} Dias</small></span> 
+                          {% else %}
+                            <div class="h5">
+                              Hoy
+                            </div>
+                          {% endif %}
+                        </div>
+                      </div>
                     </div>
-                  {% elif context.context_this_month.OK == False %}
-                    <div class="h4 text-warning">
-                      Cierre de Mes <span class="h6 mx-2"><small>{{context.context_this_month.days_ok.days}} Dias</small></span> 
-                    </div>
-                  {% else %}
-                    <div class="h4 text-success">
-                      Cierre de Mes 
-                    </div>
-                  {% endif %}
+                    
+                    
                 </div>
                 <div class="row justify-content-center">
                   <div class="h4 text-center">
@@ -308,7 +323,7 @@
                    {% endcomment %}
                   <div class="col-auto">
                     <div class="h5">Desde</div>
-                    <input type="date" name="NextDateStart"  value={{context.context_this_month.next_start_date}} required>
+                    <input type="date" disabled value={{context.context_this_month.next_start_date}} required>
                   </div>
                   <div class="col-auto">
                     <div class="h5">Hasta</div>
@@ -333,11 +348,11 @@
                 <div class="col-6">
                   <div class="row justify-content-center">
                     <div class="col-auto">
-                      <div id="idDivMonthOKNo0" class="col-auto {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}d-block{% else %}d-none{% endif %}">
+                      <div id="idDivMonthOKNo0" class="col-auto {% if context.context_this_month.days_ok > 0 %}d-block{% else %}d-none{% endif %}">
                         <button onclick="ContiueCloseMoth()" type="button" class="btn btn-danger p-2"><span class="h5">Continuar</span></button>
                       </div>
-                      <div id="idDivMonthNoOK0" class="col-auto {% if context.context_this_month.OK == True and context.context_this_month.days_ok.days != 0 %}d-none{% else %}d-block{% endif %}">
-                        <button type="submit" name="CloseMonth" class="p-2 btn {% if context.context_this_month.days_ok.days == 0 %}btn-success{% else %}btn-warning{% endif %}"><span class="h5">Realizar Cierre</span></button>
+                      <div id="idDivMonthNoOK0" class="col-auto {% if context.context_this_month.days_ok > 0 %}d-none{% else %}d-block{% endif %}">
+                        <button type="submit" name="CloseMonth" class="p-2 btn {% if context.context_this_month.days_ok == 0 %}btn-success{% else %}btn-warning{% endif %}"><span class="h5">Realizar Cierre</span></button>
                       </div>
                     </div>
                   </div>

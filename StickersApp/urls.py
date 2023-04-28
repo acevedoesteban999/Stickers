@@ -15,6 +15,7 @@ urlpatterns = [
     path('Usuarios/', views.UsersView,name='usuarios'),
     path('BasePost',views.BasePost,name='base_post'),
     path('Resumen/',views.ResumeView,name='resumen'), 
+    path('QRWIFI/',views.QRWIFI,name='qrwifi'), 
 ]
 
 urlpatterns+=static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

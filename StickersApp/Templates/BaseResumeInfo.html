@@ -1,89 +1,107 @@
-<div class="display-4 text-center my-2">{% if context.week %}Semana {{context.week}}<br>{% endif %}{{context.start_date}}{% if context.end_date %} ~ {{context.end_date}}{% endif %}</div>
+<div class="display-4 text-center my-2">
+    {% if context.week %}
+        Semana {{context.week}}
+        <br>
+    {% endif %}
+    {{context.start_date}}
+    {% if context.end_date %}
+        ~ {{context.end_date}}
+    {% endif %}
+</div>
 {% if context.movements_exists %}
-    <div class="display-4 text-center my-3">Informacion General</div>
-    <div class="container">
-        <div class="row justify-content-center text-center">
-            <div class="col">
-                <div class="table-responsive">
-                    <table class="table table-dark  table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">Info</th>
-                                <th scope="col">Trab</th>
-                                <th scope="col">Ganc</th>
-                                <th scope="col">Impt</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="table-success">
-                                <td scope="row">Total Ventas</td>
-                                <td>{{context.sales_profit_worker}}$</td>
-                                <td>{{context.sales_profit}}$</td>
-                                <td>{{context.sales_money}}$</td>
-                            </tr>
-                            {% if context.refund_lot > 0 %}
-                                <tr class="table-active">
-                                    <td scope="row">Reembolsos</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+    {% if context.final_exists %}
+        <div class="display-4 text-center my-3">Informacion General</div>
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col">
+                    <div class="table-responsive">
+                        <table class="table table-dark  table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Info</th>
+                                    <th scope="col">Trab</th>
+                                    <th scope="col">Ganc</th>
+                                    <th scope="col">Impt</th>
                                 </tr>
-                                <tr class="table-danger">
-                                    <td scope="row"></td>
-                                    <td>{{context.refund_profit_worker}}$</td>
-                                    <td>{{context.refund_profit}}$</td>
-                                    <td>{{context.refund_money}}$</td>
-                                </tr>    
-                            {% endif %}
-                            {% if context.agregate_money > 0 %}
-                                <tr class="table-active">
-                                    <td scope="row">Agregado de Dinero</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                            </thead>
+                            <tbody>
+                                <tr class="table-success">
+                                    <td scope="row">Total Ventas</td>
+                                    <td>{{context.sales_profit_worker}}$</td>
+                                    <td>{{context.sales_profit}}$</td>
+                                    <td>{{context.sales_money}}$</td>
                                 </tr>
-                                <tr class="table-warning">
-                                    <td scope="row"></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>{{context.agregate_money}}$</td>
-                                </tr>    
-                            {% endif %}
-                            {% if context.retire_money > 0 %}
+                                {% if context.refund_lot > 0 %}
+                                    <tr class="table-active">
+                                        <td scope="row">Reembolsos</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class="table-danger">
+                                        <td scope="row"></td>
+                                        <td>{{context.refund_profit_worker}}$</td>
+                                        <td>{{context.refund_profit}}$</td>
+                                        <td>{{context.refund_money}}$</td>
+                                    </tr>    
+                                {% endif %}
+                                {% if context.agregate_money > 0 %}
+                                    <tr class="table-active">
+                                        <td scope="row">Agregado de Dinero</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class="table-warning">
+                                        <td scope="row"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>{{context.agregate_money}}$</td>
+                                    </tr>    
+                                {% endif %}
+                                {% if context.retire_money > 0 %}
+                                    <tr class="table-active">
+                                        <td scope="row">Retiro de Dinero</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class="table-danger">
+                                        <td scope="row"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>{{context.retire_money}}$</td>
+                                    </tr>    
+                                {% endif %}
                                 <tr class="table-active">
-                                    <td scope="row">Retiro de Dinero</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td scope="row">Total Final</td>
+                                    <td>{{context.final_profit_worker}}$</td>
+                                    <td>{{context.final_profit}}$</td>
+                                    <td>{{context.final_money}}$</td>
                                 </tr>
-                                <tr class="table-danger">
-                                    <td scope="row"></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>{{context.retire_money}}$</td>
-                                </tr>    
-                            {% endif %}
-                            <tr class="table-active">
-                                <td scope="row">Total Final</td>
-                                <td>{{context.final_profit_worker}}$</td>
-                                <td>{{context.final_profit}}$</td>
-                                <td>{{context.final_money}}$</td>
-                            </tr>
-                            {% if context.close_month_money > 0 %}
-                                <tr class="table-active">
-                                    <td scope="row">Cierre de Mes</td>
-                                    <td></td> 
-                                    <td></td>
-                                    <td>{{context.close_month_money}}$</td>
-                                </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
+                                {% if context.close_month_money > 0 %}
+                                    <tr class="table-info">
+                                        <td scope="row">Adicional</td>
+                                        <td></td> 
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr class="table-active">
+                                        <td scope="row">Cierre de Mes</td>
+                                        <td></td> 
+                                        <td></td>
+                                        <td>{{context.close_month_money}}$</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                
                 </div>
-            
             </div>
         </div>
-    </div>
+    {% endif %}
+    
     {% if context.workers_exists %}
         <div class="display-4 text-center my-3">Por Trabajdor</div>
         <div class="container">

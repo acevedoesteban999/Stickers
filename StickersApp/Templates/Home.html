@@ -61,17 +61,16 @@
       {% comment %} </div> {% endcomment %}
       
       {% comment %} Mini Resumen {% endcomment %}
-      <div class="container text-center" id="AAA">
+      <div class="container text-center">
         {% comment %} <img src onError="LoadTodayInfo()"> {% endcomment %}
-        <a class="text-dark" style="text-decoration: none;" data-bs-toggle="collapse" href="#contentToday" aria-expanded="false" aria-controls="contentToday">
-          <div class="display-5 mt-3 ">Hoy</div>
-          <div class="h6 mb-3 mt-2"><small>({{context.context_today.today}})</small></div>
+        {% comment %} <a class="text-dark" style="text-decoration: none;" data-bs-toggle="collapse" href="#contentToday" aria-expanded="false" aria-controls="contentToday">
+          
         </a>
-        <hr>
+        <hr> {% endcomment %}
         
-        <div class="collapse show" id="contentToday">
+        {% comment %} <div class="collapse show" id="contentToday"> {% endcomment %}
+          <hr>
           <div id="IdDivTodayReadyInfo" class="d-none">
-            
           </div>
           <div id="IdDivTodayLoadingInfo" class="d-block">
             <div class="row justify-content-center align-items-center  text-center">
@@ -95,7 +94,7 @@
             </div>
           </div>
           <hr>
-        </div>
+        {% comment %} </div> {% endcomment %}
 
       
         <a  class="btn btn-primary m-3 p-3" href="{% url 'resumen' %}" role="button"><span class="h3">Ver Resumen Completo</span></a>
