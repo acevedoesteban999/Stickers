@@ -83,10 +83,10 @@
                     </div>
                     <div class="h4 m-2">Cargando Informacion de Hoy </div>
                     <script>
-                        window.onload=function()
+                         window.onload=function()
                         {
                           LoadTodayInfo("{% url 'base_post' %}");
-                        };
+                        }; 
                     </script>
                   </div>
                 </div>
@@ -108,6 +108,9 @@
   {% endif %}
 
   
+{% endblock  %}
+{% block script_js %}
+  <script type="text/javascript" src="{% static 'js/home.js' %}" ></script>
 {% endblock  %}
 {% comment %} <a href="#a" >
   A

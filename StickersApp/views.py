@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate,login,logout
 from django.db import IntegrityError
 from django.contrib import messages
 from django.db.models import Q,F,Count,Sum,Choices
+from django.urls import reverse
 import wifi_qrcode_generator.generator
 import qrcode
 import json
@@ -568,24 +569,24 @@ def ProductoView(request,productoID):
             if product :
                 movements_confirm=Movement.objects.filter(product_id=product.id,type="EP",extra_info_bool=False).order_by('date')      
                 movements=Movement.objects.filter(product_id=product.id).order_by('-date')[:10]
-               
+                product_qr_url=request.build_absolute_uri(reverse('producto',args=(product.id,)))
                 
                 def NormalPageProduct():
-                    return render(request,"Producto.html",{'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
+                    return render(request,"Producto.html",{'product_qr_url':product_qr_url,'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
                 
                 def ErrorProduct(text):
                     messages.error(request,text)
-                    return render(request,"Producto.html",{'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
+                    return render(request,"Producto.html",{'product_qr_url':product_qr_url,'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
                 
                 def SuccessProduct(text):
                     #Eliminar si se redirecciona a 'home'
                     messages.success(request,text)
-                    return render(request,"Producto.html",{'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
+                    return render(request,"Producto.html",{'product_qr_url':product_qr_url,'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
                 
                 def WarningProduct(text,no_redirect=False):
                     if no_redirect==True:
                         messages.warning(request,text)
-                        return render(request,"Producto.html",{'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
+                        return render(request,"Producto.html",{'product_qr_url':product_qr_url,'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
                     messages.warning(request,text)
                     return redirect('home') 
                 

@@ -69,8 +69,7 @@ function LoadTodayInfo(addr)
 //     }
 //     document.getElementById("NextMonthInit").innerHTML=money_next;
 // }
-function ContiueCloseMoth()
-{
+function ContiueCloseMoth(){
     document.getElementById("idDivMonthOKNo0").setAttribute("class","col-auto d-none")
     document.getElementById("idDivMonthNoOK0").setAttribute("class","col-auto d-block")
     document.getElementById("DivIdRowOKNo0").setAttribute("class","row d-none")

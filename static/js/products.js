@@ -1,0 +1,21 @@
+function VentasParesFunction(VentasParesBool)
+{
+    paredId=document.getElementById("ParesDivId");
+    paresPrecio=document.getElementById("ParesPrecio");
+    presGanancia=document.getElementById("ParesGanancia");
+    ParesGananciaTrabajador=document.getElementById("ParesGananciaTrabajador");
+    if(VentasParesBool==false)
+    {
+        paredId.setAttribute("style","display:none;");
+        paresPrecio.require=false;
+        presGanancia.required=false;
+        ParesGananciaTrabajador.required=false;
+    }
+    else
+    {
+        paredId.removeAttribute("style");
+        paresPrecio.require=true;
+        presGanancia.required=true;
+        ParesGananciaTrabajador.required=true;
+    }
+}
