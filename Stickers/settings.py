@@ -55,7 +55,7 @@ ROOT_URLCONF = 'Stickers.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'AlmacenApp/Templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'StickersApp/Templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,10 +116,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
+if DEBUG == True:
+    STATICFILES_DIRS = [
+        BASE_DIR / "static",
+    ]
+elif DEBUG == False:
+    STATIC_ROOT= os.path.join(BASE_DIR, 'static/')
 
 
 MEDIA_URL='/media/'
