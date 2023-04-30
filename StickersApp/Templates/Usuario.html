@@ -1,4 +1,5 @@
 {% extends 'Base.html' %}
+{% load static %}
 {% block contenido %}
     {% with UsEr as user %}
         <div class="container">
@@ -131,4 +132,6 @@
         </div>
     {% endwith %}
 {% endblock contenido %}
-
+{% block script_js %}
+  <script type="text/javascript" src="{% static 'js/base_prev_img.js' %}" ></script>
+{% endblock  %}

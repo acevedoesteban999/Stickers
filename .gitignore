@@ -1,10 +1,5 @@
 db.sqlite3
-manage.py
-Stickers/
 media/
-static/bootstrap/
-static/admin/
-StickersApp/__pycache__/
-StickersApp/migrations/
+
 
 

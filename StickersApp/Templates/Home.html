@@ -1,7 +1,15 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
-  <div class="display-1 my-3 text-center">  Stickers </div>
+  {% comment %} <div class="display-1 my-3 text-center">  Stickers </div> {% endcomment %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-auto">
+        <input type="image" width="400" src="{% static '../media/stickers.png' %}" alt="">
+      </div>
+    </div>
+  </div>
+  
   {% if not user.is_authenticated %}
     <div class="container">
       <div class="d-flex justify-content-center">

@@ -11,8 +11,8 @@ from django.db import IntegrityError
 from django.contrib import messages
 from django.db.models import Q,F,Count,Sum,Choices
 from django.urls import reverse
-import wifi_qrcode_generator.generator
-import qrcode
+#import wifi_qrcode_generator.generator
+#import qrcode
 import json
 """
 Tamplates Functions
@@ -846,28 +846,26 @@ def UserView(request,usuarioID):
         messages.error(request,"Error, Usuario inexistente")  
     return redirect("usuarios")
 
-def QRWIFI(request):
-    
-    
-    # factory = qrcode.image.svg.SvgImage
-    # img = qrcode.make('Some data here', image_factory=factory)
-    # print(img)
-    # from qrcode.image.pure import PyPNGImage
-    # img = qrcode.make('Some data here', image_factory=PyPNGImage)
-    # print(img)
-    context={}
-    if request.method=="POST":
-        if "SendQRWifi" in request.POST:
-            qr_data=request.POST.dict()
-            wifi_name=qr_data.get("WifiName")
-            wifi_password=qr_data.get("WifiPasword")
-            qr_code = wifi_qrcode_generator.generator.wifi_qrcode(
-                ssid=wifi_name,
-                hidden=False,
-                authentication_type='WPA',
-                password=wifi_password,
-                )
-            qr_code.print_ascii()
-            qr_code.make_image().save('media/QR_Wifi.png')
-            context.update({"QR":True})
-    return render(request,"QRWIFI.html",{"context":context})
+# def QRWIFI(request):
+#     # factory = qrcode.image.svg.SvgImage
+#     # img = qrcode.make('Some data here', image_factory=factory)
+#     # print(img)
+#     # from qrcode.image.pure import PyPNGImage
+#     # img = qrcode.make('Some data here', image_factory=PyPNGImage)
+#     # print(img)
+#     context={}
+#     if request.method=="POST":
+#         if "SendQRWifi" in request.POST:
+#             qr_data=request.POST.dict()
+#             wifi_name=qr_data.get("WifiName")
+#             wifi_password=qr_data.get("WifiPasword")
+#             qr_code = wifi_qrcode_generator.generator.wifi_qrcode(
+#                 ssid=wifi_name,
+#                 hidden=False,
+#                 authentication_type='WPA',
+#                 password=wifi_password,
+#                 )
+#             qr_code.print_ascii()
+#             qr_code.make_image().save('media/QR_Wifi.png')
+#             context.update({"QR":True})
+#     return render(request,"QRWIFI.html",{"context":context})
