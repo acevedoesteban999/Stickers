@@ -1,5 +1,8 @@
 db.sqlite3
 media/
+StickersApp/__pycache__/
+StickersApp/migrations/
+Stickers/__pycache__/
 
 
 
