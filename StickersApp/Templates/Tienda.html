@@ -139,32 +139,29 @@
                                         
                                       </div>
                                       <div class="col-12 ">
-                                          <div class="row justify-content-center  ">
-                                            <div class="col-auto border-top border-dark ">
-                                           
-                                              {% if product.pair and product.pair_stored != 0 %}
-                                                  
-                                                  <div class="text-dark text-center  h3">
-                                                      {{product.pair_stored}}
-                                                      <span>
-                                                          <small class="h6 text-muted pl-2">
-                                                              Pares
-                                                          </small>
-                                                      </span>
-                                                  </div>
-                                              {% elif product.unit_stored != 0  %}
-                                                  <div class="text-dark text-center  h3 ">
-                                                      {{product.unit_stored}} 
-                                                      <span>
-                                                          <small class="h6 text-muted pl-2">
-                                                              Unidades
-                                                          </small>
-                                                      </span>
-                                                  </div>
-                                              {% endif %}
-                                            </div>
+                                        <div class="row justify-content-center  ">
+                                          <div class="col-auto border-top border-dark ">
+                                            {% if product.pair %}
+                                              <span class="h5 m-1 text-dark">
+                                                  {{product.pair_price}}$
+                                              </span>
+                                              <span>
+                                                  <small class="text-muted pl-2 h6">
+                                                      el Par
+                                                  </small>
+                                              </span>                                      
+                                            {% else %}
+                                                <span class="h5 m-1 text-dark">
+                                                    {{product.unit_price}}$
+                                                </span>
+                                                <span>
+                                                    <small class="text-muted pl-2 h6">
+                                                        la Unidad
+                                                    </small>
+                                                </span>
+                                            {% endif %}
                                           </div>
-                                          
+                                        </div>
                                       </div>
                                   </div>
                               </div>
