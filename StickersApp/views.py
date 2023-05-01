@@ -325,7 +325,7 @@ def BasePost(request):
                         if not summary_date:
                             raise Exception()   
                         context.update({"start_date":summary_date.start_date.strftime("%d-%m-%y  %H:%M")})
-                        context.update({"end_date":summary_date.end_date.strftime("%d-%m-%y %H:%M")})
+                        context.update({"end_date":summary_date.end_date.strftime("%d-%m-%y")})
                         q=Q(date__range=(summary_date.start_date,datetime.now()))
                     
                     only_worker=False

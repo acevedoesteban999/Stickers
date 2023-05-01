@@ -1,11 +1,17 @@
 <div class="display-4 text-center my-2">
     {% if context.week %}
+    <div>
         Semana {{context.week}}
-        <br>
+    </div>
     {% endif %}
     {{context.start_date}}
     {% if context.end_date %}
-        ~ {{context.end_date}}
+        <div>
+            ~
+        </div> 
+        <div>
+            {{context.end_date}}
+        </div>
     {% endif %}
 </div>
 {% if context.movements_exists %}
