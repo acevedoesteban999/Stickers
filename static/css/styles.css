@@ -1,11 +1,11 @@
 .ColorWorker{
-    background: rgb(132,58,180);
-    background: linear-gradient(90deg, rgba(132,58,180,1) 14%, rgba(29,253,228,1) 49%, rgba(69,252,195,1) 100%);  
+    background: rgb(218,11,74);
+    background: linear-gradient(304deg, rgba(218,11,74,1) 7%, rgba(65,122,226,1) 56%, rgba(50,72,214,1) 98%); 
 }
 .ColorNoAuthenticated
 {
-    background: rgb(64,180,58);
-    background: linear-gradient(90deg, rgba(64,180,58,1) 18%, rgba(29,253,228,1) 49%, rgba(69,186,252,1) 91%); 
+    background: rgb(218,11,172);
+    background: linear-gradient(90deg, rgba(218,11,172,1) 0%, rgba(167,65,226,1) 50%, rgba(66,50,214,1) 100%); 
 }
 .ColorUser{
     background: rgb(192,218,81);
@@ -13,8 +13,8 @@
 }
 .ColorAdmin
 {
-    background: rgb(58,91,180);
-    background: linear-gradient(90deg, rgba(58,91,180,1) 0%, rgba(29,210,253,1) 50%, rgba(153,252,69,1) 100%); 
+    background: rgb(34,91,195);
+    background: linear-gradient(304deg, rgba(34,91,195,1) 0%, rgba(253,45,45,1) 100%); 
 }
 .ColorSuperUser
 {

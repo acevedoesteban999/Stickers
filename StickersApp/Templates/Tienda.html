@@ -130,7 +130,7 @@
                                         <div class="row justify-content-center">
                                           <div class="col-auto">
                                             <div class="text-dark card-title text-center border border-2 px-2">
-                                              <span class="w-100 h4">
+                                              <span class="w-100 h3">
                                                   {{product.name}}
                                               </span>
                                             </div>
@@ -140,26 +140,27 @@
                                       </div>
                                       <div class="col-12 ">
                                         <div class="row justify-content-center  ">
-                                          <div class="col-auto border-top border-dark ">
-                                            {% if product.pair %}
-                                              <span class="h5 m-1 text-dark">
-                                                  {{product.pair_price}}$
-                                              </span>
-                                              <span>
+                                          <div class="col-auto border-top border-dark py-2">
+                                            
+                                             {% if product.pair %}
+                                              <div class="h5 m-1 text-dark ">
+                                                {{product.pair_price}}$
+                                              </div>
+                                              {% comment %} <div>
                                                   <small class="text-muted pl-2 h6">
                                                       el Par
                                                   </small>
-                                              </span>                                      
+                                              </div>{% endcomment %}
                                             {% else %}
-                                                <span class="h5 m-1 text-dark">
-                                                    {{product.unit_price}}$
-                                                </span>
-                                                <span>
-                                                    <small class="text-muted pl-2 h6">
-                                                        la Unidad
-                                                    </small>
-                                                </span>
-                                            {% endif %}
+                                              <div class="h5 m-1 text-dark ">
+                                                {{product.unit_price}}$
+                                              </div>
+                                              {% comment %} <div>
+                                                  <small class="text-muted pl-2 h6">
+                                                      la Unidad
+                                                  </small>
+                                              </div> {% endcomment %}
+                                            {% endif %} 
                                           </div>
                                         </div>
                                       </div>
