@@ -47,9 +47,33 @@ function getCookie(name)
     }
     return cookieValue;
 }
-var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
+var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 30, qrbox: 250 });
 html5QrcodeScanner.render(onScanSuccess);
-function onScanSuccess(decodedText, decodedResult) {
-    html5QrcodeScanner.clear()
-    window.location = decodedText
+function onScanSuccess(decodedText) {
+    function isValidHttpUrl(string) {
+        let url;
+        try {
+          url = new URL(string);
+        } catch (_) {
+          return false;
+        }
+        return url.protocol === "http:" || url.protocol === "https:";
+    }
+    if(isValidHttpUrl(decodedText))
+    {
+        html5QrcodeScanner.clear()
+        window.location = decodedText
+    }
+    else
+    {
+       
+        html5QrcodeScanner.clear().then(()=>{
+            html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 30, qrbox: 250 });
+            html5QrcodeScanner.render(onScanSuccess);
+            document.getElementById("IDErrorScan").setAttribute("class","text-danger h3 text-center p-2 m-2 d-block");
+        });
+        
+        
+    }
+        
 }
