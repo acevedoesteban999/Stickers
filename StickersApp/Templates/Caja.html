@@ -5,10 +5,10 @@
         <div class="continer-md">
             {% comment %} =================  Buttons Money ==================== {% endcomment %}
             {% if  user.is_admin  %}
-                <div class="container my-4 ">
-                    <div class="row justify-content-around">
+                <div class="container ">
+                    <div class="row my-4 justify-content-around">
     
-                        <div class="col-6 w-auto my-3 ">
+                        <div class="col-6 w-auto m-3 ">
                             <button type="button" class="btn btn-success p-3 "  style="border-radius: 20px;" data-bs-toggle="modal" data-bs-target="#AgregateModal" data-bs-whatever="@AGrDin"><span class="h4"> Agregar Dinero</span></button>     
                             <div class="modal fade" data-bs-backdrop="static" id="AgregateModal" tabindex="-1" aria-labelledby="AgregateModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
@@ -41,7 +41,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class=" col-6 w-auto my-3 ">
+                        <div class=" col-6 w-auto m-3 ">
                             <button type="button" class="btn btn-success p-3 " style="border-radius: 20px;" data-bs-toggle="modal" data-bs-target="#RetirarModal" data-bs-whatever="@RetDin"><span class="h4"> Retirar Dinero </span></button>     
                             <div class="modal fade" data-bs-backdrop="static" id="RetirarModal" tabindex="-1" aria-labelledby="RetirarModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
