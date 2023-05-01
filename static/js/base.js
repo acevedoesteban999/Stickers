@@ -47,3 +47,9 @@ function getCookie(name)
     }
     return cookieValue;
 }
+var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 });
+html5QrcodeScanner.render(onScanSuccess);
+function onScanSuccess(decodedText, decodedResult) {
+    html5QrcodeScanner.clear()
+    window.location = decodedText
+}

@@ -1,21 +1,52 @@
+{% extends 'Base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR WIFI</title>
-</head>
-<body>
-    <form action="" method="post">
-        {% csrf_token %}
-        <input type="text" name="WifiName" id="">
-        <input type="text" name="WifiPasword" id="">
-        <input type="submit" name="SendQRWifi" id="">
-    </form>
-    
-        <img src="{% static '../media/QR_Wifi.png' %}" alt="No QR Wifi">
-    
-</body>
+{% block contenido %}
+
+
+    <div class="container">
+        <div class="row justify-content-center">
+            
+            <div class="col-12 m-2 ">
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <input type="text" value="SIID" placeholder="SIID" id="S"oninput="QRWifi()" name="WifiName" id="">
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 m-2">
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <input type="text" value="Password" placeholder="Password" id="P"oninput="QRWifi()" name="WifiPasword" id="">
+                    </div>
+                </div>
+                
+            </div>
+                 
+            <div class="col-12 m-5">
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <div id="qrcode"></div> 
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+        
+        
+
+{% endblock  %}
+{% block script_js %}
+    <script type="text/javascript" src="{% static 'qrcodejs/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'qrcodejs/qrcode.js' %}"></script>
+    <script type="text/javascript">
+        QRWifi();
+        function QRWifi(){
+            S=document.getElementById("S").value;
+            P=document.getElementById("P").value;
+            document.getElementById("qrcode").innerHTML="";
+        new QRCode(document.getElementById("qrcode"), "WIFI:S:"+S+";T:WPA;P:"+P+";;");
+    }
+    </script>
+{% endblock  %}
 </html>

@@ -180,7 +180,7 @@
               </span>       
               <input  class=" form-control me-2" type="text" id="SearchProductID" placeholder="Buscar Producto" oninput="SearchProduct('{% url 'base_post' %}')" aria-label="Search"> 
               <div class="input-group-append">
-                <a style="text-decoration: none;" onclick="ScanQR()" class="text-dark" type="button">
+                <a style="text-decoration: none;" data-bs-toggle="modal" data-bs-target="#modalScan" class="text-dark" type="button">
                   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
                     <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v1H4V4Z"/>
                     <path d="M7 2H2v5h5V2ZM3 3h3v3H3V3Zm2 8H4v1h1v-1Z"/>
@@ -196,6 +196,17 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalScan" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          
+          <div class="modal-body">
+            <div id="qr-reader" class="container"></div>
           </div>
         </div>
       </div>
@@ -311,81 +322,12 @@
       {% block contenido %}
       {% endblock  %}
     </div>
-    <div style="width: 500px" id="reader"></div>
-    {% comment %} <input type="file" id="qr-input-file" accept="image/*" capture> {% endcomment %}
-    <script src="{% static 'qrcodejs/html5-qrcode.min.js' %}" ></script>
-    <script>
-      {% comment %} CON INPUT {% endcomment %}
-      {% comment %} const html5QrCode = new Html5Qrcode("reader");
-
-      const fileinput = document.getElementById('qr-input-file');
-      fileinput.addEventListener('change', e => {
-        if (e.target.files.length == 0) {
-          // No file selected, ignore 
-          return;
-        }
-
-        // Use the first item in the list
-        const imageFile = e.target.files[0];
-        html5QrCode.scanFile(imageFile, /* showImage= */true)
-        .then(qrCodeMessage => {
-          // success, use qrCodeMessage
-          console.log(qrCodeMessage);
-        })
-        .catch(err => {
-          // failure, handle it.
-          console.log(`Error scanning file. Reason: ${err}`)
-        });
-      }); {% endcomment %}
-
-      function ScanQR()
-      {
-        var cameraId=null;
-        console.log("QR");
-        Html5Qrcode.getCameras().then(devices => {
-          if (devices && devices.length) {
-            var cameraId = devices[0].id;
-          }
-          else
-            console.log("else")
-        }).catch(err => {
-          console.log("Err:",err)
-        });
-        const html5QrCode = new Html5Qrcode(/* element id */ "reader");
-        html5QrCode.start(
-          cameraId, 
-          {
-            fps: 10,    // Optional, frame per seconds for qr code scanning
-            qrbox: { width: 250, height: 250 }  // Optional, if you want bounded box UI
-          },
-          (decodedText, decodedResult) => {
-            console.log(`Scan result: ${decodedText}`, decodedResult);
-          },
-          (errorMessage) => {
-            console.log("errorMessage",errorMessage);
-          })
-        .catch((err) => {
-          console.log("err",err);
-        });
-        
-        
-        //var html5QrcodeScanner = new Html5QrcodeScanner(
-        //  "reader", { fps: 10, qrbox: 250 });
-        //html5QrcodeScanner.render(onScanSuccess,onScanError); 
-      }
-      function onScanSuccess(decodedText, decodedResult) {
-        // Handle on success condition with the decoded text or result.
-        console.log(`Scan result: ${decodedText}`, decodedResult);
-        html5QrcodeScanner.clear();
-      }
-      function onScanError(errorMessage) {
-        console.log(errorMessage);
-        html5QrcodeScanner.clear();
-      }
-    </script>
     
+    {% comment %} <input type="file" id="qr-input-file" accept="image/*" capture> {% endcomment %}
+
     <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}" ></script>
     {% comment %} <script type="text/javascript" src="{% static 'js/index.js' %}" ></script> {% endcomment %}
+    <script src="{% static 'qrcodejs/html5-qrcode.min.js' %}" ></script>
     <script type="text/javascript" src="{% static 'js/base.js' %}" ></script>
     {% block script_js %}
     {% endblock  %}
