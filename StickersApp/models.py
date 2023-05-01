@@ -432,11 +432,11 @@ class Movement(models.Model):
                             extra_info_int=total_money,
                             extra_info_int_1=total_profit,
                             extra_info_int_2=total_profit_worker,
-                            extra_info_str="Mes:{}~{} {} <br>Nota:{}".format(
+                            extra_info_str="Mes:{}~{} {} {}".format(
                                 date_start.strftime("%d-%m-%y"),
                                 date_end.strftime("%d-%m-%y"),
                                 "<br>Fecha De Cierre:"+datetime.today().strftime("%d-%m-%y"),
-                                note if note else "",
+                                ("<br>Nota:"+note.__str__()) if note else "",
                                 )
                             )
                 if movement:
