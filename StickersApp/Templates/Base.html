@@ -33,7 +33,7 @@
                 </svg>
               </a>
             {% endif %}
-            <a style="text-decoration: none;" role="button" class="ms-auto mx-3 link-light" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            <a style="text-decoration: none;" role="button" class="ms-auto mx-3 link-light" data-bs-toggle="modal" data-bs-target="#modalSearch">
               <svg width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-search" viewBox="0 0 16 16">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
               </svg>
@@ -110,7 +110,7 @@
                   <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
                     <li class="nav-item text-center my-auto">
                       <div class="ms-auto px-3 my-auto mx-2  my-auto">
-                        <button type="button" class=" btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                        <button id="idSearch" type="button" class=" btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalSearch">
                           <svg width="25" height="25" fill="currentColor" class="d-block mx-auto bi bi-search" viewBox="0 0 16 16">
                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                           </svg>
@@ -163,7 +163,7 @@
       </div>
     </nav>
     {% comment %} ============================MODAL============================ {% endcomment %}
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="modalSearch" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -171,7 +171,7 @@
             <button type="button"  class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-          
+            <div class="d-none" id="IdErrorScanDiv">Error, QR invalido</div>
             <div class="input-group mb-3">
               <span class="input-group-text" id="basic-addon1">
                 <svg width="16" height="16" fill="currentColor" class="mx-2 bi bi-search" viewBox="0 0 16 16">
@@ -180,7 +180,7 @@
               </span>       
               <input  class=" form-control me-2" type="text" id="SearchProductID" placeholder="Buscar Producto" oninput="SearchProduct('{% url 'base_post' %}')" aria-label="Search"> 
               <div class="input-group-append">
-                <a style="text-decoration: none;" data-bs-toggle="modal" data-bs-target="#modalScan" class="text-dark" type="button">
+                <a onclick="ScanQR()" style="text-decoration: none;" data-bs-toggle="modal" data-bs-target="#modalScan" class="text-dark" type="button">
                   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-qr-code-scan" viewBox="0 0 16 16">
                     <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v1H4V4Z"/>
                     <path d="M7 2H2v5h5V2ZM3 3h3v3H3V3Zm2 8H4v1h1v-1Z"/>
@@ -204,10 +204,12 @@
     <div class="modal fade" id="modalScan" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
-          
+          <div class="modal-header">  
+            <button type="button" id="buttonCloseScan" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="CloseScanModal()"></button>
+          </div>
           <div class="modal-body">
             <div id="qr-reader" class="container"></div>
-            <div class="d-none" id="IDErrorScan">Error, QR invalido</div>
+            
           </div>
         </div>
       </div>

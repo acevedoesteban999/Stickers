@@ -1,4 +1,5 @@
 var SearchBool=false
+var html5QrcodeScanner;
 function SearchProduct(addr)
 {
     if (SearchBool == true)
@@ -47,8 +48,13 @@ function getCookie(name)
     }
     return cookieValue;
 }
-var html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 30, qrbox: 250 });
-html5QrcodeScanner.render(onScanSuccess);
+
+function ScanQR()
+{
+    html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 30, qrbox: 250 });
+    html5QrcodeScanner.render(onScanSuccess);
+}
+
 function onScanSuccess(decodedText) {
     function isValidHttpUrl(string) {
         let url;
@@ -61,19 +67,23 @@ function onScanSuccess(decodedText) {
     }
     if(isValidHttpUrl(decodedText))
     {
-        html5QrcodeScanner.clear()
-        window.location = decodedText
+        html5QrcodeScanner.clear().then(()=>{
+            window.location = decodedText
+        });
+        
     }
     else
     {
-       
-        html5QrcodeScanner.clear().then(()=>{
-            html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", { fps: 30, qrbox: 250 });
-            html5QrcodeScanner.render(onScanSuccess);
-            document.getElementById("IDErrorScan").setAttribute("class","text-danger h3 text-center p-2 m-2 d-block");
-        });
-        
-        
+
+        document.getElementById("buttonCloseScan").click();
+        document.getElementById("IdErrorScanDiv").setAttribute("class","text-danger d-block h4 text-center");
+        document.getElementById("idSearch").click();
+        setTimeout(()=>{ document.getElementById("IdErrorScanDiv").setAttribute("class","d-none");} ,5000) 
     }
         
+}
+function CloseScanModal()
+{
+    html5QrcodeScanner.clear().then(()=>{  
+    });
 }
