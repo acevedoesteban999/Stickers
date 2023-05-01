@@ -60,7 +60,7 @@
         </div>
     </div> {% endcomment %}
     <div class="d-block d-md-none ">
-        <div class="row justify-content-center align-items-center mt-3">
+        {% comment %} <div class="row justify-content-center align-items-center mt-3">
           {% for product in products %}  
             <div class="col-12 m-2 ">
               <a type="button" href="{% url 'producto' product.id %}" style="text-decoration:none;" class="text-dark" >
@@ -115,7 +115,63 @@
               </a>
             </div> 
           {% endfor %}
-        </div>
+        </div> {% endcomment %}
+        <div class="continer pt-4 m-2">
+          <div class="row cols-1 cols-md-2 cols-lg-3 cols-xl-4"> 
+              <div class="card-group">
+                  {% for product in products %}
+                      <div class="col-11 col-md-5 col-lg-4 col-xl-3 mb-5">
+                          <a class="link-light h4 card-title" style=" text-decoration: none;" href="{% url 'producto' product.id %}">
+                              <div class="card h-100 m-1 p-3  ">
+                                  
+                                  <div class="text-dark card-title text-center border border-2 w-auto">
+                                      <span class="w-100 h4">
+                                          {{product.name}}
+                                      </span>
+                                  </div>
+                                  
+                                  <div class="row cols-2 align-items-start justify-content-around">
+                                      <div class="col-4 gx-2 ">
+                                          <img src="{{product.image.url}}" class="img-fluid img-thumbnail border border-0" alt="...">
+                                      </div>
+                                      <div class="col-6">
+                                          <div class="row">
+                                              {% if product.pair and product.pair_stored != 0 %}
+                                                  
+                                                  <div class="text-dark text-center h3 p-1 mt-3 border-top border-bottom border-dark">
+                                                      {{product.pair_stored}}
+                                                      <span>
+                                                          <small class="h6 text-muted pl-2">
+                                                              Pares
+                                                          </small>
+                                                      </span>
+                                                  </div>
+                                              {% elif product.unit_stored != 0  %}
+                                                  <div class="text-dark text-center h3 p-1 mt-3 border-top border-bottom border-dark">
+                                                      {{product.unit_stored}} 
+                                                      <span>
+                                                          <small class="h6 text-muted pl-2">
+                                                              Unidades
+                                                          </small>
+                                                      </span>
+                                                  </div>
+                                              {% else %}
+                                                  <div class="border border-danger p-2 mt-3 text-center text-danger h5">
+                                                      AGOTADO
+                                                  </div>
+                                              {% endif %}
+                                              
+                                          </div>
+                                          
+                                      </div>
+                                  </div>
+                              </div>
+                          </a>
+                      </div>
+                  {% endfor %}  
+              </div>    
+          </div>
+      </div>
     </div>
     <div class="d-none d-md-block  ">
       <div class="row cols-1 cols-md-2 cols-lg-3 cols-xl-4 justify-content-around align-items-start">
