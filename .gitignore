@@ -1,5 +1,6 @@
 db.sqlite3
-media/
+media/productos/
+media/usuarios/
 static/admin
 StickersApp/__pycache__/
 StickersApp/migrations/

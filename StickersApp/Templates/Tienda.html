@@ -59,7 +59,7 @@
           </div>
         </div>
     </div> {% endcomment %}
-    <div class="d-block d-md-none ">
+    <div class="d-block">
         {% comment %} <div class="row justify-content-center align-items-center mt-3">
           {% for product in products %}  
             <div class="col-12 m-2 ">
@@ -118,61 +118,50 @@
         </div> {% endcomment %}
         <div class="continer pt-4 m-2">
           <div class="row cols-auto justify-content-center h-100 "> 
-                  {% for product in products %}
-                      <div class="col-5 my-3">
-                          <a class="link-light h4 card-title" style=" text-decoration: none;" href="{% url 'producto' product.id %}">
-                              <div class="card h-100 ">
-                                  <div class="row align-items-end justify-content-center text-center h-100">
-                                      <div class="col-12 align-self-start">
-                                          <img src="{{product.image.url}}" class="img-fluid img-thumbnail border border-0" alt="...">
-                                      </div>
-                                      <div class="col-12 ">
-                                        <div class="row justify-content-center">
-                                          <div class="col-auto">
-                                            <div class="text-dark card-title text-center border border-2 px-2">
-                                              <span class="w-100 h3">
-                                                  {{product.name}}
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        
-                                      </div>
-                                      <div class="col-12 ">
-                                        <div class="row justify-content-center  ">
-                                          <div class="col-auto border-top border-dark py-2">
-                                            
-                                             {% if product.pair %}
-                                              <div class="h5 m-1 text-dark ">
-                                                {{product.pair_price}}$
-                                              </div>
-                                              {% comment %} <div>
-                                                  <small class="text-muted pl-2 h6">
-                                                      el Par
-                                                  </small>
-                                              </div>{% endcomment %}
-                                            {% else %}
-                                              <div class="h5 m-1 text-dark ">
-                                                {{product.unit_price}}$
-                                              </div>
-                                              {% comment %} <div>
-                                                  <small class="text-muted pl-2 h6">
-                                                      la Unidad
-                                                  </small>
-                                              </div> {% endcomment %}
-                                            {% endif %} 
-                                          </div>
-                                        </div>
-                                      </div>
-                                  </div>
+            {% for product in products %}
+              <div class="col-5 col-sm-4 col-md-3 col-lg-2 my-3">
+                  <a class="link-light h4 card-title" style=" text-decoration: none;" href="{% url 'producto' product.id %}">
+                      <div class="card h-100 ">
+                          <div class="row align-items-end justify-content-center text-center h-100">
+                              <div class="col-12 align-self-start">
+                                  <img src="{{product.image.url}}" class="p-3 img-fluid img-thumbnail border border-0" alt="...">
                               </div>
-                          </a>
+                              <div class="col-12 ">
+                                <div class="row justify-content-center">
+                                  <div class="col-auto">
+                                    <div class="text-dark card-title text-center border border-2 px-2">
+                                      <span class="w-100 h3">
+                                          {{product.name}}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-12 ">
+                                <div class="row justify-content-center  ">
+                                  <div class="col-auto border-top border-dark py-2">
+                                    
+                                      {% if product.pair %}
+                                      <div class="h5 m-1 text-dark ">
+                                        {{product.pair_price}}$
+                                      </div>
+                                    {% else %}
+                                      <div class="h5 m-1 text-dark ">
+                                        {{product.unit_price}}$
+                                      </div>
+                                    {% endif %} 
+                                  </div>
+                                </div>
+                              </div>
+                          </div>
                       </div>
-                  {% endfor %}    
+                  </a>
+              </div>
+            {% endfor %}    
           </div>
       </div>
     </div>
-    <div class="d-none d-md-block  ">
+    {% comment %} <div class="d-none d-md-block  ">
       <div class="row cols-1 cols-md-2 cols-lg-3 cols-xl-4 justify-content-around align-items-start">
         <div class="card-group">  
           {% for product in products %}  
@@ -219,45 +208,9 @@
               </a>
             </div> 
           {% endfor %}
-
-          {% comment %} {% for product in products %}
-            <div class="col-11 col-md-5 col-lg-4 col-xl-3 mb-3">
-              <div class="card h-100 text-center p-3 m-1 mb-3 ">
-                <div class="row align-items-center justify-content-center">
-                  {% if product.image %}
-                      {% comment %} <img src="{{product.image.url}}" width="150" height="250" class="card-img-top" alt="..."> {% endcomment %}
-                      {% comment %} <img src="{{product.image.url}}"  style="max-width: 320px;max-height: 280px;" class="img-fluid img-thumbnail border border-0 " alt="...">
-                      
-                  {% else %}
-                      <img src="" max-width="200" max-height="400" class="card-img-top" alt="{{Product.name}} no tiene imagen asignada">
-                  {% endif %}   {% endcomment %}
-                {% comment %} </div> 
-                <div class="row align-self-center">
-                  {% if user.is_authenticated %}
-                    <div class="card-footer bg-ligth">
-                      <div class="d-grid gap-2">
-                        <a type="button" href="{% url 'producto' product.id %}" class="btn btn-outline-secondary " >Ver {{product.name}}</a>
-                      </div> 
-                    </div>
-                  {% else %}
-                    <hr></hr>
-                  {% endif %}
-                  <div class="card-body">
-                      <h3 class="card-title">{{product.name}}</h3>
-                      <h5 class="card-text">{{product.price}}$</h5>
-                      {% if user.is_authenticated %}
-                        <h6 class="card-text">Almacenado : {{product.stored}}</h6>
-                      {% endif %} 
-                      <p class=" h6 p-1 text-center text-muted text-break" ><small >{{product.description}}</small></p>
-                  </div>
-                        
-                </div>
-              </div>
-            </div> 
-          {% endfor %} {% endcomment %}
         </div>
       </div>
-    </div>
+    </div> {% endcomment %}
   {% else %}
     <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay productos almacenados para mostrar<h2></div>
   {% endif %}
