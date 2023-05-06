@@ -3,9 +3,9 @@
 {% block contenido %}
     {% if product and product.removed == False %}
         <div class="container">  
-            <div class="display-2 my-2 text-center">  Producto </div>
+            {% comment %} <div class="display-2 my-2 text-center">  Producto </div> {% endcomment %}
             {% comment %}=================================== Product Info =================================  {% endcomment %}
-            <div class="row justify-content-center">
+            <div class="row justify-content-center mt-4">
                 <div class="card text-center p-3">
                     <div class="col-auto">
                         <div class="row justify-content-center">
@@ -137,7 +137,7 @@
                             {% if product.confirm or user.is_admin %} 
                                 <div class="col-12">
                                     <button class="btn m-2  btn-sm btn-outline-secondary w-auto" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
-                                        <span class="h-1"> Informacion Adicional </span>
+                                        <span class="h-1"> Información Adicional </span>
                                     </button>
                                     <div class="collapse" id="collapseMoreInfo">
                                         <div class="row justify-content-center">
@@ -197,28 +197,28 @@
                             <hr>
                             <div class="row justify-content-around align-items-center">
                                 {% if user.is_admin %}
-                                    <div class="col-auto">
+                                    <div class="col-auto my-2">
                                         <a type="button" class=" btn btn-info" data-bs-toggle="modal" data-bs-target="#AddModal" data-bs-whatever="1">
                                             Agregar
                                         </a>      
                                     </div>
                                 {% endif %}
                                 {% if product.unit_stored > 0 or product.pair_stored > 0 %}
-                                    <div class="col-auto ">
+                                    <div class="col-auto my-2 ">
                                         <a type="button" class=" btn btn-success" data-bs-toggle="modal" data-bs-target="#SellModal" data-bs-whatever="1">
                                             Vender
                                         </a>  
                                     </div>
                                 {% endif %}
                                 {% if user.is_admin %}
-                                    <div class="col-auto ">
+                                    <div class="col-auto my-2 ">
                                         <button type="button" class=" btn btn-warning" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">
                                             Editar
                                         </button> 
                                     </div>
                                 {% endif %}
                                 {% if product.unit_sold > 0 or product.pair_sold > 0 %}
-                                    <div class="col-auto ">
+                                    <div class="col-auto my-2 ">
                                         <a type="button" style="background-color: orangered; color: white;" class=" btn " data-bs-toggle="modal" data-bs-target="#RefundModal" data-bs-whatever="1">
                                             Reembolsar
                                         </a>  
@@ -226,7 +226,7 @@
                                 {% endif %}
                                 {% if user.is_admin %}
                                     {% if product.unit_stored > 0 or product.pair_stored > 0 %}
-                                        <div class="col-auto ">
+                                        <div class="col-auto my-2 ">
                                             <a type="button" class=" btn btn-danger" data-bs-toggle="modal" data-bs-target="#SubModal" data-bs-whatever="1">
                                                 Quitar
                                             </a>  
@@ -384,7 +384,7 @@
                         {% if product.confirm or user.is_admin %} 
                             <div class="col-10">
                                 <button class="btn m-2  btn-sm btn-outline-secondary w-auto" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
-                                    <span class="h-1"> Informacion Adicional </span>
+                                    <span class="h-1"> Información Adicional </span>
                                 </button>
                                 <div class="collapse" id="collapseMoreInfo">
                                     <div class="row justify-content-center">
@@ -502,42 +502,45 @@
                                 </div>
                                 <form method="POST" action="">
                                     {% csrf_token %}
-                                    <div class="row">
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text">Agregar {% if product.pair %} Pares {% else %} Unidades {% endif %} </span>
-                                            <div class="form-floating">
-                                                <input required value="1" type="number" required min="1" name="cantidad" class="form-control" id="idPairLotInput" placeholder="Cantidad">
-                                                <label for="floatingInput">Cantidad de {{product.name}}</label>        
+                                    <div class="modal-body">
+                                
+                                        <div class="row">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">Agregar {% if product.pair %} Pares {% else %} Unidades {% endif %} </span>
+                                                <div class="form-floating">
+                                                    <input required value="1" type="number" required min="1" name="cantidad" class="form-control" id="idPairLotInput" placeholder="Cantidad">
+                                                    <label for="floatingInput">Cantidad de {{product.name}}</label>        
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    {% if product.pair %}
-                                        <div class="form-check form-switch mb-3 m-1">
-                                            <input type="checkbox" class="form-check-input" id="PairAddUni" name="AccionPar" onchange="onPairAddUni()" >
-                                            <label class="form-check-label">                   
-                                                Agregar Unidades
-                                            </label>
-                                        </div>
-                                        <div class="input-group mb-3" id="divIdCantUni" style="display: none;">
-                                            <span class="input-group-text">Agregar Unidades</span>
-                                            <div class="form-floating">
-                                                <input required value="1"  type="number" min="1" name="cantidad_1" class="form-control" id="PairAddUnitInput" placeholder="Cantidad Unidades">
-                                                <label for="floatingInput">Cantidad de Unidades de {{product.name}}</label>        
+                                        {% if product.pair %}
+                                            <div class="form-check form-switch mb-3 m-1">
+                                                <input type="checkbox" class="form-check-input" id="PairAddUni" name="AccionPar" onchange="onPairAddUni()" >
+                                                <label class="form-check-label">                   
+                                                    Agregar Unidades
+                                                </label>
                                             </div>
+                                            <div class="input-group mb-3" id="divIdCantUni" style="display: none;">
+                                                <span class="input-group-text">Agregar Unidades</span>
+                                                <div class="form-floating">
+                                                    <input required value="1"  type="number" min="1" name="cantidad_1" class="form-control" id="PairAddUnitInput" placeholder="Cantidad Unidades">
+                                                    <label for="floatingInput">Cantidad de Unidades de {{product.name}}</label>        
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        <div class="form-floating mb-3">
+                                            <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                            <label for="floatingInput">Nota Adicional</label>
                                         </div>
-                                    {% endif %}
-                                    <div class="form-floating mb-3">
-                                        <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
-                                        <label for="floatingInput">Nota Adicional</label>
-                                    </div>
-                                    <div class="row justify-content-around m-2">
-                                        <div class="col-6">
-                                            <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
-                                        </div>
-                                        <div class="col-6">
-                                            <input type="submit"  name="AddProduct" class="btn btn-info float-end mx-2" value="Agregar">
-                                        </div>
-                                    </div>       
+                                        <div class="row justify-content-around m-2">
+                                            <div class="col-6">
+                                                <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="submit"  name="AddProduct" class="btn btn-info float-end mx-2" value="Agregar">
+                                            </div>
+                                        </div>      
+                                    </div> 
                                 </form>
                             </div>
                         </div>
@@ -550,20 +553,22 @@
                                     <h1 class="modal-title fs-5" id="RemoveModalLabel">Eliminar</h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <form method="POST" action="">
-                                    {% csrf_token %}
-                                    <div class="modal-body">
-                                        <table>Eliminar a {{product.name}} </table>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
-                                        <label for="floatingInput">Nota Adicional</label>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">
-                                        <input class=" btn btn-danger" type="submit" name="RemoveProduct" value="Eliminar">
-                                    </div>
-                                </form>
+                                <div class="modal-body">
+                                    <form method="POST" action="">
+                                        {% csrf_token %}
+                                        <div class="modal-body text-center">
+                                            <div class="h3 text-danger">Eliminar {{product.name}} </div>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                            <label for="floatingInput">Nota Adicional</label>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">
+                                            <input class=" btn btn-danger" type="submit" name="RemoveProduct" value="Eliminar">
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -626,8 +631,8 @@
                                         </fieldset>
 
                                         <div class="form-floating mb-3">
-                                            <textarea  type="text" class="form-control" name="descripcion" id="floatingInput" placeholder="Descripcion"  style="height: 100px;">{{product.description}}</textarea >
-                                            <label for="floatingInput">Descripcion</label>
+                                            <textarea  type="text" class="form-control" name="descripción" id="floatingInput" placeholder="Descripción"  style="height: 100px;">{{product.description}}</textarea >
+                                            <label for="floatingInput">Descripción</label>
                                         </div>
                                         <div class="form-floating mb-3">
                                             <div class="row m-2">
@@ -666,40 +671,42 @@
                                 </div>
                                 <form method="POST"  action="">
                                     {% csrf_token %}
-                                    
-                                    <div class="row">
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text">Vender</span>
-                                            <div class="form-floating">
-                                                <input  required type="number"  oninput="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.pair_profit}}','{{product.pair_profit_worker}}','{{product.unit_price}}','{{product.unit_profit}}','{{product.unit_profit_worker}}')" value="1" min="1" max="{% if product.pair %}{{product.pair_stored}} {% else %}{{product.unit_stored}}{% endif %} " name="cantidad" class="form-control" id="idLotatChange" placeholder="Cantidad">
-                                                
-                                                {% if product.pair == True %} 
-                                                    <input type="hidden" id="HiddenInptMaxMin"value="{{product.unit_stored}}">
-                                                {% endif %}
-                                                <label for="floatingInput">Cantidad</label>       
+                                    <div class="modal-body">
+                                
+                                        <div class="row">
+                                            <div class="input-group mb-3">
+                                                <span class="input-group-text">Vender</span>
+                                                <div class="form-floating">
+                                                    <input  required type="number"  oninput="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.pair_profit}}','{{product.pair_profit_worker}}','{{product.unit_price}}','{{product.unit_profit}}','{{product.unit_profit_worker}}')" value="1" min="1" max="{% if product.pair %}{{product.pair_stored}} {% else %}{{product.unit_stored}}{% endif %} " name="cantidad" class="form-control" id="idLotatChange" placeholder="Cantidad">
+                                                    
+                                                    {% if product.pair == True %} 
+                                                        <input type="hidden" id="HiddenInptMaxMin"value="{{product.unit_stored}}">
+                                                    {% endif %}
+                                                    <label for="floatingInput">Cantidad</label>       
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    {% if product.pair %}
-                                        <div class="form-check form-switch mb-3 m-1">
-                                            <input onclick="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.pair_profit}}','{{product.pair_profit_worker}}','{{product.unit_price}}','{{product.unit_profit}}','{{product.unit_profit_worker}}')" id="VentaPresId" type="checkbox" class="form-check-input" name="AccionPar" checked >
-                                            <label class="form-check-label">                   
-                                                Venta por Pares
-                                            </label>
+                                        {% if product.pair %}
+                                            <div class="form-check form-switch mb-3 m-1">
+                                                <input onclick="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.pair_profit}}','{{product.pair_profit_worker}}','{{product.unit_price}}','{{product.unit_profit}}','{{product.unit_profit_worker}}')" id="VentaPresId" type="checkbox" class="form-check-input" name="AccionPar" checked >
+                                                <label class="form-check-label">                   
+                                                    Venta por Pares
+                                                </label>
+                                            </div>
+                                        {% endif %}    
+                                        <div class="form-floating mb-3">
+                                            <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                            <label for="floatingInput">Nota Adicional</label>
                                         </div>
-                                    {% endif %}    
-                                    <div class="form-floating mb-3">
-                                        <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
-                                        <label for="floatingInput">Nota Adicional</label>
-                                    </div>
-                                    <div class="row justify-content-around m-2">
-                                        <div class="col-6 ">
-                                            <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
-                                        </div>
-                                        <div class="col-6">
-                                            <input type="submit"  name="SellProduct" class="btn btn-success float-end mx-2" value="Vender">
-                                        </div>
-                                    </div>       
+                                        <div class="row justify-content-around m-2">
+                                            <div class="col-6 ">
+                                                <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">         
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="submit"  name="SellProduct" class="btn btn-success float-end mx-2" value="Vender">
+                                            </div>
+                                        </div>   
+                                    </div>    
                                 </form>
                             </div>
                         </div>
@@ -716,39 +723,42 @@
                                 </div>
                                 <form method="POST" action="">
                                     {% csrf_token %}
-                                    <div class="row">
-                                        <div class="h5 mx-4 p-1">Id de Operacion a Reembolsar</div>
-                                        <div class="input-group mb-3">
-                                            <input type="number" class="form-control" name="RefundIdMovement" min="1"  placeholder="Id" id="inputIdVerifRefund" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                                            <div class="input-group-append">
-                                              <button class="btn btn-outline" style="background-color: orangered; color: white;" onClick="VerifRefund('{% url 'base_post' %}',{{product.id}})" type="button">Verificar</button>
+                                    <div class="modal-body">
+                                
+                                        <div class="row">
+                                            <div class="h5 mx-4 p-1">Id de Operación a Reembolsar</div>
+                                            <div class="input-group mb-3">
+                                                <input type="number" class="form-control" name="RefundIdMovement" min="1"  placeholder="Id" id="inputIdVerifRefund" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                                <div class="input-group-append">
+                                                <button class="btn btn-outline" style="background-color: orangered; color: white;" onClick="VerifRefund('{% url 'base_post' %}',{{product.id}})" type="button">Verificar</button>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="container text-center m-1 p-1">
-                                            <div id="IdSpiner" class="d-none">
-                                                <div class="row justify-content-center align-items-center text-center">
-                                                    <div class="col">
-                                                        <div class="spinner-border" role="status">
-                                                            <span class="sr-only"></span>
+                                            <div class="container text-center m-1 p-1">
+                                                <div id="IdSpiner" class="d-none">
+                                                    <div class="row justify-content-center align-items-center text-center">
+                                                        <div class="col">
+                                                            <div class="spinner-border" role="status">
+                                                                <span class="sr-only"></span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div  class="h5 p-1 mx-4"id="DivIdInfoRefundAjax">
-                                                
+                                                <div  class="h5 p-1 mx-4"id="DivIdInfoRefundAjax">
+                                                    
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
-                                        <label for="floatingInput">Nota Adicional</label>
-                                    </div>
-                                    <div class="row justify-content-around m-2">
-                                        <div class="col-6">
-                                            <input type="reset" class="btn btn-warning float-start" data-bs-dismiss="modal" value="Cancelar">         
+                                        <div class="form-floating mb-3">
+                                            <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                            <label for="floatingInput">Nota Adicional</label>
                                         </div>
-                                        <div class="col-6">
-                                            <input type="submit" disabled id="RefundProductButton" name="RefundProduct" style="background-color: orangered; color: white;" class="btn float-end mx-2" value="Reembolsar">
+                                        <div class="row justify-content-around m-2">
+                                            <div class="col-6">
+                                                <input type="reset" class="btn btn-warning float-start" data-bs-dismiss="modal" value="Cancelar">         
+                                            </div>
+                                            <div class="col-6">
+                                                <input type="submit" disabled id="RefundProductButton" name="RefundProduct" style="background-color: orangered; color: white;" class="btn float-end mx-2" value="Reembolsar">
+                                            </div>
                                         </div>
                                     </div>       
                                 </form>  
@@ -768,36 +778,38 @@
                                     </div>
                                     <form method="POST" action="">
                                         {% csrf_token %}
-                                        
-                                        <div class="row">
-                                            <div class="input-group mb-3">
-                                                <span class="input-group-text">Quitar</span>
-                                                <div class="form-floating">
-                                                    <input required type="number" value="1" min="1" max="{% if product.pair %}{{product.pair_stored}} {% else %}{{product.unit_stored}}{% endif %}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
-                                                    <label for="floatingInput">Cantidad</label>       
+                                        <div class="modal-body">
+                                
+                                            <div class="row">
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text">Quitar</span>
+                                                    <div class="form-floating">
+                                                        <input required type="number" value="1" min="1" max="{% if product.pair %}{{product.pair_stored}} {% else %}{{product.unit_stored}}{% endif %}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
+                                                        <label for="floatingInput">Cantidad</label>       
+                                                    </div>
                                                 </div>
+                                            </div>  
+                                            {% if product.pair %}
+                                                <div class="form-check form-switch mb-3 m-1">
+                                                    <input type="checkbox" class="form-check-input" name="AccionPar" checked >
+                                                    <label class="form-check-label">                   
+                                                        Quitado por Pares
+                                                    </label>
+                                                </div>
+                                            {% endif %} 
+                                            <div class="form-floating mb-3">
+                                                <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
+                                                <label for="floatingInput">Nota Adicional</label>
                                             </div>
-                                        </div>  
-                                        {% if product.pair %}
-                                            <div class="form-check form-switch mb-3 m-1">
-                                                <input type="checkbox" class="form-check-input" name="AccionPar" checked >
-                                                <label class="form-check-label">                   
-                                                    Quitado por Pares
-                                                </label>
-                                            </div>
-                                        {% endif %} 
-                                        <div class="form-floating mb-3">
-                                            <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
-                                            <label for="floatingInput">Nota Adicional</label>
+                                            <div class="row justify-content-around m-2">
+                                                <div class="col-6">
+                                                    <input type="reset" class="btn btn-secondary float-start" data-bs-dismiss="modal" value="Cancelar">   
+                                                </div>
+                                                <div class="col-6">
+                                                    <input type="submit"  name="SubProduct" class="btn btn-danger float-end mx-2" value="Quitar">
+                                                </div>
+                                            </div>       
                                         </div>
-                                        <div class="row justify-content-around m-2">
-                                            <div class="col-6">
-                                                <input type="reset" class="btn btn-secondary float-start" data-bs-dismiss="modal" value="Cancelar">   
-                                            </div>
-                                            <div class="col-6">
-                                                <input type="submit"  name="SubProduct" class="btn btn-danger float-end mx-2" value="Quitar">
-                                            </div>
-                                        </div>       
                                     </form>   
                                 </div>
                             </div>

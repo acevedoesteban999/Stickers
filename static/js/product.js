@@ -29,18 +29,18 @@ function VerifRefund(addr,product_id)
             }
             else if (data == "E2")
             {
-                document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, Operacion de Id:"+idRefund+" no es de tipo Venta";
-                alert("Error, Operacion de Id:"+idRefund+" no es de tipo Venta");
+                document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, Operación de Id:"+idRefund+" no es de tipo Venta";
+                alert("Error, Operación de Id:"+idRefund+" no es de tipo Venta");
             }
             else if (data == "E3")
             {
-                document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, El Producto de la Operacion de Id:"+idRefund+" no Coincide con el Producto en la Pagina ";
-                alert("Error, El Producto de la Operacion de Id:"+idRefund+" no Coincide con el Producto en la Pagina");
+                document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, El Producto de la Operación de Id:"+idRefund+" no Coincide con el Producto en la Pagina ";
+                alert("Error, El Producto de la Operación de Id:"+idRefund+" no Coincide con el Producto en la Pagina");
             }
             else if (data == "E4")
             {
-                document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, La Operacion de Id:"+idRefund+" ya ha sido Reembolsada";
-                alert("Error, La Operacion de Id:"+idRefund+" ya ha sido Reembolsada");
+                document.getElementById("DivIdInfoRefundAjax").innerHTML="Error, La Operación de Id:"+idRefund+" ya ha sido Reembolsada";
+                alert("Error, La Operación de Id:"+idRefund+" ya ha sido Reembolsada");
             }
             else
             {

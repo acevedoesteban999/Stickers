@@ -1,3 +1,8 @@
+html, body {
+    margin: 0;
+    height: 100%;
+}
+
 .ColorWorker{
     background: rgb(218,11,74);
     background: linear-gradient(304deg, rgba(218,11,74,1) 7%, rgba(65,122,226,1) 56%, rgba(50,72,214,1) 98%); 

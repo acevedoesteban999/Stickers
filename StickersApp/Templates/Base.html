@@ -278,14 +278,14 @@
               <div class="col-auto">   
                 <form action="{% url 'base_post' %}" method="POST">
                   {% csrf_token %}
-                  <input type="submit" value="Cerrar Sesion" name="CerrarSesion" class="btn btn-danger m-3 p-2">
+                  <input type="submit" value="Cerrar Sesión" name="CerrarSesion" class="btn btn-danger m-3 p-2">
                 </form>   
               </div>
             </div>
           {% else %}
             <form action="{% url 'base_post' %}" method="POST">
               {% csrf_token %}
-              <div class="h4">Inicio de Sesion</div>
+              <div class="h4">Inicio de Sesión</div>
               <div class="form-floating mb-3">
                 <input type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username" maxlength="150" required="" class="form-control" id="floatingInput" placeholder="Ususario">
                 <label for="floatingInput">Usuario</label>
@@ -326,7 +326,25 @@
           </div>
         </div>
       {% endfor %}
-
+      <div class="row justify-content-between mt-2 mx-2 d-none">
+        <div class="col-auto">
+          <a href="">
+            <svg style="text-decoration: none;" class="text-dark" xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-box-arrow-in-left" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M10 3.5a.5.5 0 0 0-.5-.5h-8a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h8a.5.5 0 0 0 .5-.5v-2a.5.5 0 0 1 1 0v2A1.5 1.5 0 0 1 9.5 14h-8A1.5 1.5 0 0 1 0 12.5v-9A1.5 1.5 0 0 1 1.5 2h8A1.5 1.5 0 0 1 11 3.5v2a.5.5 0 0 1-1 0v-2z"/>
+              <path fill-rule="evenodd" d="M4.146 8.354a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H14.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3z"/>
+            </svg>
+          </a>
+        </div>
+        <div class="col-auto">
+          <a href="">
+            <svg xmlns="http://www.w3.org/2000/svg" style="text-decoration: none;" class="text-dark" width="26" height="26" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+              <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+            </svg>
+          </a>
+        </div>
+        
+      </div>
       {% block contenido %}
       {% endblock  %}
     </div>

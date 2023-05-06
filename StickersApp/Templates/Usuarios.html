@@ -1,104 +1,106 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
-    <div class="container">
-        <div class="row my-5">
-            <div class="col-12">
-                <div class="card text-center">
-                    <div class="card-body">
-                      <h4 class="card-title">Administradores</h4>
-                        <div class="row justify-content-center">  
-                            {% for admin in context.admins %}
-                                <div class="col-auto m-2 ">
-                                    <a style="text-decoration: none;" href="{% url 'usuario' admin.id %}">  
-                                        <div class="card text-white bg-dark m-2">
-                                            <div class="card-body">
-                                                <div class="row justify-content-center">
-                                                    <div class="col-auto">
-                                                        <img src="{{admin.image.url}}"  width="75" height="75"  class="img-fluid rounded-circle" alt="" >
+    {% if user.is_admin %}
+        <div class="container">
+            <div class="row my-5">
+                <div class="col-12">
+                    <div class="card text-center">
+                        <div class="card-body">
+                        <h4 class="card-title">Administradores</h4>
+                            <div class="row justify-content-center">  
+                                {% for admin in context.admins %}
+                                    <div class="col-auto m-2 ">
+                                        <a style="text-decoration: none;" href="{% url 'usuario' admin.id %}">  
+                                            <div class="card text-white bg-dark m-2">
+                                                <div class="card-body">
+                                                    <div class="row justify-content-center">
+                                                        <div class="col-auto">
+                                                            <img src="{{admin.image.url}}"  width="75" height="75"  class="img-fluid rounded-circle" alt="" >
+                                                        </div>
                                                     </div>
+                                                    <h4 class="card-title">{{admin.username}}</h4>
+                                                    <p class="card-text h6">Ultima Conexion:<br>{% if admin.last_login %}{{worker.last_login.date}}{% else %}Nunca{% endif %} </p>
                                                 </div>
-                                                <h4 class="card-title">{{admin.username}}</h4>
-                                                <p class="card-text h6">Ultima Conexion:<br>{% if admin.last_login %}{{worker.last_login.date}}{% else %}Nunca{% endif %} </p>
                                             </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    
-        <div class="row my-5">
-            <div class="col-12">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h4 class="card-title">Trabajadores</h4>
-                        <div class="row justify-content-center">  
-                            {% for worker in context.workers %}
-                                <div class="col-auto m-2">
-                                    
-                                    <a style="text-decoration: none;" href="{% url 'usuario' worker.id %}">
-                                        <div class="card text-white bg-dark m-2">
-                                            <div class="card-body">
-                                                <div class="row justify-content-center">
-                                                    <div class="col-auto">
-                                                        <img src="{{worker.image.url}}" width="75" height="75" class="img-fluid rounded-circle" alt="" >
-                                                    </div>
-                                                </div>
-                                                <h4 class="card-title">{{worker.username}}</h4>
-                                                <p class="card-text h6">Ultima Conexion:<br>{% if worker.last_login %}{{worker.last_login.date}}{% else %}Nunca{% endif %} </p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% if context.users_desactivated %}
-            <div class="display-4 mx-3 text-center" type="button" data-bs-toggle="collapse" data-bs-target="#colapseUsersDesactivated" aria-expanded="false"
-                    aria-controls="contentId">
-                Ususarios Desactivados
-            </div>
-            <div class="collapse" id="colapseUsersDesactivated">
-                <div class="row my-5">
-                    <div class="col-12">
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <h4 class="card-title">Usuarios Desactivados</h4>
-                                <div class="row justify-content-center">  
-                                    {% for user in context.users_desactivated %}  
-                                        <div class="col-auto m-2">
-                                            <a style="text-decoration: none;" href="{% url 'usuario' user.id %}">
-                                                <div class="card text-white bg-dark m-2">
-                                                    <div class="card-body">
-                                                         <div class="row justify-content-center">
-                                                            <div class="col-auto">
-                                                                <img src="{{user.image.url}}" width="75" height="75" class="img-fluid rounded-circle" alt="" >
-                                                            </div>
-                                                        </div> 
-                                                        <h4 class="card-title">{{user.username}}</h4>
-                                                        <p class="card-text h6">{% if user.is_admin %}Administrador{% elif user.is_worker %}Trabajador{% endif %} </p>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    {% endfor %}
-                                </div>
+                                        </a>
+                                    </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-        {% endif %}
         
-    </div>
-    
-    
+            <div class="row my-5">
+                <div class="col-12">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h4 class="card-title">Trabajadores</h4>
+                            <div class="row justify-content-center">  
+                                {% for worker in context.workers %}
+                                    <div class="col-auto m-2">
+                                        
+                                        <a style="text-decoration: none;" href="{% url 'usuario' worker.id %}">
+                                            <div class="card text-white bg-dark m-2">
+                                                <div class="card-body">
+                                                    <div class="row justify-content-center">
+                                                        <div class="col-auto">
+                                                            <img src="{{worker.image.url}}" width="75" height="75" class="img-fluid rounded-circle" alt="" >
+                                                        </div>
+                                                    </div>
+                                                    <h4 class="card-title">{{worker.username}}</h4>
+                                                    <p class="card-text h6">Ultima Conexion:<br>{% if worker.last_login %}{{worker.last_login.date}}{% else %}Nunca{% endif %} </p>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if context.users_desactivated %}
+                <div class="display-4 mx-3 my-3 text-center" type="button" data-bs-toggle="collapse" data-bs-target="#colapseUsersDesactivated" aria-expanded="false"
+                        aria-controls="contentId">
+                    Ususarios Desactivados
+                </div>
+                <div class="collapse" id="colapseUsersDesactivated">
+                    <div class="row my-5">
+                        <div class="col-12">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h4 class="card-title">Usuarios Desactivados</h4>
+                                    <div class="row justify-content-center">  
+                                        {% for user in context.users_desactivated %}  
+                                            <div class="col-auto m-2">
+                                                <a style="text-decoration: none;" href="{% url 'usuario' user.id %}">
+                                                    <div class="card text-white bg-dark m-2">
+                                                        <div class="card-body">
+                                                            <div class="row justify-content-center">
+                                                                <div class="col-auto">
+                                                                    <img src="{{user.image.url}}" width="75" height="75" class="img-fluid rounded-circle" alt="" >
+                                                                </div>
+                                                            </div> 
+                                                            <h4 class="card-title">{{user.username}}</h4>
+                                                            <p class="card-text h6">{% if user.is_admin %}Administrador{% elif user.is_worker %}Trabajador{% endif %} </p>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            {% endif %}
+            
+        </div>
+    {% else %}
+        <meta http-equiv="Refresh" content="0; url='{% url 'home' %}'" />
+    {% endif %}
 {% endblock contenido %}

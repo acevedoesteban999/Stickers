@@ -111,7 +111,7 @@ class Movement(models.Model):
                 pair_profit_worker=pair_profit_worker,
                 description=description,
                 )
-            str_info="Nombre:{}<br>ID:{}<br>Por Pares:{}<br>{}{}<br>Descripcion:{}<br>Imagen:{}<br>".format(
+            str_info="Nombre:{}<br>ID:{}<br>Por Pares:{}<br>{}{}<br>Descripción:{}<br>Imagen:{}<br>".format(
                 name,
                 i_d,
                 "Si" if pair else "No",
@@ -248,7 +248,7 @@ class Movement(models.Model):
                 str_info+="Imagen Editada<br>"
                 product.image=image 
             if product.description!= description:
-                str_info+="Descripcion Editada<br>"
+                str_info+="Descripción Editada<br>"
                 product.description=description
             movement=cls(type="eP",user=user,product=product,extra_info_str=str_info)
             if movement:
@@ -407,7 +407,7 @@ class Movement(models.Model):
                             product.unit_stored += movement.lot
                             movement_refund=cls(type="rP",extra_info_int_2=product.unit_profit_worker,extra_info_int_1=product.unit_profit,user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=movement.lot)
                             if movement_refund:
-                                movement_refund.extra_info_str+="<br><div class='text-success'>Id de Operacion Reembolsada: {}</div>".format(movement.id)
+                                movement_refund.extra_info_str+="<br><div class='text-success'>Id de Operación Reembolsada: {}</div>".format(movement.id)
                                 movement_refund.save()
                                 movement.extra_info_str+="<br><div class='text-danger'>Reembolsado</div>"
                                 movement.save()

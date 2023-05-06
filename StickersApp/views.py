@@ -227,12 +227,21 @@ def BasePost(request):
                 if formlogin.is_valid():
                     nombre=formlogin.cleaned_data.get("username")
                     contra=formlogin.cleaned_data.get("password")
+                    
                     usuario=authenticate(username=nombre,password=contra)
                     if usuario is not None:
                         login(request,usuario)
-                        messages.success(request ,"Se ha iniciado en la cuenta '%s' correctamente"  %  nombre)    
-                        return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
-                    messages.error(request,"No se pudo inicar en la cuenta '%s'" % nombre)
+                        messages.success(request ,"Se ha iniciado sesión en la cuenta {} correctamente".format(nombre))    
+                    else:
+                        raise Exception()
+                else:
+                    formlogin=request.POST.dict()
+                    nombre=formlogin.get("username")
+                    username=UsEr.objects.filter(username=nombre).exists()
+                    if username:
+                        messages.error(request,"El usuario {} no está activo".format(nombre))
+                    else:
+                        messages.error(request,"Usuario o Contraseña incorrecto")
                 return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
             elif "CerrarSesion" in request.POST:
                 user=request.user.username
@@ -492,7 +501,7 @@ def CajaView(request):
             messages.error(request,"No tiene Permisos para Acceder a este Sitio")    
             return redirect('home') 
         else:
-            messages.error(request,"Debe Iniciar Sesion para Aceeder a este Sitio")    
+            messages.error(request,"Debe Iniciar Sesión para Aceeder a este Sitio")    
             return redirect('home') 
     except Exception as e:
         print(e)
@@ -539,7 +548,7 @@ def ProductosView(request):
                         pair_profit=int(crear_form.get("ganancia pares") )
                         pair_profit_worker=int(crear_form.get("ganancia pares trabajador")) 
                     image=files.cleaned_data.get("imagen")
-                    description=crear_form.get("descripcion")
+                    description=crear_form.get("descripción")
                     result=Movement.Create(i_d=i_d,user=user,name=name,pair=pair,unit_price=unit_price,pair_profit=pair_profit,unit_profit=unit_profit,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker,description=description,image=image)
                     if result==True:
                         crear_form=FormProduc()
@@ -553,7 +562,7 @@ def ProductosView(request):
                 return render(request,"Productos.html",{'products':products})
             return render(request,"Productos.html",{'products':products})
         else:
-            messages.error(request,"Debe Iniciar Sesion para Aceeder a estos Recursos")    
+            messages.error(request,"Debe Iniciar Sesión para Aceeder a estos Recursos")    
             return redirect('home') 
     except Exception as e:
         print(e)
@@ -607,7 +616,7 @@ def ProductoView(request,productoID):
                         unit_price=int(edit_product.get("precio unitario"))
                         unit_profit=int(edit_product.get("ganancia unitario"))
                         unit_profit_worker=int(edit_product.get("ganancia unitario trabajador"))
-                        description=edit_product.get("descripcion")
+                        description=edit_product.get("descripción")
                         image=files.cleaned_data.get("imagen")
                         result=Movement.Edit(user=user,product=product,
                                             name=name,
@@ -688,7 +697,7 @@ def ProductoView(request,productoID):
                                         return SuccessProduct("Se han confirmado y agregado {} {} {} {} correctamente".format(movement_to_confirm.lot," Pares" if movement_to_confirm.extra_info_int==1 or movement_to_confirm.extra_info_int==2 else "Unidades",("+ " + movement_to_confirm.extra_info_int_1.__str__()+" Unidades") if movement_to_confirm.extra_info_int==2 else "","de "+ movement_to_confirm.product.name))
                                     else:
                                         product=Product.objects.get(id=product.id)
-                                        return WarningProduct(no_redirect=True,text="Se han confirmado y agregado {} {} {} {} correctamente, pero aun quedan confirmaciones".format(movement_to_confirm.lot," Pares" if movement_to_confirm.extra_info_int==1 or movement_to_confirm.extra_info_int==2 else "Unidades","+ " + movement_to_confirm.extra_info_int_1.__str__()+" Unidades" if movement_to_confirm.extra_info_int==2 else "","de "+ movement_to_confirm.product.name))
+                                        return WarningProduct(no_redirect=True,text="Se han confirmado y agregado {} {} {} {} correctamente, pero aún quedan confirmaciones".format(movement_to_confirm.lot," Pares" if movement_to_confirm.extra_info_int==1 or movement_to_confirm.extra_info_int==2 else "Unidades","+ " + movement_to_confirm.extra_info_int_1.__str__()+" Unidades" if movement_to_confirm.extra_info_int==2 else "","de "+ movement_to_confirm.product.name))
                                         
                         return ErrorProduct("No se ha podido confirmar")
                     #Form Quitar
@@ -726,7 +735,7 @@ def ProductoView(request,productoID):
                     return ErrorProduct("Ha ocurrido un error inesperado")    
                 return NormalPageProduct()
         else:
-            messages.error(request,"Debe Iniciar Sesion para Aceeder a estos Recursos")    
+            messages.error(request,"Debe Iniciar Sesión para Aceeder a estos Recursos")    
             return redirect('home') 
     except ObjectDoesNotExist:
         messages.error(request,"Error, producto inexistente")
