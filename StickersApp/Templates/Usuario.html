@@ -1,137 +1,145 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
-    {% if user.is_admin %}
-        {% with UsEr as user %}
+    {% if user.is_admin or user.is_worker %}
             <div class="container">
-                <div class="card border-info mt-5 m-3">
-                <div class="card-body text-center">
-                    <div class="row justify-content-center align-items-center">
-                        <div class="col-12 col-md-5">
-                            <div class="row justify-content-center">
-                                <div class="col-10 col-md-8">
-                                    <div class="d-flex justify-content-around m-3">
-                                        <img class="img-fluid rounded-circle" src="{% if user.image %} {{user.image.url}} {% endif %}" alt="Foto del Usuario" >
-                                    </div>
-                                </div>
-                            </div>
-                            
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="row justify-content-around text-center">
-                                <div class="col-4 ">
-                                    <div class="h4 p-1">Nombre </div>
-                                </div>
-                                <div class="col-6 ">
-                                    <div class="h4 p-1">{{user.username}}</div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="h5 p-1">Permisos</div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="h5 p-1">{% if user.is_admin %} Administrador{% elif user.is_worker %}Trabajdor{% endif %}</div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="h5 p-1">Activo</div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="h5 p-1">{% if user.is_active %} Si{% else %}No{% endif %}</div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="h5 p-1">Ultima Conexion</div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="h5">{% if user.last_login %} {{user.last_login}}{% else %}Nunca{% endif %}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="col-12">
-                            <div class="row justify-content-center">
-                                <div class="col-auto">
-                                    <!-- Modal trigger button -->
-                                    <button type="button" class="btn btn-warning btn-lg" data-bs-toggle="modal" data-bs-target="#modalEditUser">
-                                    Editar Usuario
-                                    </button>
-                                    
-                                    <div class="modal fade" id="modalEditUser" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalEditUser" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
-                                            <div class="modal-content">
-                                                <form action="" method="post" enctype=multipart/form-data>
-                                                    {% csrf_token %} 
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="modalTitleId">Editar {{user.username}}</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="form-floating mb-3">
-                                                            <input required type="text" maxlength="30" class="form-control" name="UserName" id="floatingInput" placeholder="Nombre" value="{{user.username}}">
-                                                            <label for="floatingInput">Nombre</label>
-                                                        </div>
-                                                        <div class="form-floating mb-3">
-                                                            <div class="row m-2">
-                                                                Foto
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-12" id="ImgDiv">
-                                                                    <div id="divid">
-                                                                        <input {% if user.image %} src="{{user.image.url}}"{% endif %} onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Foto">
-                                                                    </div>
-                                                                </div> 
-                                                                {% comment %} <div class="col-3">
-                                                                    <a class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
-                                                                </div>     {% endcomment %}
-                                                            </div>
-                                                            
-                                                            <div class="d-flex justify-content-around m-3">
-                                                                <img id="imgPre" class="img-fluid rounded-circle" src="{% if user.image %} {{user.image.url}} {% endif %}" alt=" " >
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <hr>
-                                                    <div class="row justify-content-around my-2">
-                                                        <div class="col-auto">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                    
-                                                        </div>
-                                                        <div class="col-auto">
-                                                            <button type="submit" name="EditUser" class="btn btn-warning">Editar</button>
-                                                        </div>
-                                                    </div>
-                                                        
-                                                </form>
-                                            </div>
+                <div class="card mt-4">
+                    <div class="card-body text-center">
+                        <div class="row justify-content-center align-items-center">
+                            <div class="col-12 col-md-5">
+                                <div class="row justify-content-center">
+                                    <div class="col-10 col-md-8">
+                                        <div class="d-flex justify-content-around m-3">
+                                            <img class="img-fluid rounded-circle" src="{% if UsEr.image %} {{UsEr.image.url}} {% endif %}" alt="Foto del Usuario" >
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-12 col-md-6">
+                                <div class="row justify-content-around text-center">
+                                    <div class="col-4 ">
+                                        <div class="h4 p-1">Nombre </div>
+                                    </div>
+                                    <div class="col-6 ">
+                                        <div class="h4 p-1">{{UsEr.username}}</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="h5 p-1">Permisos</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="h5 p-1">{% if UsEr.is_admin %} Administrador{% elif UsEr.is_worker %}Trabajdor{% endif %}</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="h5 p-1">Activo</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="h5 p-1">{% if UsEr.is_active %} Si{% else %}No{% endif %}</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="h5 p-1">Ultima Conexion</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="h5">{% if UsEr.last_login %} {{UsEr.last_login}}{% else %}Nunca{% endif %}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            {% if user == UsEr %}
+                                <div class="col-12">
+                                    <div class="row justify-content-center">
+                                        <div class="col-auto">
+                                            <!-- Modal trigger button -->
+                                            <button type="button" class="btn btn-warning btn-lg" data-bs-toggle="modal" data-bs-target="#modalEditUser">
+                                            Editar 
+                                            </button>
+                                            
+                                            <div class="modal fade" id="modalEditUser" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalEditUser" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                                                    <div class="modal-content">
+                                                        <form action="" method="post" enctype=multipart/form-data>
+                                                            {% csrf_token %} 
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="modalTitleId">Editar {{UsEr.username}}</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="form-floating mb-3">
+                                                                    <input required type="text" maxlength="30" class="form-control" name="UserName" id="floatingInput" placeholder="Nombre" value="{{UsEr.username}}">
+                                                                    <label for="floatingInput">Nombre</label>
+                                                                </div>
+                                                                <div class="form-floating mb-3">
+                                                                    <input  type="password" maxlength="30" minlength="8" class="form-control" name="PassWord" id="floatingInput1" placeholder="Contraseña">
+                                                                    <label for="floatingInput">Contraseña</label>
+                                                                </div>
+                                                                <div class="form-floating mb-3">
+                                                                    <input  type="password" maxlength="30" minlength="8" class="form-control" name="PassWord_Confirm" id="floatingInput2" placeholder="Confirmar">
+                                                                    <label for="floatingInput">Repetir Contraseña</label>
+                                                                </div>
+                                                                <div class="form-floating mb-3">
+                                                                    <div class="row m-2">
+                                                                        Foto
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-12" id="ImgDiv">
+                                                                            <div id="divid">
+                                                                                <input {% if UsEr.image %} src="{{UsEr.image.url}}"{% endif %} onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Foto">
+                                                                            </div>
+                                                                        </div> 
+                                                                        {% comment %} <div class="col-3">
+                                                                            <a class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
+                                                                        </div>     {% endcomment %}
+                                                                    </div>
+                                                                    
+                                                                    <div class="d-flex justify-content-around m-3">
+                                                                        <img id="imgPre" class="img-fluid rounded-circle" src="{% if UsEr.image %} {{UsEr.image.url}} {% endif %}" alt=" " >
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <hr>
+                                                            <div class="row justify-content-around my-2">
+                                                                <div class="col-auto">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                            
+                                                                </div>
+                                                                <div class="col-auto">
+                                                                    <button type="submit" name="EditUser" class="btn btn-warning">Editar</button>
+                                                                </div>
+                                                            </div>
+                                                                
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
-                    <h4 class="card-title h3"></h4>
-                    <p class="card-text h4"></p>
                 </div>
-                </div>
+                
             </div>
-            <div class="container">
-                <div class="row justify-content-end">
-                    <div class="col-auto">
-                        <form action="" method="post">
-                            {% csrf_token %}
-                            <button name="ActvateDesactivateUser"class="btn btn-{% if user.is_active %}danger{% else %}success{% endif %}"type="submit">
-                                <span class="h5">
-                                    {% if user.is_active %}
-                                        Desactivar
-                                    {% else %}
-                                        Activar
-                                    {% endif %}
-                                        Usuario
-                                </span>
-                            </button>
-                        </form>
+            {% if user.is_admin %}
+                <div class="container">
+                    <div class="row justify-content-end my-3">
+                        <div class="col-auto">
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <button name="ActvateDesactivateUser"class="btn btn-{% if UsEr.is_active %}danger{% else %}success{% endif %}"type="submit">
+                                    <span class="h5">
+                                        {% if UsEr.is_active %}
+                                            Desactivar
+                                        {% else %}
+                                            Activar
+                                        {% endif %}
+                                            Usuario
+                                    </span>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% endwith %}
+            {% endif %}
     {% else %}
         <meta http-equiv="Refresh" content="0; url='{% url 'home' %}'" />
     {% endif %}

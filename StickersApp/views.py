@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,HttpResponse
 from django.http import JsonResponse,HttpResponseNotFound
-from .models import MChoise,Product,RegisteCash,Movement,Visits,SummaryDate,UsEr
+from .models import MChoise,Product,RegisteCash,Movement,Visits,SummaryDate,UsEr,Category,SubCategory,SubCategoryColor
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import FormProduc,FormLot,FormImg
 from datetime import datetime ,timedelta,timezone
@@ -518,49 +518,70 @@ def TiendaView(request):
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
 
-def ProductosView(request): 
+def AdminView(request): 
     try:
         user=request.user
         if user:
-            products = Product.objects.exclude(removed=True).order_by('name')   
-
+            #products = Product.objects.exclude(removed=True).order_by('name')   
+            categorys=Category.objects.all()
+            colors=SubCategoryColor.objects.all()
             if request.method == "POST":
-                if "CrearProducto" in request.POST:
+                if "CrearCategoria" in request.POST:
                     crear_form=request.POST.dict()
                     files=FormImg(request.POST,request.FILES)
                     files.is_valid()
                     name=crear_form.get("name").__str__().capitalize()
-                    i_d=crear_form.get("i_d")
-                    pair=crear_form.get("VentasPares")
-                    if pair == "1":
-                        pair=True
-                    else:
-                        pair=False
-                    
-                    unit_price=int(crear_form.get("precio unitario") )
-                    unit_profit=int(crear_form.get("ganancia unitaria") )
-                    unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
-                    pair_price=0
-                    pair_profit=0
-                    pair_profit_worker=0
-                    if pair == True:
-                        pair_price=int(crear_form.get("precio pares"))
-                        pair_profit=int(crear_form.get("ganancia pares") )
-                        pair_profit_worker=int(crear_form.get("ganancia pares trabajador")) 
                     image=files.cleaned_data.get("imagen")
-                    description=crear_form.get("descripción")
-                    result=Movement.Create(i_d=i_d,user=user,name=name,pair=pair,unit_price=unit_price,pair_profit=pair_profit,unit_profit=unit_profit,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker,description=description,image=image)
-                    if result==True:
-                        crear_form=FormProduc()
-                        product=Product.objects.exclude(removed=True).get(name=name)
-                        messages.success(request,"Se ha creado  el objeto {} correctamente".format(name))
-                        return redirect("/Producto/{}".format(product.id))
-                    elif result=="E0":
-                        messages.error(request,"No se ha podido  crear, ya existe un objeto de nombre %s"% name)
-                        return render(request,"Productos.html",{'products':products})
-                messages.error(request,"Ha ocurrido un error  insesperado")
-                return render(request,"Productos.html",{'products':products})
-            return render(request,"Productos.html",{'products':products})
+                    if Movement.create_category(name=name,image=image,user=user):
+                        messages.success(request,"Se ha creado  la categoria {} correctamente".format(name))
+                        return render(request,"Administracion.html",{"context":{"OkCC":True},"categorys":categorys})
+                    else:
+                        messages.error(request,"No se ha podido  crear, ya existe una categoria de nombre {}".format(name))
+                        return render(request,"Administracion.html",{"categorys":categorys})
+                elif "CrearColor" in request.POST:
+                    crear_form=request.POST.dict()
+                    name=crear_form.get("name").__str__().capitalize()
+                    if Movement.create_color(name=name,user=user):
+                        messages.success(request,"Se ha creado  el color {} correctamente".format(name))
+                    else:
+                        messages.error(request,"No se ha podido crear, ya existe una color de nombre {}".format(name))
+        
+                # if "CrearProducto" in request.POST:
+                #     crear_form=request.POST.dict()
+                #     files=FormImg(request.POST,request.FILES)
+                #     files.is_valid()
+                #     name=crear_form.get("name").__str__().capitalize()
+                #     i_d=crear_form.get("i_d")
+                #     pair=crear_form.get("VentasPares")
+                #     if pair == "1":
+                #         pair=True
+                #     else:
+                #         pair=False
+                    
+                #     unit_price=int(crear_form.get("precio unitario") )
+                #     unit_profit=int(crear_form.get("ganancia unitaria") )
+                #     unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
+                #     pair_price=0
+                #     pair_profit=0
+                #     pair_profit_worker=0
+                #     if pair == True:
+                #         pair_price=int(crear_form.get("precio pares"))
+                #         pair_profit=int(crear_form.get("ganancia pares") )
+                #         pair_profit_worker=int(crear_form.get("ganancia pares trabajador")) 
+                #     image=files.cleaned_data.get("imagen")
+                #     description=crear_form.get("descripción")
+                #     result=Movement.Create_Product(i_d=i_d,user=user,name=name,pair=pair,unit_price=unit_price,pair_profit=pair_profit,unit_profit=unit_profit,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker,description=description,image=image)
+                #     if result==True:
+                #         crear_form=FormProduc()
+                #         product=Product.objects.exclude(removed=True).get(name=name)
+                #         messages.success(request,"Se ha creado  el objeto {} correctamente".format(name))
+                #         return redirect("/Producto/{}".format(product.id))
+                #     elif result=="E0":
+                #         messages.error(request,"No se ha podido  crear, ya existe un objeto de nombre %s"% name)
+                #         return render(request,"Administracion.html",{'products':products})
+                #messages.error(request,"Ha ocurrido un error  insesperado")
+                #return render(request,"Administracion.html",{'products':products})
+            return render(request,"Administracion.html",{'categorys':categorys,"colors":colors})
         else:
             messages.error(request,"Debe Iniciar Sesión para Aceeder a estos Recursos")    
             return redirect('home') 
@@ -569,6 +590,42 @@ def ProductosView(request):
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
 
+def CategoriaView(request,categoryID):
+    try:
+        user=request.user
+        category=Category.objects.get(id=categoryID)
+        if request.method=="POST":
+            if "CrearSubCategoria" in request.POST:
+                
+                crear_form=request.POST.dict()
+                name=crear_form.get("name").__str__().capitalize()
+                if Movement.create_sub_category(name=name,category=category,user=user):
+                    messages.success(request,"Se ha creado  la sub categoria {} correctamente".format(name))
+                else:
+                    messages.error(request,"No se ha podido crear, ya existe una sub categoria de nombre {}".format(name))
+        products=Product.objects.filter(sub_category__category__id=categoryID).values("name","id")
+        subcategorys=SubCategory.objects.filter(category__id=categoryID)
+        return render(request,"Categoria.html",{"category":category,"products":products,"subcategorys":subcategorys})
+    except ObjectDoesNotExist:
+        messages.error(request,"Error, categoria inexistente")
+    except Exception as e:
+        messages.error(request,"Error, Algo ha salido mal")  
+    return redirect('home')
+
+def SubCategoriaView(request,categoryID,subcategoryID):
+    try:
+        user=request.user
+        category=Category.objects.get(id=categoryID)
+        subcategory=SubCategory.objects.get(id=subcategoryID)
+        products=Product.objects.filter(sub_category__id=subcategoryID)
+        return render(request,"SubCategoria.html",{"category":category,"subcategory":subcategory,"products":products})
+    except ObjectDoesNotExist:
+        messages.error(request,"Error, categoria o subcategoria inexistente")
+    except Exception as e:
+        messages.error(request,"Error, Algo ha salido mal")
+    return redirect('home')
+        
+    
 def ProductoView(request,productoID):
     try:
         product=Product.objects.exclude(removed=True).get(id=productoID)
@@ -855,5 +912,6 @@ def UserView(request,usuarioID):
         messages.error(request,"Error, Usuario inexistente")  
     return redirect("usuarios")
 
-def QRWIFI(request):
-    return render(request,"QRWIFI.html")
+def QR(request):
+    home_qr_url=request.build_absolute_uri(reverse('home'))
+    return render(request,"QR.html",{"home_qr_url":home_qr_url})

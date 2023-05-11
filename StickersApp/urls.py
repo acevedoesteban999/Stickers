@@ -7,15 +7,17 @@ urlpatterns = [
     path('', views.RedirectHomeView),
     path('Home/', views.HomeView,name='home'),
     path('Tienda/', views.TiendaView,name='tienda'),
-    path('Productos/', views.ProductosView,name='productos'),
+    path('Administracion/', views.AdminView,name='administracion'),
     path('Producto/<int:productoID>/', views.ProductoView,name='producto'),
+    path('Administracion/Categoria/<int:categoryID>/', views.CategoriaView,name='categoria'),
+    path('Administracion/Categoria/<int:categoryID>/SubCategoria/<int:subcategoryID>', views.SubCategoriaView,name='subcategoria'),
     path('Operaciones/', views.OperacionesView,name='operaciones'),
     path('Caja/', views.CajaView,name='caja'),
     path('Usuario/<int:usuarioID>', views.UserView,name='usuario'),
     path('Usuarios/', views.UsersView,name='usuarios'),
     path('BasePost',views.BasePost,name='base_post'),
     path('Resumen/',views.ResumeView,name='resumen'), 
-    path('QRWIFI/',views.QRWIFI,name='qrwifi'), 
+    path('QR/',views.QR,name='qr'), 
 ]
 
 urlpatterns+=static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

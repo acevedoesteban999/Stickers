@@ -10,15 +10,8 @@ class UsEr(AbstractUser):
     is_admin=models.BooleanField(default=False)
     money=models.IntegerField(default=0)
     image=models.ImageField(blank=True,null=True,upload_to='usuarios',default="no_user_imagen.jpg", height_field=None, width_field=None, max_length=None)
-    
-    
+     
 class Visits(models.Model):
-    # today_date=models.DateField( auto_now=False, auto_now_add=False)
-    # todat_visits=models.IntegerField(default=0)
-    # week_date=models.DateField( auto_now=False, auto_now_add=False)
-    # week_visits=models.IntegerField(default=0)
-    # month_date=models.DateField( auto_now=False, auto_now_add=False)
-    # month_visits=models.IntegerField(default=0)
     total_visits=models.IntegerField(default=0)
     def __str__(self):
         return self.total_visits.__str__()
@@ -29,15 +22,30 @@ class RegisteCash(models.Model):
         return self.money.__str__()
 
 class SummaryDate(models.Model):
-    #start_date=models.DateField(blank=True,null=True)
-    #end_date=models.DateField(blank=True,null=True)
     start_date=models.DateTimeField(blank=True,null=True)
     end_date=models.DateTimeField(blank=True,null=True)
     active=models.BooleanField(default=False)
-    #start_money=models.IntegerField(default=0)
     def __str__(self):
         return "Active-"+self.start_date.strftime("%d-%m-%y %H:%M")+" ~ "+self.end_date.strftime("%d-%m-%y %H:%M") if self.active else "Desactive"
-    
+
+
+class Category(models.Model):
+    name=models.CharField(max_length=30)
+    image=models.ImageField(blank=True,null=True,upload_to='categorias',default="no_imagen.jpg", height_field=None, width_field=None, max_length=None)
+    def __str__(self) -> str:
+        return self.name
+
+class SubCategory(models.Model):
+    name=models.CharField(max_length=30)
+    category=models.ForeignKey(Category, on_delete=models.DO_NOTHING)
+    def __str__(self) -> str:
+        return self.name
+
+class SubCategoryColor(models.Model):
+    name=models.CharField(max_length=30)
+    def __str__(self) -> str:
+        return self.name
+
 class Product(models.Model):
     i_d=models.CharField(max_length=4, unique=True)
     name=models.CharField(max_length=30, unique=True)
@@ -56,6 +64,11 @@ class Product(models.Model):
     description=models.CharField(max_length=100,blank=True)
     removed=models.BooleanField(default=False)
     confirm=models.BooleanField(default=True)
+    
+    #category=models.ForeignKey(Category, on_delete=models.DO_NOTHING)
+    sub_category=models.ForeignKey(SubCategory,null=True,blank=True,on_delete=models.DO_NOTHING)
+    color=models.ForeignKey(SubCategoryColor,null=True,blank=True, on_delete=models.DO_NOTHING)
+    
     def __str__(self):
         return self.name
     
@@ -64,6 +77,9 @@ MChoise = [
     
     ('AD','Agregado de Dinero'),
     ('EP','Agregado de Productos'),
+    ("CC","Creado de Categoria"),
+    ("Cc","Creado de Color"),
+    ("CS","Creado de SubCategoria"),
     ("CM","Cierre de Mes"),
     ("cP","Confirmado de Producto"),
     ('CP','Creado de Producto'),
@@ -76,6 +92,8 @@ MChoise = [
     ("VP","Venta de Productos"),
     
     ]
+
+
 
 class Movement(models.Model):
     type=models.CharField(max_length=2,choices=MChoise)
@@ -92,7 +110,7 @@ class Movement(models.Model):
         return "M"+self.id.__str__()+"-"+self.type+"-"+self.date.date().__str__()
 
     @classmethod
-    def Create(cls,user,i_d,name,pair,unit_price,unit_profit,unit_profit_worker,pair_price,pair_profit,pair_profit_worker,description,image):
+    def Create_Product(cls,user,i_d,name,pair,unit_price,unit_profit,unit_profit_worker,pair_price,pair_profit,pair_profit_worker,description,image):
         if unit_price > 0  and unit_profit_worker >= 0  and unit_profit >= 0 :
             if pair == True :
                 if pair_price > 0 and pair_profit >= 0 and pair_profit_worker >= 0 :
@@ -146,6 +164,43 @@ class Movement(models.Model):
                         return "E0"
         return False
     @classmethod
+    def create_category(cls,name,image,user):
+        try:
+            category=Category(name=name)
+            if image:
+                category.image=image
+            movement=cls(type="CC",extra_info_str=name,user=user)
+            category.save()
+            movement.save()
+            return True
+        except Exception as e:
+            pass                
+        return False
+    @classmethod
+    def create_sub_category(cls,name,category,user):
+        try:
+            subcategory=SubCategory(name=name,category=category)
+            movement=cls(type="CS",extra_info_str=name,user=user)
+            subcategory.save()
+            movement.save()
+            return True
+        except Exception as e:
+            pass    
+        return False
+    @classmethod
+    def create_color(cls,name,user):
+        try:
+            color=SubCategoryColor(name=name)
+            movement=cls(type="Cc",extra_info_str=name,user=user)
+            color.save()
+            movement.save()
+            return True
+        except Exception as e:
+            pass    
+        return False
+    
+    
+    
     def Remove(cls,user,product):
         product.removed = True
         product.description=product.name

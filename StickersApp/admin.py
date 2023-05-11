@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product,Movement,RegisteCash,Visits,UsEr,SummaryDate
+from .models import Product,Movement,RegisteCash,Visits,UsEr,SummaryDate,Category,SubCategory,SubCategoryColor
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
@@ -24,6 +24,9 @@ class UsErAdmin(UserAdmin ):
 admin.site.register(UsEr, UsErAdmin)
 # Register your models here.
 admin.site.register(Product)
+admin.site.register(Category)
+admin.site.register(SubCategory)
+admin.site.register(SubCategoryColor)
 admin.site.register(Movement)
 admin.site.register(RegisteCash)
 admin.site.register(Visits)
