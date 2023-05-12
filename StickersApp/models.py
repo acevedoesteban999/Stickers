@@ -83,7 +83,9 @@ MChoise = [
     ("CM","Cierre de Mes"),
     ("cP","Confirmado de Producto"),
     ('CP','Creado de Producto'),
+    ("eC","Editado de Categoria"),
     ("eP","Editado de Producto"),
+    ("eS","Editado de SubCategoria"),
     ('eU','Editado de Usuario'),
     ('SP','Quitado de Productos'),
     ("rP","Reembolso de Productos"),
@@ -110,7 +112,7 @@ class Movement(models.Model):
         return "M"+self.id.__str__()+"-"+self.type+"-"+self.date.date().__str__()
 
     @classmethod
-    def Create_Product(cls,user,i_d,name,pair,unit_price,unit_profit,unit_profit_worker,pair_price,pair_profit,pair_profit_worker,description,image):
+    def Create_Product(cls,user,name,pair,unit_price,unit_profit,unit_profit_worker,pair_price,pair_profit,pair_profit_worker,description,image,subcategory,color):
         if unit_price > 0  and unit_profit_worker >= 0  and unit_profit >= 0 :
             if pair == True :
                 if pair_price > 0 and pair_profit >= 0 and pair_profit_worker >= 0 :
@@ -119,7 +121,7 @@ class Movement(models.Model):
                     return False
             product=Product(
                 name=name,
-                i_d=i_d,
+                i_d="NONE",
                 pair=pair,
                 unit_price=unit_price,
                 unit_profit=unit_profit,
@@ -128,31 +130,25 @@ class Movement(models.Model):
                 pair_profit=pair_profit,
                 pair_profit_worker=pair_profit_worker,
                 description=description,
+                sub_category=subcategory,
                 )
-            str_info="Nombre:{}<br>ID:{}<br>Por Pares:{}<br>{}{}<br>Descripción:{}<br>Imagen:{}<br>".format(
+            if color:
+                product.color=color
+            str_info="Nombre:{}<br>Por Pares:{}<br>{}{}<br>Category:{}<br>SubCategory:{}{}<br>Descripción:{}<br>Imagen:{}<br>".format(
                 name,
-                i_d,
                 "Si" if pair else "No",
                 "Precio por Par:{}<br>Gannacia por Par:{}<br>Pago a Trabajador por Par:{}<br>".format(pair_price,pair_profit,pair_profit_worker) if pair else "",
-                "Precio por Unidad:{}<br>Ganancia por Unidad:{}<br>Pago a Trabajador por Unidad:{}<br>".format(unit_price,unit_profit,unit_profit_worker),
-                "{}".format("Si" if len(description.__str__()) > 0 else "No"),
-                "{}".format("Si" if image else "No")
+                "Precio por Unidad:{}<br>Ganancia por Unidad:{}<br>Pago a Trabajador por Unidad:{}".format(unit_price,unit_profit,unit_profit_worker),
+                subcategory.category.name,
+                subcategory.name,
+                "<br>Color:{}".format(color.name) if color else "",
+                "Si" if len(description.__str__()) > 0 else "No",
+                "Si" if image else "No",
+                
                 )
             if product:
                 if image:
                     product.image=image
-                    # print(product.image)
-                    # print(product.image.name)
-                    # print(product.image.path)
-                    # LastName=product.image.name
-                    # LastPath=product.image.path
-                    # NewName=product.name.__str__()+"."+LastName.split(".")[-1]
-                    # NewPath=LastPath.replace(LastName,NewName)
-                    # print(NewName)
-                    # print(NewPath)
-                    # product.image.name=NewName
-                    # product.image.path=NewPath
-                    #return False
                 movement=cls(type="CP",product=product,extra_info_str=str_info,user=user)
                 if movement:
                     try:
@@ -160,7 +156,6 @@ class Movement(models.Model):
                         movement.save()
                         return True
                     except Exception as e:
-                        print(e)
                         return "E0"
         return False
     @classmethod
@@ -176,6 +171,37 @@ class Movement(models.Model):
         except Exception as e:
             pass                
         return False
+    @classmethod 
+    def edit_category(cls,name,image,category,user):
+        str_info=""
+        if category.name!=name:
+            str_info+="Nombre: {} editado a {}<br>".format(category.name,name)
+            category.name=name
+        if image:
+            str_info+="Imagen Editada<br>"
+            category.image=image 
+        movement=cls(type="eC",user=user,extra_info_str=str_info)
+        if movement:
+            try:
+                category.save()
+                movement.save()                   
+                return True
+            except:
+                return False
+    @classmethod 
+    def edit_sub_category(cls,name,subcategory,user):
+        str_info=""
+        if subcategory.name!=name:
+            str_info+="Nombre: {} editado a {}<br>".format(subcategory.name,name)
+            subcategory.name=name
+        movement=cls(type="eS",user=user,extra_info_str=str_info)
+        if movement:
+            try:
+                subcategory.save()
+                movement.save()                   
+                return True
+            except:
+                return False
     @classmethod
     def create_sub_category(cls,name,category,user):
         try:

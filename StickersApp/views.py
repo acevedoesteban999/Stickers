@@ -545,7 +545,7 @@ def AdminView(request):
                         messages.success(request,"Se ha creado  el color {} correctamente".format(name))
                     else:
                         messages.error(request,"No se ha podido crear, ya existe una color de nombre {}".format(name))
-        
+
                 # if "CrearProducto" in request.POST:
                 #     crear_form=request.POST.dict()
                 #     files=FormImg(request.POST,request.FILES)
@@ -596,32 +596,100 @@ def CategoriaView(request,categoryID):
         category=Category.objects.get(id=categoryID)
         if request.method=="POST":
             if "CrearSubCategoria" in request.POST:
-                
-                crear_form=request.POST.dict()
-                name=crear_form.get("name").__str__().capitalize()
+                post_form=request.POST.dict()
+                name=post_form.get("name").__str__().capitalize()
                 if Movement.create_sub_category(name=name,category=category,user=user):
                     messages.success(request,"Se ha creado  la sub categoria {} correctamente".format(name))
                 else:
                     messages.error(request,"No se ha podido crear, ya existe una sub categoria de nombre {}".format(name))
+            elif "EditCategory" in request.POST:
+                post_form=request.POST.dict()
+                files=FormImg(request.POST,request.FILES)
+                files.is_valid()
+                name=post_form.get("name").__str__().capitalize()
+                image=files.cleaned_data.get("imagen")
+                        
+                if Movement.edit_category(name=name,image=image,category=category,user=user):
+                    messages.success(request,"Se ha editado  la categoria {} correctamente".format(name))
+                else:
+                    messages.error(request,"No se ha podido editar, ya existe una categoria de nombre {}".format(name))
+
+        
         products=Product.objects.filter(sub_category__category__id=categoryID).values("name","id")
         subcategorys=SubCategory.objects.filter(category__id=categoryID)
         return render(request,"Categoria.html",{"category":category,"products":products,"subcategorys":subcategorys})
     except ObjectDoesNotExist:
         messages.error(request,"Error, categoria inexistente")
     except Exception as e:
+        print(e)
         messages.error(request,"Error, Algo ha salido mal")  
     return redirect('home')
 
 def SubCategoriaView(request,categoryID,subcategoryID):
     try:
+        
         user=request.user
         category=Category.objects.get(id=categoryID)
         subcategory=SubCategory.objects.get(id=subcategoryID)
+        if category!=subcategory.category:
+            messages.error(request,"Error, categoria y subcategoria desiguales")
+            return redirect('home')
+        if request.method=="POST":
+            if "CrearProducto" in request.POST:
+                crear_form=request.POST.dict()
+                files=FormImg(request.POST,request.FILES)
+                files.is_valid()
+                image=files.cleaned_data.get("imagen")
+                name=crear_form.get("name").__str__().capitalize()
+                pair=crear_form.get("VentasPares")
+                if pair == "1":
+                    pair=True
+                else:
+                    pair=False
+                
+                unit_price=int(crear_form.get("precio unitario") )
+                unit_profit=int(crear_form.get("ganancia unitaria") )
+                unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
+                pair_price=0
+                pair_profit=0
+                pair_profit_worker=0
+                if pair == True:
+                    pair_price=int(crear_form.get("precio pares"))
+                    pair_profit=int(crear_form.get("ganancia pares") )
+                    pair_profit_worker=int(crear_form.get("ganancia pares trabajador")) 
+                
+                color_id=crear_form.get("SelectColor")
+                if color_id and color_id!="NC":
+                    color=SubCategoryColor.objects.get(id=color_id)
+                else:
+                    color=None
+                description=crear_form.get("descripción")
+                result=Movement.Create_Product(color=color,subcategory=subcategory,user=user,name=name,pair=pair,unit_price=unit_price,pair_profit=pair_profit,unit_profit=unit_profit,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker,description=description,image=image)
+                if result==True:
+                    crear_form=FormProduc()
+                    product=Product.objects.exclude(removed=True).get(name=name)
+                    messages.success(request,"Se ha creado  el objeto {} correctamente".format(name))
+                    return redirect("/Producto/{}".format(product.id))
+                elif result=="E0":
+                    messages.error(request,"No se ha podido  crear, ya existe un objeto de nombre %s"% name)
+                messages.error(request,"Ha ocurrido un error  insesperado")
+                
+            elif "EditSubCategory" in request.POST:
+                post_form=request.POST.dict()
+                name=post_form.get("name").__str__().capitalize()
+                        
+                if Movement.edit_sub_category(name=name,subcategory=subcategory,user=user):
+                    messages.success(request,"Se ha editado  la subcategoria {} correctamente".format(name))
+                else:
+                    messages.error(request,"No se ha podido editar, ya existe una subcategoria de nombre {}".format(name))
+        
+        colors=SubCategoryColor.objects.all()
         products=Product.objects.filter(sub_category__id=subcategoryID)
-        return render(request,"SubCategoria.html",{"category":category,"subcategory":subcategory,"products":products})
+        return render(request,"SubCategoria.html",{"colors":colors,"category":category,"subcategory":subcategory,"products":products})
     except ObjectDoesNotExist:
         messages.error(request,"Error, categoria o subcategoria inexistente")
     except Exception as e:
+        print(e)
         messages.error(request,"Error, Algo ha salido mal")
     return redirect('home')
         
@@ -799,7 +867,7 @@ def ProductoView(request,productoID):
     except Exception as e:
         print(e)
         messages.error(request,"Error, Algo ha salido mal")  
-    return redirect('productos')        
+    return redirect('administracion')        
 
 def OperacionesView(request):
     try:

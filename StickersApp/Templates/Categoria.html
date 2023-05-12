@@ -1,93 +1,154 @@
 {% extends 'Base.html' %}
 {% block contenido %}
+{% load static %}
 <div class="container">
-    <h1 class="display-2 text-center">{{category.name}}</h1>
-    <div class="row justify-content-center">
-        <div class="col-12">
-            <div class="row justify-content-center align-items-center">
-                <div class="col-auto">
-                    <div class="card m-4    ">
-                        <div class="card-body">
-                            <a class="text-dark collapsed" style="text-decoration: none;" role="button" data-bs-toggle="collapse" href="#contentSubCategory" aria-expanded="true" aria-controls="contentSubCategory">
-                                <h1 class="display-3">Sub Categorias</h1>
-                            </a>
+    <div class="row justify-content-center my-4">
+        <div class="col-auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row justify-content-center">
+                        <div class="col-6">
+                            <div class="row justify-content-center">
+                                <div class="col-8">
+                                    <img src="{{category.image.url}}" class="img-fluid img-thumbnail" alt="Imagen Categoria">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row justify-content-center align-items-center h-100">
+                                <div class="col-12">
+                                    <h1 class="display-4 text-center">{{category.name}}</h1>
+                                </div>
+                                <div class="col-auto my-2 ">
+                                    <button type="button" class=" btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">
+                                        Editar
+                                    </button> 
+                                </div>
+                                <div class="modal fade" id="EditModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="EditModalLabel">Editar {{category.name}}</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form method="POST" action="" enctype=multipart/form-data>
+                                                {% csrf_token %}
+                                                <div class="modal-body">
+                                                    <div class="form-floating mb-3">
+                                                        <input required type="text" maxlength="30" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{category.name}}">
+                                                        <label for="floatingInput">Nombre</label>
+                                                    </div>
+                                                    
+                                                    <div class="form-floating mb-3">
+                                                        <div class="row m-2">
+                                                            Imagen
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-12" id="ImgDiv">
+                                                                <div id="divid">
+                                                                    <input src="{% if category.image %} {{category.image.url}} {% endif %}" onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Imagen">
+                                                                </div>
+                                                            </div> 
+                                                            
+                                                        </div>
+                                                        <div class="d-flex justify-content-around m-3">
+                                                            <img id="imgPre" src="{% if category.image %} {{category.image.url}} {% endif %}" class="img-fluid"  alt=" " >
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row justify-content-around m-2">
+                                                    <div class="col-auto">
+                                                        <div class="row justify-content-center">
+                                                            <div class="col-auto">
+                                                                <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">   
+                                                            </div>
+                                                        </div>    
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <div class="row justify-content-center">
+                                                            <div class="col-auto">
+                                                                <input class="btn btn-warning" type="submit" name="EditCategory" value="Editar">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>  
+                                
+                            </div>
                         </div>
                     </div>
-                    
+                </div>          
+            </div>
+        </div>
+    </div>
+    <h1 class="display-4 text-center my-4 ">Sub Categorias</h1>
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modalCreateCategory">
+                        Crear Sub Categoria
+                        </button>
                 </div>
             </div>
             
-            <div class="collapse show" id="contentSubCategory">
-                <div class="row justify-content-center">
-                    <div class="col-auto">
-                        <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modalCreateCategory">
-                            Crear Sub Categoria
-                          </button>
-                    </div>
-                </div>
-                
-                
-                <div class="modal fade" id="modalCreateCategory" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalCreateCategory" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="CrearModalLabel">Nueva Sub Categoria</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="POST" action="">
-                                    {% csrf_token %}
-                                    <div class="modal-body">
-                                        <div class="form-floating mb-3">
-                                            <input type="text" class="form-control" maxlength="30" required name="name" id="floatingInput" placeholder="Nombre">
-                                            <label for="floatingInput">Nombre</label>
-                                        </div>
+            
+            <div class="modal fade" id="modalCreateCategory" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalCreateCategory" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="CrearModalLabel">Nueva Sub Categoria</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" action="">
+                                {% csrf_token %}
+                                <div class="modal-body">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" maxlength="30" required name="name" id="floatingInput" placeholder="Nombre">
+                                        <label for="floatingInput">Nombre</label>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <input class="btn btn-success" type="submit" name="CrearSubCategoria" value="Crear">
-                                    </div>
-                                </form>
-                            </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <input class="btn btn-success" type="submit" name="CrearSubCategoria" value="Crear">
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
-                <div class="row justify-content-center my-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row justify-content-around align-items-center">
-                                    {% for subcategory in subcategorys %}
-                                        <a class="link-dark" style=" text-decoration: none;" href="{% url 'subcategoria' category.id subcategory.id %}">                                           
-                                            
-                                            {% if forloop.counter != 1  %}
-                                                <hr>
-                                            {% endif %}
-                                            <div class="col-6">
-                                                <div class="row justify-content-center">
-                                                    <div class="col-auto">
-                                                        <div class="h3 text-center">{{subcategory.name}}</div>
-                                                    </div>
+            </div>
+            <div class="row justify-content-center my-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row justify-content-around align-items-center">
+                                {% for subcategory in subcategorys %}
+                                    <a class="link-dark" style=" text-decoration: none;" href="{% url 'subcategoria' category.id subcategory.id %}">                                           
+                                        
+                                        {% if forloop.counter != 1  %}
+                                            <hr>
+                                        {% endif %}
+                                        <div class="col-6">
+                                            <div class="row justify-content-center ">
+                                                <div class="col-auto">
+                                                    <div class="h3 text-center">{{subcategory.name}}</div>
                                                 </div>
-                                                
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="row justify-content-end">
-                                                    <div class="col-auto">
-                                                        <a class="h6 text-center">Editar</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                        {% empty %}
-                                        <div class="col-12 text-center">
-                                            <div class="h3">
-                                                No Existen Sub Categorias
                                             </div>
                                         </div>
+                                        
+                                    </a>
+                                    {% empty %}
+                                    <div class="col-12 text-center">
+                                        <div class="h3">
+                                            No Existen Sub Categorias
+                                        </div>
+                                    </div>
 
-                                    {% endfor %}
-                                </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -101,4 +162,5 @@
 
 {% endblock  %}
 {% block script_js %}
+    <script type="text/javascript" src="{% static 'js/base_prev_img.js' %}" ></script>
 {% endblock  %}
