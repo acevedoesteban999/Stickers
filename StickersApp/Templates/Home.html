@@ -89,12 +89,7 @@
                       role="status">
                     </div>
                     <div class="h4 m-2">Cargando Información de Hoy </div>
-                    <script>
-                         window.onload=function()
-                        {
-                          LoadTodayInfo("{% url 'base_post' %}");
-                        }; 
-                    </script>
+                    
                   </div>
                 </div>
               </div>
@@ -118,10 +113,7 @@
 {% endblock  %}
 {% block script_js %}
   <script type="text/javascript" src="{% static 'js/home.js' %}" ></script>
+  <script>
+    LoadTodayInfo("{% url 'base_post' %}");
+</script>
 {% endblock  %}
-{% comment %} <a href="#a" >
-  A
-</a>
-<section id="a">
-  Hola
-</section> {% endcomment %}

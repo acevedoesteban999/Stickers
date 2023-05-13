@@ -36,7 +36,7 @@
                                         <div class="h5 p-1">{% if UsEr.is_active %} Si{% else %}No{% endif %}</div>
                                     </div>
                                     <div class="col-4">
-                                        <div class="h5 p-1">Ultima Conexion</div>
+                                        <div class="h5 p-1">Ultima Conexión</div>
                                     </div>
                                     <div class="col-6">
                                         <div class="h5">{% if UsEr.last_login %} {{UsEr.last_login}}{% else %}Nunca{% endif %}</div>
@@ -54,9 +54,9 @@
                                             </button>
                                             
                                             <div class="modal fade" id="modalEditUser" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalEditUser" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                                                <div class="modal-dialog modal-dialog-centered" role="document">
                                                     <div class="modal-content">
-                                                        <form action="" method="post" enctype=multipart/form-data>
+                                                        <form autocomplete="new-password" action="" method="post" enctype=multipart/form-data>
                                                             {% csrf_token %} 
                                                             <div class="modal-header">
                                                                 <h5 class="modal-title" id="modalTitleId">Editar {{UsEr.username}}</h5>
@@ -64,15 +64,15 @@
                                                             </div>
                                                             <div class="modal-body">
                                                                 <div class="form-floating mb-3">
-                                                                    <input required type="text" maxlength="30" class="form-control" name="UserName" id="floatingInput" placeholder="Nombre" value="{{UsEr.username}}">
+                                                                    <input  autoComplete="new-password" required type="text" maxlength="30" class="form-control" name="UserName" id="floatingInput" placeholder="Nombre" value="{{UsEr.username}}">
                                                                     <label for="floatingInput">Nombre</label>
                                                                 </div>
                                                                 <div class="form-floating mb-3">
-                                                                    <input  type="password" maxlength="30" minlength="8" class="form-control" name="PassWord" id="floatingInput1" placeholder="Contraseña">
+                                                                    <input  autocomplete="new-password" type="password" maxlength="30" minlength="8" class="form-control" name="PassWord" id="floatingInput1" placeholder="Contraseña">
                                                                     <label for="floatingInput">Contraseña</label>
                                                                 </div>
                                                                 <div class="form-floating mb-3">
-                                                                    <input  type="password" maxlength="30" minlength="8" class="form-control" name="PassWord_Confirm" id="floatingInput2" placeholder="Confirmar">
+                                                                    <input autocomplete="new-password" type="password" maxlength="30" minlength="8" class="form-control" name="PassWord_Confirm" id="floatingInput2" placeholder="Confirmar">
                                                                     <label for="floatingInput">Repetir Contraseña</label>
                                                                 </div>
                                                                 <div class="form-floating mb-3">
@@ -84,28 +84,24 @@
                                                                             <div id="divid">
                                                                                 <input {% if UsEr.image %} src="{{UsEr.image.url}}"{% endif %} onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Foto">
                                                                             </div>
-                                                                        </div> 
-                                                                        {% comment %} <div class="col-3">
-                                                                            <a class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
-                                                                        </div>     {% endcomment %}
+                                                                        </div>
                                                                     </div>
                                                                     
                                                                     <div class="d-flex justify-content-around m-3">
                                                                         <img id="imgPre" class="img-fluid rounded-circle" src="{% if UsEr.image %} {{UsEr.image.url}} {% endif %}" alt=" " >
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                            <hr>
-                                                            <div class="row justify-content-around my-2">
-                                                                <div class="col-auto">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                            
-                                                                </div>
-                                                                <div class="col-auto">
-                                                                    <button type="submit" name="EditUser" class="btn btn-warning">Editar</button>
-                                                                </div>
-                                                            </div>
+                                                                <hr>
+                                                                <div class="row justify-content-around my-2">
+                                                                    <div class="col-auto">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                                                 
+                                                                    </div>
+                                                                    <div class="col-auto">
+                                                                        <button type="submit" name="EditUser" class="btn btn-warning">Editar</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>    
                                                         </form>
                                                     </div>
                                                 </div>

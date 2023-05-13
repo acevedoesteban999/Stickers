@@ -8,7 +8,6 @@ from django.contrib.auth.models import AbstractUser
 class UsEr(AbstractUser):
     is_worker=models.BooleanField(default=False)
     is_admin=models.BooleanField(default=False)
-    money=models.IntegerField(default=0)
     image=models.ImageField(blank=True,null=True,upload_to='usuarios',default="no_user_imagen.jpg", height_field=None, width_field=None, max_length=None)
      
 class Visits(models.Model):
@@ -47,9 +46,10 @@ class SubCategoryColor(models.Model):
         return self.name
 
 class Product(models.Model):
-    i_d=models.CharField(max_length=4, unique=True)
-    name=models.CharField(max_length=30, unique=True)
+    #i_d=models.CharField(max_length=4)
+    name=models.CharField(max_length=40, unique=True)
     pair=models.BooleanField(default=False)
+    purchase_price=models.IntegerField(default=0)
     unit_price=models.IntegerField(default=0)
     unit_profit=models.IntegerField(default=0)
     unit_profit_worker=models.IntegerField(default=0)
@@ -112,7 +112,7 @@ class Movement(models.Model):
         return "M"+self.id.__str__()+"-"+self.type+"-"+self.date.date().__str__()
 
     @classmethod
-    def Create_Product(cls,user,name,pair,unit_price,unit_profit,unit_profit_worker,pair_price,pair_profit,pair_profit_worker,description,image,subcategory,color):
+    def Create_Product(cls,user,name,pair,unit_price,unit_profit,unit_profit_worker,pair_price,pair_profit,pair_profit_worker,description,image,subcategory,color,purchase_price):
         if unit_price > 0  and unit_profit_worker >= 0  and unit_profit >= 0 :
             if pair == True :
                 if pair_price > 0 and pair_profit >= 0 and pair_profit_worker >= 0 :
@@ -121,7 +121,6 @@ class Movement(models.Model):
                     return False
             product=Product(
                 name=name,
-                i_d="NONE",
                 pair=pair,
                 unit_price=unit_price,
                 unit_profit=unit_profit,
@@ -131,6 +130,7 @@ class Movement(models.Model):
                 pair_profit_worker=pair_profit_worker,
                 description=description,
                 sub_category=subcategory,
+                purchase_price=purchase_price,
                 )
             if color:
                 product.color=color
@@ -224,9 +224,7 @@ class Movement(models.Model):
         except Exception as e:
             pass    
         return False
-    
-    
-    
+    @classmethod
     def Remove(cls,user,product):
         product.removed = True
         product.description=product.name
@@ -248,7 +246,6 @@ class Movement(models.Model):
                     product.unit_sold += lot
                     amount=lot * product.unit_price
                     r_box.money += amount
-                    user.money+=amount
                     movement=cls(type="VP",user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,extra_info_int_1=product.unit_profit,extra_info_int_2=product.unit_profit_worker,product=product,lot=lot)
                     if movement:
                         product.save()
@@ -277,7 +274,6 @@ class Movement(models.Model):
                     product.pair_sold += lot
                     amount=lot * product.pair_price
                     r_box.money += amount
-                    user.money+=amount
                     movement=cls(type="VP",user=user,extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,extra_info_int_1=product.pair_profit,extra_info_int_2=product.pair_profit_worker,product=product,lot=lot)
                     if movement:
                         product.save()
@@ -289,15 +285,11 @@ class Movement(models.Model):
             return "E0"
         return False
     @classmethod
-    def Edit(cls,user,product,name,pair_price,pair_profit,pair_profit_worker,unit_price,unit_profit,unit_profit_worker,description,image,i_d):  
+    def Edit(cls,user,product,name,pair_price,pair_profit,pair_profit_worker,unit_price,unit_profit,unit_profit_worker,description,image):  
         str_info=""
         if product.name!=name:
             str_info+="Nombre: {} editado a {}<br>".format(product.name,name)
             product.name=name
-        if product.i_d!=i_d:
-            str_info+="Id: {} editado a {}<br>".format(product.i_d,i_d)
-            product.i_d=i_d
-        
         if product.pair:
             if pair_price>0  and pair_profit_worker>0 and pair_profit>0:
                 if product.pair_price != pair_price:
@@ -341,34 +333,33 @@ class Movement(models.Model):
                     return "E0"
         return False
     @classmethod
-    def EditUser(cls,user,user_edit=None,username=None,image=None,user_activ_desact=None):
-        if user.is_admin:
-            str_info=""
-            if user_activ_desact:
-                user_activ_desact.is_active=not user_activ_desact.is_active
-                str_info="{} de Usuario".format("Activado" if user_activ_desact.is_active==True else "Desactivado")
-                
-            else:
-                if user_edit.username!=username:
-                    str_info+="Nombre: {} editado a {}<br>".format(user_edit.username,username)
-                    user_edit.username=username
-                if image:
-                    str_info+="Imagen Editada<br>"
-                    user_edit.image=image
-                
+    def EditUser(cls,user,username=None,password=None,image=None,user_activ_desact=None):
+        str_info=""
+        if user_activ_desact:
+            user_activ_desact.is_active=not user_activ_desact.is_active
+            str_info="{} de Usuario".format("Activado" if user_activ_desact.is_active==True else "Desactivado")
             
-            movement=cls(type="eU",user=user,extra_info_str=str_info)
-            if movement:
-                try:
-                    if user_activ_desact:
-                        user_activ_desact.save()
-                    else:
-                        user_edit.save()
-                    movement.save()                   
-                    return True
-                except:
-                    return "E0"
-        return False
+        else:
+            if user.username!=username:
+                str_info+="Nombre: {} editado a {}<br>".format(user.username,username)
+                user.username=username
+            if password:
+                user.set_password(password)
+                str_info+="Contraseña: editada <br>"
+            if image:
+                str_info+="Imagen Editada<br>"
+                user.image=image
+        movement=cls(type="eU",user=user,extra_info_str=str_info)
+        if movement:
+            try:
+                if user_activ_desact:
+                    user_activ_desact.save()
+                else:
+                    user.save()
+                movement.save()                   
+                return True
+            except:
+                return "E0"
     @classmethod
     def Add(cls,user,product,lot,lot_1,pair_action,note):
         if product and lot>0  :
@@ -440,8 +431,6 @@ class Movement(models.Model):
         return False
     @classmethod
     def Refund(cls,user,product,movement,note):
-        print("Amodel")
-        print(movement)
         if product and product.id == movement.product.id and movement.type=="VP":
             if movement.extra_info_bool:
                 diff = product.pair_sold - movement.lot 
@@ -451,11 +440,6 @@ class Movement(models.Model):
                         amount=movement.lot * product.pair_price
                         r_box.money -= amount
                         if r_box.money >= 0:
-                            user.money-=amount
-                            warning_bool=False
-                            if user.money < 0:
-                                user.money=0
-                                warning_bool=True
                             product.pair_sold = diff
                             product.pair_stored += movement.lot
                             movement_refund=cls(type="rP",extra_info_int_1=product.pair_profit,extra_info_int_2=product.pair_profit_worker,user=user,extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=movement.lot)
@@ -466,7 +450,7 @@ class Movement(models.Model):
                                 product.save()
                                 r_box.save()
                                 user.save()
-                                return ("OK0" if warning_bool==False else "OK1")
+                                return ("OK")
                             return False
                         return "E1"
                     return False
@@ -479,11 +463,6 @@ class Movement(models.Model):
                         amount=movement.lot * product.unit_price
                         r_box.money -= amount
                         if r_box.money >= 0:
-                            user.money-=amount
-                            warning_bool=False
-                            if user.money < 0:
-                                user.money=0
-                                warning_bool=True
                             product.unit_sold = diff
                             product.unit_stored += movement.lot
                             movement_refund=cls(type="rP",extra_info_int_2=product.unit_profit_worker,extra_info_int_1=product.unit_profit,user=user,extra_info_str=note,extra_info_bool=False,extra_info_int=product.unit_price,product=product,lot=movement.lot)
@@ -495,7 +474,7 @@ class Movement(models.Model):
                                 product.save()
                                 r_box.save()
                                 user.save()
-                                return ("OK0" if warning_bool==False else "OK1")
+                                return True
                             return False
                         return "E1"
                     return False

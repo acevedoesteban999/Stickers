@@ -8,6 +8,33 @@
             <div class="row justify-content-center mt-4">
                 <div class="card text-center p-3">
                     <div class="col-auto">
+                        {% if user.is_admin %}
+                            <div class="row justify-content-end">
+                                <div class="col-auto">
+                                    <div class="d-flex">
+                                        <div class="dropdown me-1">
+                                        <button type="button" class="btn btn-light dropdown-toggle" id="dropdownMenuOffset" data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="10,20">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                                                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                                            </svg>
+                                        </button>
+
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
+                                            <li>
+                                            <a class="dropdown-item" href="#" onclick="SubmitRelica()">Crear Replica del Producto</a>
+                                            
+                                            </li>
+                                            <form action="" method="post" id="IDFormREplica">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="ReplicaProduct">
+                                            </form>
+                                        </ul>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        {% endif %}
                         <div class="row justify-content-center">
                             <div class="col-8 col-md-6">
                                 <div class="row justify-content-center h-100 align-items-center">
@@ -41,12 +68,13 @@
                                                 </div>
                                                 <div class="col-12 align-self-end">
                                                     <div class="h6 text-muted mb-0">
-                                                        {{product.i_d}}
+                                                        {{product.id}}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    
                                     <div class="row justify-content-center my-3">
                                         {% if product.pair %}
                                             <div class="col-12">
@@ -126,68 +154,112 @@
                             </div>
                         </div>
                         {% comment %} CONFIRM & Adicional Info  {% endcomment %}
-                        {% if user.is_worker %}
+                        {% if user.is_worker or user.is_admin %}
                             <div class="row justify-content-center align-items-center my-4">
-                                {% if not product.confirm %}
+                                {% if not product.confirm and user.is_worker %}
                                     <div class="col-12">
                                         <a type="button" class="w-auto m-2 p-2 btn btn-info" data-bs-toggle="modal" data-bs-target="#ConfirmAddModal" data-bs-whatever="1">
                                             <span class="h2">Realizar Confirmaciones</span>
                                         </a>    
                                     </div>
                                 {% endif %}
-                                {% if product.confirm or user.is_admin %} 
+                                {% if not product.confirm and user.is_admin %}
+                                    <div class="col-12">
+                                        <div class="row justify-content-center">
+                                            <div class="col-auto">
+                                                <div class="w-auto m-2 p-2 bg-info" >
+                                                    <span class="h2">Confirmaciones Pendientes</span>
+                                                </div>   
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% if user.is_admin or user.is_worker %} 
                                     <div class="col-12">
                                         <button class="btn m-2  btn-sm btn-outline-secondary w-auto" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
                                             <span class="h-1"> Información Adicional </span>
                                         </button>
                                         <div class="collapse" id="collapseMoreInfo">
                                             <div class="row justify-content-center">
-                                                <table class="w-50 border border-1 p-2 m-2 table table-ligth table-borderless">  
-                                                    <thead>
-                                                        <tr>
-                                                            <th scope="col h3"></th>
-                                                            {% if product.pair %}
-                                                                <th scope="col  h3">Por Par</th>
-                                                            {% endif %}
-                                                            <th scope="col h3">Por Unidad</th>
-                                                        </tr>
-                                                        <tbody>
-                                                            <tr>
-                                                                <th scope="row h3">Precio</th>
-                                                                {% if product.pair %}
-                                                                        <td class="h3">{{product.pair_price}}$</td>
-                                                                {% endif %}
-                                                                <td class="h3">{{product.unit_price}}$</td>
-                                                            </tr>
-                                                            
-                                                            {% if user.is_admin %}  
-                                                                <tr>
-                                                                    <th scope="row h3">Ganancia</th>
-                                                                    {% if product.pair %}
-                                                                            <td class="h3">{{product.pair_profit}}$</td>
-                                                                    {% endif %}
-                                                                    <td class="h3">{{product.unit_profit}}$</td>
-                                                                </tr>
-                                                            {% endif %}
-                                                            <tr>
-                                                                <th scope="row h3">Pago a Trabajdor</th>
-                                                                {% if product.pair %}
-                                                                        <td class="h3">{{product.pair_profit_worker}}$</td>
-                                                                {% endif %}
-                                                                <td class="h3">{{product.unit_profit_worker}}$</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <th scope="row h3">Total Vendido</th>
-                                                                {% if product.pair %}
-                                                                    <td class="h3">{{product.pair_sold}}</td>
-                                                                {% endif %}
-                                                                <td class="h3">{{product.unit_sold}}</td>
-                                                            </tr>
-                                                            
-                                                        </tbody>
-                                                        
-                                                    </thead>  
-                                                </table>
+                                                <div class="col-auto">
+                                                    <div class="row justify-content-around border my-3">
+                                                        <div class="col-6 text-start">
+                                                            <div class="h5">Categoria:</div>
+                                                        </div>
+                                                        <div class="col-6 text-end">
+                                                            <div class="h5">{{product.sub_category.category.name}}</div>
+                                                        </div>
+                                                        <div class="col-6 text-start">
+                                                            <div class="h5">Sub Categoria:</div>
+                                                        </div>
+                                                        <div class="col-6 text-end">
+                                                            <div class="h5">{{product.sub_category.name}}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="row justify-content-center">
+                                                        <div class="col-auto ">
+                                                            <table class=" border border-1 p-2 m-2 table table-ligth table-borderless">  
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col h3"></th>
+                                                                        {% if product.pair %}
+                                                                            <th scope="col  h3">Por Par</th>
+                                                                        {% endif %}
+                                                                        <th scope="col h3">Por Unidad</th>
+                                                                    </tr>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <th scope="row h3">Precio</th>
+                                                                            {% if product.pair %}
+                                                                                    <td class="h3">{{product.pair_price}}$</td>
+                                                                            {% endif %}
+                                                                            <td class="h3">{{product.unit_price}}$</td>
+                                                                        </tr>
+                                                                        {% if user.is_admin %}  
+                                                                            <tr>
+                                                                                <th scope="row h3">Precio de Compra</th>
+                                                                                {% if product.pair %}
+                                                                                    <td class="h3">-</td>
+                                                                                {% endif %}
+                                                                                <td class="h3">{{product.purchase_price}}$</td>
+                                                                                
+                                                                            </tr>
+                                                                        {% endif %}
+                                                                        {% if user.is_admin %}  
+                                                                            <tr>
+                                                                                <th scope="row h3">Ganancia</th>
+                                                                                {% if product.pair %}
+                                                                                        <td class="h3">{{product.pair_profit}}$</td>
+                                                                                {% endif %}
+                                                                                <td class="h3">{{product.unit_profit}}$</td>
+                                                                            </tr>
+                                                                        {% endif %}
+                                                                        <tr>
+                                                                            <th scope="row h3">Pago a Trabajdor</th>
+                                                                            {% if product.pair %}
+                                                                                    <td class="h3">{{product.pair_profit_worker}}$</td>
+                                                                            {% endif %}
+                                                                            <td class="h3">{{product.unit_profit_worker}}$</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <th scope="row h3">Total Vendido</th>
+                                                                            {% if product.pair %}
+                                                                                <td class="h3">{{product.pair_sold}}</td>
+                                                                            {% endif %}
+                                                                            <td class="h3">{{product.unit_sold}}</td>
+                                                                        </tr>
+                                                                        
+                                                                    </tbody>
+                                                                    
+                                                                </thead>  
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </div>
+                                                
                                             </div>
                                         </div> 
                                     </div>
@@ -353,10 +425,10 @@
                                             <input required type="text" maxlength="30" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{product.name}}">
                                             <label for="floatingInput">Nombre</label>
                                         </div>
-                                        <div class="form-floating mb-3">
-                                            <input required type="text" maxlength="4" class="form-control" name="i_d" id="floatingInput" placeholder="Id" value="{{product.i_d}}">
+                                        {% comment %} <div class="form-floating mb-3">
+                                            <input required type="text" maxlength="4" class="form-control" name="id" id="floatingInput" placeholder="Id" value="{{product.id}}">
                                             <label for="floatingInput">Id</label>
-                                        </div>
+                                        </div> {% endcomment %}
                                         {% if product.pair %}
                                             <fieldset class="border p-2 m-1">
                                                 <legend  class="float-none w-auto">Por Pares</legend> 
@@ -627,8 +699,143 @@
                         </div>
                     {% endif %}
                 {% endif %}
-               
-            
+                {% comment %} ========================== REPLICA =================== {% endcomment %}
+                {% if user.is_admin %}
+                    <div class="modal fade" data-bs-backdrop="static" id="modalCreatePoduct" tabindex="-1" aria-labelledby="modalCreatePoduct" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="modalCreatePoduct">Nuevo Producto Replicado</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="POST" action="" enctype=multipart/form-data>
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" maxlength="30" required name="name" id="floatingInput" placeholder="Nombre">
+                                                <label for="floatingInput">Nombre</label>
+                                            </div>
+                                            {% comment %} <div class="form-floating mb-3">
+                                                <input type="number" class="form-control" maxlength="4" required name="id" id="floatingInput" placeholder="ID">
+                                                <label for="floatingInput">Id</label>
+                                            </div> {% endcomment %}
+                                            <div class="form-floating mb-3">
+                                                <input value="{{product.purchase_price}}" min="1" type="number"  class="form-control"  name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
+                                                <label for="floatingInput">Precio de Compra </label>
+                                            </div>
+                                            <fieldset class="border p-2 m-1">
+                                                <legend  class="float-none w-auto">Venta</legend> 
+                                                <div class="form-check">
+                                                    <input  {% if product.pair == False %}checked{% endif %} class="form-check-input" value="0" onclick="VentasParesFunction(false)" type="radio" name="VentasPares">
+                                                    <label class="form-check-label" for="flexRadioDefault1">
+                                                    Venta por Unidad
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input  {% if product.pair == True %}checked{% endif %} class="form-check-input" value="1" onclick="VentasParesFunction(true)" type="radio" name="VentasPares" >
+                                                    <label class="form-check-label" for="flexRadioDefault2">
+                                                    Venta Por Pares
+                                                    </label>
+                                                </div>
+                                            </fieldset>
+                                            <div {% if product.pair == False %}style="display: none;"{% endif %} id="ParesDivId">
+
+                                                <fieldset class="border p-2 m-1">
+                                                <legend  class="float-none w-auto">Por Pares</legend> 
+                                            
+                                                    <div class="form-floating mb-3">
+                                                        <input value="{{product.pair_price}}" min="1" type="number"  class="form-control"  name="precio pares"id="ParesPrecio" placeholder="Precio">
+                                                        <label for="floatingInput">Precio por Par </label>
+                                                    </div>
+                                                    <div class="form-floating mb-3">
+                                                        <input value="{{product.pair_profit}}" min="1" type="number"  class="form-control"  name="ganancia pares"id="ParesGanancia" placeholder="Ganancia">
+                                                        <label for="floatingInput">Ganancia por Par </label>
+                                                    </div>
+                                                    <div class="form-floating mb-3">
+                                                        <input value="{{product.pair_profit_worker}}" min="1" type="number"  class="form-control"  name="ganancia pares trabajador" id="ParesGananciaTrabajador" placeholder="Ganancia por Venta">
+                                                        <label for="floatingInput">Pago a Trabajador por Par </label>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+                                            <fieldset class="border p-2 m-1">
+                                                <legend  class="float-none w-auto">Por Unidad</legend>    
+                                                <div class="form-floating mb-3">
+                                                    <input value="{{product.unit_price}}" min="1" type="number"  class="form-control" required name="precio unitario"id="floatingInput" placeholder="Precio">
+                                                    <label for="floatingInput">Precio por Unidad </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input value="{{product.unit_profit}}" min="1" type="number"  class="form-control" required name="ganancia unitaria"id="floatingInput" placeholder="Ganancia">
+                                                    <label for="floatingInput">Ganancia por Unidad </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input value="{{product.unit_profit_worker}}" min="1" type="number"  class="form-control" required name="ganancia unitaria trabajador" id="floatingInput" placeholder="Ganancia por Venta">
+                                                    <label for="floatingInput">Pago a Trabajador por Unidad</label>
+                                                </div>
+                                            </fieldset>
+                                            
+                                            <div class="form-floating mb-3">
+                                                <textarea  value="{{product.description}}" type="text" class="form-control" maxlength="100" name="descripción" id="floatingInput" placeholder="Descripción"  style="height: 100px;"></textarea >
+                                                <label for="floatingInput">Descripción</label>
+                                            </div>
+                                            {{product}}
+                                            <fieldset class="border p-2 m-1">
+                                                <legend  class="float-none w-auto">Categoria</legend>    
+                                                <div class="form-floating mb-3">
+                                                    <input value="{{product.sub_category.category.name}}" type="text"  class="form-control" disabled>
+                                                    <label for="floatingInput">Categoria </label>
+                                                </div>
+                                                
+                                            </fieldset>
+                                            <fieldset class="border p-2 m-1">
+                                                <legend  class="float-none w-auto">Sub Categoria</legend>    
+                                                <div class="form-floating mb-3">
+                                                    <input value="{{product.sub_category.name}}" type="text"  class="form-control" disabled >
+                                                    <input type="hidden" name="subcategoryid" value="{{subcategory.id}}">
+                                                    <label for="floatingInput">Sub Categoria </label>
+                                                </div>
+                                            </fieldset>
+                                            <fieldset class="border p-2 m-1">
+                                                <legend class="float-none w-auto">Color</legend>    
+                                                <select name="SelectColor" class="form-select" aria-label="Default select example">  
+                                                    <option  selected  value="NC">Sin Color</option>
+                                                    {% for color in colors  %}
+                                                        <option value="{{color.id}}">{{color.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                
+                                            </fieldset>
+                                            
+                                            
+                                            <div class="form-floating mb-3">
+                                                <div class="row m-2">
+                                                    Imagen
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-9" id="ImgDiv">
+                                                        <div id="divid">
+                                                            <input onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Imagen">
+                                                        </div>
+                                                    </div> 
+                                                    <div class="col-3">
+                                                        <a style="display: none;" class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
+                                                    </div>    
+                                                </div>
+                                                <div class="d-flex justify-content-center m-3">
+                                                    <img id="imgPre" class="img-fluid" src="" alt=" ">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <input class="btn btn-success" type="submit" name="CrearProducto" value="Crear">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 {% comment %} =================  CONFIRM  ==================== {% endcomment %}   
                 {% if not product.confirm and user.is_worker%}
                     <div class="modal fade" data-bs-backdrop="static" id="ConfirmAddModal" tabindex="-1" aria-labelledby="ConfirmAddModalLabel" aria-hidden="true">
@@ -691,7 +898,7 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title text-center" id="modalTitleId">{{product.name}} <span class="ml-3 text muted h6"><small>id:{{product.i_d}}</small></span> </h5>
+                            <h5 class="modal-title text-center" id="modalTitleId">{{product.name}} <span class="ml-3 text muted h6"><small>id:{{product.id}}</small></span> </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             
                         </div>
@@ -728,6 +935,7 @@
 
 {% endblock  %}
 {% block script_js %}
+    <script type="text/javascript" src="{% static 'js/create_product.js' %}" ></script>
     <script type="text/javascript" src="{% static 'js/product.js' %}" ></script>
     <script type="text/javascript" src="{% static 'js/base_prev_img.js' %}" ></script>
     <script type="text/javascript" src="{% static 'qrcodejs/jquery.min.js' %}"></script>

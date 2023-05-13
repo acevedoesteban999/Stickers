@@ -1,3 +1,7 @@
+function SubmitRelica()
+{
+    document.getElementById("IDFormREplica").submit()
+}
 function VerifRefund(addr,product_id)
 {
     idRefund=document.getElementById("inputIdVerifRefund").value;

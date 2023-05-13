@@ -29,6 +29,8 @@ Tamplates Functions
 """
 Internal Functions
 """
+replica_id=False
+
 def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_worker=False,workers_bool=False):
         if movements:
             context={}
@@ -97,7 +99,7 @@ def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_
                 context.update({"movements_exists":True})
                 products=movements.filter(type="VP").values(
                     'product__name',
-                    'product__i_d',
+                    'product__id',
                     'lot',
                     'extra_info_int',
                     'extra_info_int_1',
@@ -108,19 +110,19 @@ def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_
                     context1={}
                     context2={"total_money":0,"total_profit":0,"total_profit_worker":0,"total_lot":0}
                     for product in products:
-                        if context1.get(product['product__i_d']):
-                            context1[product['product__i_d']]['lot']+=product['lot']
-                            context1[product['product__i_d']]['money']+=product['extra_info_int']*product['lot'] 
-                            context1[product['product__i_d']]['profit']+=product['extra_info_int_1']*product['lot'] 
-                            context1[product['product__i_d']]['profit_worker']+=product['extra_info_int_2']*product['lot'] 
+                        if context1.get(product['product__id']):
+                            context1[product['product__id']]['lot']+=product['lot']
+                            context1[product['product__id']]['money']+=product['extra_info_int']*product['lot'] 
+                            context1[product['product__id']]['profit']+=product['extra_info_int_1']*product['lot'] 
+                            context1[product['product__id']]['profit_worker']+=product['extra_info_int_2']*product['lot'] 
                             context2['total_money']+=product['extra_info_int']*product['lot'] 
                             context2['total_profit']+=product['extra_info_int_1']*product['lot'] 
                             context2['total_profit_worker']+=product['extra_info_int_2']*product['lot'] 
                             context2['total_lot']+=product['lot'] 
                         else:
-                            context1[product['product__i_d']]={
+                            context1[product['product__id']]={
                                 "name":product['product__name'],
-                                "i_d":product['product__i_d'],
+                                "id":product['product__id'],
                                 "lot":product['lot'],
                                 "money":product['extra_info_int']*product['lot'],
                                 'profit':product['extra_info_int_1']*product['lot'],
@@ -128,7 +130,8 @@ def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_
                                 }
                             context2['total_money']+=product['extra_info_int']*product['lot'] 
                             context2['total_profit']+=product['extra_info_int_1']*product['lot'] 
-                            context2['total_profit_worker']+=product['extra_info_int_2']*product['lot'] 
+                            context2['total_profit_worker']+=product['extra_info_int_2']*product['lot']
+                            context2['total_lot']+=product['lot'] 
                     context.update({"products":context1}) 
                     context.update({"products_totals":context2}) 
                     context.update({"products_exists":True})   
@@ -140,7 +143,7 @@ def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_
                     
                 products=movements.filter(q).values(
                     'product__name',
-                    'product__i_d',
+                    'product__id',
                     'lot',
                     'extra_info_int',
                     'extra_info_int_1',
@@ -154,11 +157,11 @@ def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_
                     context2={"total_money":0,"total_profit":0,"total_profit_worker":0,"total_lot":0}
                     for product in products:
                         if context1.get(product['user__username']):
-                            if context1[product['user__username']]["products"].get(product['product__i_d']):
-                                context1[product['user__username']]["products"][product['product__i_d']]['lot']+=product['lot']
-                                context1[product['user__username']]["products"][product['product__i_d']]['money']+=product['extra_info_int']*product['lot']
-                                context1[product['user__username']]["products"][product['product__i_d']]['profit']+=product['extra_info_int_1']*product['lot']
-                                context1[product['user__username']]["products"][product['product__i_d']]['profit_worker']+=product['extra_info_int_2']*product['lot']
+                            if context1[product['user__username']]["products"].get(product['product__id']):
+                                context1[product['user__username']]["products"][product['product__id']]['lot']+=product['lot']
+                                context1[product['user__username']]["products"][product['product__id']]['money']+=product['extra_info_int']*product['lot']
+                                context1[product['user__username']]["products"][product['product__id']]['profit']+=product['extra_info_int_1']*product['lot']
+                                context1[product['user__username']]["products"][product['product__id']]['profit_worker']+=product['extra_info_int_2']*product['lot']
                                 context1[product['user__username']]["total_money"]+=product['extra_info_int'] *product['lot']
                                 context1[product['user__username']]["total_profit"]+=product['extra_info_int_1'] *product['lot']
                                 context1[product['user__username']]["total_profit_worker"]+=product['extra_info_int_2'] *product['lot']
@@ -168,9 +171,9 @@ def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_
                                 context2["total_profit_worker"]+=product['extra_info_int_2'] *product['lot']
                                 context2["total_lot"]+=product['lot']
                             else:
-                                context1[product['user__username']]["products"][product['product__i_d']]={
+                                context1[product['user__username']]["products"][product['product__id']]={
                                     "name":product['product__name'],
-                                    "i_d":product['product__i_d'],
+                                    "id":product['product__id'],
                                     "lot":product['lot'],
                                     "money":product['extra_info_int'] *product['lot'] ,
                                     "profit":product['extra_info_int_1'] *product['lot'] ,
@@ -188,9 +191,9 @@ def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_
                         else:
                             context1[product['user__username']]={
                                 "products":{
-                                    product['product__i_d']:{
+                                    product['product__id']:{
                                         "name":product['product__name'],
-                                        "i_d":product['product__i_d'],
+                                        "id":product['product__id'],
                                         "lot":product['lot'],
                                         "money":product['extra_info_int'] *product['lot'] ,
                                         "profit":product['extra_info_int_1'] *product['lot'] ,
@@ -213,6 +216,53 @@ def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_
             context={"final_money":0,"final_profit":0,"final_profit_worker":0}
         return context
     
+def create_product(request):
+    crear_form=request.POST.dict()
+    files=FormImg(request.POST,request.FILES)
+    files.is_valid()
+    image=files.cleaned_data.get("imagen")
+    #name=crear_form.get("name").__str__().capitalize()
+    name=crear_form.get("NombreAlmacenar").__str__().capitalize()
+    pair=crear_form.get("VentasPares")
+    if pair == "1":
+        pair=True
+    else:
+        pair=False
+    
+    unit_price=int(crear_form.get("precio unitario") )
+    unit_profit=int(crear_form.get("ganancia unitaria") )
+    unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
+    pair_price=0
+    pair_profit=0
+    pair_profit_worker=0
+    if pair == True:
+        pair_price=int(crear_form.get("precio pares"))
+        pair_profit=int(crear_form.get("ganancia pares") )
+        pair_profit_worker=int(crear_form.get("ganancia pares trabajador")) 
+    
+    color_id=crear_form.get("SelectColor")
+    if color_id and color_id!="NC":
+        color=SubCategoryColor.objects.get(id=color_id)
+    else:
+        color=None
+    description=crear_form.get("descripción")
+    purchase_price=int(crear_form.get("precio compra"))
+    subcategoryID=int(crear_form.get("subcategoryid"))
+    subcategory=SubCategory.objects.get(id=subcategoryID)
+    user=request.user
+    result=Movement.Create_Product(purchase_price=purchase_price,color=color,subcategory=subcategory,user=user,name=name,pair=pair,unit_price=unit_price,pair_profit=pair_profit,unit_profit=unit_profit,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker,description=description,image=image)
+    if result==True:
+        crear_form=FormProduc()
+        product=Product.objects.exclude(removed=True).get(name=name)
+        messages.success(request,"Se ha creado  el objeto {} correctamente".format(name))
+        #return redirect("/Producto/{}".format(product.id))
+        return redirect('producto',product.id)
+        #return True
+    elif result=="E0":
+        messages.error(request,"No se ha podido  crear, ya existe un objeto de nombre {}".format(name))
+    else:
+        messages.error(request,"No se ha podido  crear,ha ocurrido un error  insesperado")
+    return False
 """
 View Functions
 """
@@ -256,12 +306,12 @@ def BasePost(request):
                     search_value = data.get('SearchValue')  
                     try:
                         if search_value:
-                            q=Q(removed=False) & (Q(name__contains=search_value) | Q(i_d__contains=search_value))
+                            q=Q(removed=False) & (Q(name__contains=search_value) | Q(id__contains=search_value))
                             products=Product.objects.filter(q)[:5]
                             if products:
                                 return render(None,"BaseSearchProducts.html",{"products": products})
                     except Exception as e:
-                        print(e)
+                        pass
                     return HttpResponse("NoProducts")
                 elif 'VerifRefundIdMovement' in data:
                     id_refund = data.get('VerifRefundIdMovement') 
@@ -273,7 +323,7 @@ def BasePost(request):
                                 "type",
                                 "lot",
                                 "product__name",
-                                "product__i_d",
+                                "product__id",
                                 "product__id",
                                 "user__username",
                                 "extra_info_bool",
@@ -285,7 +335,6 @@ def BasePost(request):
                             if movement:
                                 if movement[0].get('product__id')==id_prouct:
                                     if "<br><div class='text-danger'>Reembolsado</div>" not in movement[0].get('extra_info_str'):
-                                        print(movement[0])
                                         if movement[0].get('type') =="VP":
                                             return render(None,"BaseVerifRefundMovement.html",{"movement": movement[0]})
                                         return HttpResponse("E2")
@@ -293,7 +342,7 @@ def BasePost(request):
                                 return HttpResponse("E3")
                             return HttpResponse("E1")
                         except Exception as e:
-                            print(e)
+                            pass
                     return HttpResponse("E0")
                 elif 'FilterResumeValue' in data:
                     filter_resume=int(data.get('FilterResumeValue'))
@@ -359,7 +408,6 @@ def BasePost(request):
                 return HttpResponse("Error")
         return render(request,"Home.html")
     except Exception as e:
-        print(e)
         messages.error(request,"Algo ha salido mal")    
         return HttpResponseNotFound("Error, Algo Salio mal<br>Error:"+e.__str__())
     
@@ -433,7 +481,6 @@ def ResumeView(request):
             context['context_global'].update({"SumaryDate":False})
         return render(request,"Resume.html",{'context':context})
     except Exception as e:
-        print(e)
         messages.error(request,"Ha ocurrido un error inesperado")
     return redirect('home')
     
@@ -467,7 +514,7 @@ def HomeView(request):
         return render(request,"Home.html",{"context":context})
     
     except KeyError as e:
-        print(e)
+        pass
     return HttpResponse("Ha ocurrido un error insesperado , contacte con los administradores")
 
 def CajaView(request):
@@ -504,7 +551,6 @@ def CajaView(request):
             messages.error(request,"Debe Iniciar Sesión para Aceeder a este Sitio")    
             return redirect('home') 
     except Exception as e:
-        print(e)
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
 
@@ -514,7 +560,6 @@ def TiendaView(request):
         products = Product.objects.exclude(removed=True).filter(q).order_by('name')
         return render(request,"Tienda.html",{'products':products})
     except Exception as e:
-        print(e)
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
 
@@ -546,47 +591,11 @@ def AdminView(request):
                     else:
                         messages.error(request,"No se ha podido crear, ya existe una color de nombre {}".format(name))
 
-                # if "CrearProducto" in request.POST:
-                #     crear_form=request.POST.dict()
-                #     files=FormImg(request.POST,request.FILES)
-                #     files.is_valid()
-                #     name=crear_form.get("name").__str__().capitalize()
-                #     i_d=crear_form.get("i_d")
-                #     pair=crear_form.get("VentasPares")
-                #     if pair == "1":
-                #         pair=True
-                #     else:
-                #         pair=False
-                    
-                #     unit_price=int(crear_form.get("precio unitario") )
-                #     unit_profit=int(crear_form.get("ganancia unitaria") )
-                #     unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
-                #     pair_price=0
-                #     pair_profit=0
-                #     pair_profit_worker=0
-                #     if pair == True:
-                #         pair_price=int(crear_form.get("precio pares"))
-                #         pair_profit=int(crear_form.get("ganancia pares") )
-                #         pair_profit_worker=int(crear_form.get("ganancia pares trabajador")) 
-                #     image=files.cleaned_data.get("imagen")
-                #     description=crear_form.get("descripción")
-                #     result=Movement.Create_Product(i_d=i_d,user=user,name=name,pair=pair,unit_price=unit_price,pair_profit=pair_profit,unit_profit=unit_profit,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker,description=description,image=image)
-                #     if result==True:
-                #         crear_form=FormProduc()
-                #         product=Product.objects.exclude(removed=True).get(name=name)
-                #         messages.success(request,"Se ha creado  el objeto {} correctamente".format(name))
-                #         return redirect("/Producto/{}".format(product.id))
-                #     elif result=="E0":
-                #         messages.error(request,"No se ha podido  crear, ya existe un objeto de nombre %s"% name)
-                #         return render(request,"Administracion.html",{'products':products})
-                #messages.error(request,"Ha ocurrido un error  insesperado")
-                #return render(request,"Administracion.html",{'products':products})
             return render(request,"Administracion.html",{'categorys':categorys,"colors":colors})
         else:
             messages.error(request,"Debe Iniciar Sesión para Aceeder a estos Recursos")    
             return redirect('home') 
     except Exception as e:
-        print(e)
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
 
@@ -621,7 +630,6 @@ def CategoriaView(request,categoryID):
     except ObjectDoesNotExist:
         messages.error(request,"Error, categoria inexistente")
     except Exception as e:
-        print(e)
         messages.error(request,"Error, Algo ha salido mal")  
     return redirect('home')
 
@@ -631,49 +639,21 @@ def SubCategoriaView(request,categoryID,subcategoryID):
         user=request.user
         category=Category.objects.get(id=categoryID)
         subcategory=SubCategory.objects.get(id=subcategoryID)
-        if category!=subcategory.category:
-            messages.error(request,"Error, categoria y subcategoria desiguales")
-            return redirect('home')
+        # if category!=subcategory.category:
+        #     messages.error(request,"Error, categoria y subcategoria desiguales")
+        #     return redirect('home')
+        global replica_id
+        replica=None
+        if replica_id != False:
+            replica_id_context=replica_id
+            replica_id=False
+            product=Product.objects.get(id=replica_id_context)
+            replica=product 
         if request.method=="POST":
             if "CrearProducto" in request.POST:
-                crear_form=request.POST.dict()
-                files=FormImg(request.POST,request.FILES)
-                files.is_valid()
-                image=files.cleaned_data.get("imagen")
-                name=crear_form.get("name").__str__().capitalize()
-                pair=crear_form.get("VentasPares")
-                if pair == "1":
-                    pair=True
-                else:
-                    pair=False
-                
-                unit_price=int(crear_form.get("precio unitario") )
-                unit_profit=int(crear_form.get("ganancia unitaria") )
-                unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
-                pair_price=0
-                pair_profit=0
-                pair_profit_worker=0
-                if pair == True:
-                    pair_price=int(crear_form.get("precio pares"))
-                    pair_profit=int(crear_form.get("ganancia pares") )
-                    pair_profit_worker=int(crear_form.get("ganancia pares trabajador")) 
-                
-                color_id=crear_form.get("SelectColor")
-                if color_id and color_id!="NC":
-                    color=SubCategoryColor.objects.get(id=color_id)
-                else:
-                    color=None
-                description=crear_form.get("descripción")
-                result=Movement.Create_Product(color=color,subcategory=subcategory,user=user,name=name,pair=pair,unit_price=unit_price,pair_profit=pair_profit,unit_profit=unit_profit,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker,description=description,image=image)
-                if result==True:
-                    crear_form=FormProduc()
-                    product=Product.objects.exclude(removed=True).get(name=name)
-                    messages.success(request,"Se ha creado  el objeto {} correctamente".format(name))
-                    return redirect("/Producto/{}".format(product.id))
-                elif result=="E0":
-                    messages.error(request,"No se ha podido  crear, ya existe un objeto de nombre %s"% name)
-                messages.error(request,"Ha ocurrido un error  insesperado")
-                
+                cp=create_product(request)
+                if  cp != False:
+                    return cp
             elif "EditSubCategory" in request.POST:
                 post_form=request.POST.dict()
                 name=post_form.get("name").__str__().capitalize()
@@ -685,11 +665,10 @@ def SubCategoriaView(request,categoryID,subcategoryID):
         
         colors=SubCategoryColor.objects.all()
         products=Product.objects.filter(sub_category__id=subcategoryID)
-        return render(request,"SubCategoria.html",{"colors":colors,"category":category,"subcategory":subcategory,"products":products})
+        return render(request,"SubCategoria.html",{"replica":replica,"colors":colors,"category":category,"subcategory":subcategory,"products":products})
     except ObjectDoesNotExist:
         messages.error(request,"Error, categoria o subcategoria inexistente")
     except Exception as e:
-        print(e)
         messages.error(request,"Error, Algo ha salido mal")
     return redirect('home')
         
@@ -698,24 +677,23 @@ def ProductoView(request,productoID):
     try:
         product=Product.objects.exclude(removed=True).get(id=productoID)
         user=request.user
-        #print(user)
         if user:
             if product :
                 movements_confirm=Movement.objects.filter(product_id=product.id,type="EP",extra_info_bool=False).order_by('date')      
                 movements=Movement.objects.filter(product_id=product.id).order_by('-date')[:10]
                 product_qr_url=request.build_absolute_uri(reverse('producto',args=(product.id,)))
-                
+                colors=SubCategoryColor.objects.all()
                 def NormalPageProduct():
-                    return render(request,"Producto.html",{'product_qr_url':product_qr_url,'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
+                    return render(request,"Producto.html",{"colors":colors,'product_qr_url':product_qr_url,'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
                 
                 def ErrorProduct(text):
                     messages.error(request,text)
-                    return render(request,"Producto.html",{'product_qr_url':product_qr_url,'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
+                    return render(request,"Producto.html",{"colors":colors,'product_qr_url':product_qr_url,'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
                 
                 def SuccessProduct(text):
                     #Eliminar si se redirecciona a 'home'
                     messages.success(request,text)
-                    return render(request,"Producto.html",{'product_qr_url':product_qr_url,'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
+                    return render(request,"Producto.html",{"colors":colors,'product_qr_url':product_qr_url,'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
                 
                 def WarningProduct(text,no_redirect=False):
                     if no_redirect==True:
@@ -726,12 +704,20 @@ def ProductoView(request,productoID):
                 
                 if request.method == "POST":
                     #Form Editar
+                    if "ReplicaProduct" in request.POST:
+                        global replica_id
+                        replica_id=productoID
+                        return redirect('subcategoria',product.sub_category.category.id,product.sub_category.id)
+                    if "CrearProducto" in request.POST:
+                        cp=create_product(request)
+                        if  cp != False:
+                            return cp
                     if "EditProduct" in request.POST:
                         edit_product=request.POST.dict()
                         files=FormImg(request.POST,request.FILES)
                         files.is_valid()
                         name=edit_product.get("name")
-                        i_d=edit_product.get("i_d")
+                        id=edit_product.get("id")
                         pair_price=None
                         pair_profit_worker=None
                         if product.pair:
@@ -745,7 +731,7 @@ def ProductoView(request,productoID):
                         image=files.cleaned_data.get("imagen")
                         result=Movement.Edit(user=user,product=product,
                                             name=name,
-                                            i_d=i_d,
+                                            id=id,
                                             pair_price=pair_price,
                                             pair_profit=pair_profit,
                                             pair_profit_worker=pair_profit_worker,
@@ -765,15 +751,12 @@ def ProductoView(request,productoID):
                         
                         pair_action=sell_product.get("AccionPar")
                         note=sell_product.get("nota")
-                        #if pair_action:
-                            #pair_action=True
-                        
                         if pair_action:
                             result=Movement.Pair_Sell(user=user,product=product,lot=lot_sell,note=note)
                         else:
                             result=Movement.Unit_Sell(user=user,product=product,lot=lot_sell,note=note)
                         
-                        if result == True or result== "OK0":
+                        if result == True:
                             return SuccessProduct("Se han vendido {} {} {} {},con un importe de {}$".format(lot_sell,"pares de" if pair_action  else "unidades de",product.name,", se ha descontado una unidad de un lote par " if result=="OK0" else "",product.pair_price*lot_sell if pair_action  else product.unit_price*lot_sell))
                         elif result == 'E2':
                             return ErrorProduct("No se ha podido vender {} productos, solo se admite vender 1 unidad cuando ya no exsisten unidades por separado, esta unidad sera descontada de un par".format(lot_sell))
@@ -811,7 +794,6 @@ def ProductoView(request,productoID):
                         note=confirm_product.get("nota")
                         if id_movement:
                             movement_to_confirm=Movement.objects.get(id=id_movement)
-                            print(movements_confirm)
                             
                             if movement_to_confirm:
                                 if Movement.ConfirmAdd(user=user,movement=movement_to_confirm,note=note):
@@ -847,10 +829,10 @@ def ProductoView(request,productoID):
                         movement=Movement.objects.filter(id=id_movement)[0]
                         if movement:
                             result=Movement.Refund(user=user,product=product,movement=movement,note=note)
-                            if result == "OK0":
+                            if result == True:
                                 return SuccessProduct("Se han reembolsado {} {} {} con un importe de {}$".format(movement.lot,"Pares de " if movement.extra_info_bool else "Unidades de ",product.name,movement.lot * (product.pair_price if movement.extra_info_bool else product.unit_price)))
-                            elif result == "OK1":
-                                return WarningProduct(no_redirect=True,text="Se han reembolsado {} {} {} con un importe de {}$, el usuario {} no presentaba el dinero suficiente en la cuenta, se ha retirado todo el dinero del usuario".format(movement.lot,"Pares de " if movement.extra_info_bool else "Unidades de ",product.name,movement.lot * (product.pair_price if movement.extra_info_bool else product.unit_price),user.username))
+                            #elif result == "OK1":
+                            #    return WarningProduct(no_redirect=True,text="Se han reembolsado {} {} {} con un importe de {}$, el usuario {} no presentaba el dinero suficiente en la cuenta, se ha retirado todo el dinero del usuario".format(movement.lot,"Pares de " if movement.extra_info_bool else "Unidades de ",product.name,movement.lot * (product.pair_price if movement.extra_info_bool else product.unit_price),user.username))
                             elif result == "E0":
                                 return ErrorProduct("No se han podido reembolsar {} {}".format(movement.lot,product.name))
                             elif result == "E1":
@@ -895,9 +877,8 @@ def OperacionesView(request):
                     user_filter=filter_movement.get("UserFilter")
                     if product_filter.isdigit() and product_filter.__len__() == 4:
                         product_filter=int(product_filter)
-                        q = q & Q(product__i_d=product_filter)
+                        q = q & Q(product__id=product_filter)
                     
-                    #print(type_filter,product_filter,date_filter)
                     if date_filter ==  "DD":
                         date_day_filter=filter_movement.get("FilterDateDay")
                         if not date_day_filter:
@@ -922,7 +903,6 @@ def OperacionesView(request):
         date_today_max =datetime.today() + timedelta(days=1)
         return render(request,"Operaciones.html",{"users":UsEr.objects.values_list("username",flat=True),"MChoise":MChoise,"date_end_filter":date_end_filter,"date_start_filter":date_start_filter,"date_day_filter":date_day_filter,"id_filter":id_filter,"date_today":datetime.today().strftime("%Y-%m-%d"),"date_today_max":date_today_max.strftime("%Y-%m-%d"),"movements":movements,"product_filter":product_filter,"type_filter":type_filter,"user_filter":user_filter,"date_filter":date_filter})
     except Exception as e:
-        print(e)
         messages.error(request,"Algo ha salido mal")    
     return redirect('home')
 
@@ -943,7 +923,7 @@ def UsersView(request):
             context.update({"users_desactivated":users_desactivated})
         
     except Exception as e:
-        print(e)
+        pass
         
     return render(request,"Usuarios.html",{"context":context})
 
@@ -951,7 +931,6 @@ def UserView(request,usuarioID):
     try:
                 
         user=UsEr.objects.get(id=usuarioID)
-        
         if request.method=="POST":
             if "ActvateDesactivateUser" in request.POST:
                 if Movement.EditUser(user=request.user,user_activ_desact=user):
@@ -959,26 +938,36 @@ def UserView(request,usuarioID):
                 else:
                     raise Exception()
             if "EditUser" in request.POST:
+                if request.user != user:
+                    messages.error(request,"Error, solo se puede editar un usuario desde su propia cuenta")  
+                    return redirect("home")
                 edit_user=request.POST.dict()
                 files=FormImg(request.POST,request.FILES)
                 files.is_valid()
                 username=edit_user.get("UserName")
+                password=edit_user.get("PassWord")
+                if not password:
+                    password=None
+                else:
+                    passwordconfirm=edit_user.get("PassWord_Confirm")
+                    if password!=passwordconfirm:
+                        messages.error(request,"Error, las contraseñas no coinciden")  
+                        return redirect("usuario",user.id)
                 image=files.cleaned_data.get("imagen")
-                result=Movement.EditUser(user=request.user,user_edit=user,username=username,image=image)
+                result=Movement.EditUser(user=request.user,username=username,password=password,image=image)
                 if result==True:
                     messages.success(request,"Se ha editado el Usuario {} Correctamente".format(username))
+                    return redirect("usuario",user.id)
                 elif result=="E0":    
                     messages.error(request,"Error, Ya existe un Usuario con nombre {}".format(username))
                 else:
                     raise Exception()
-        context={}
-        return render(request,"Usuario.html",{"UsEr":user,"context":context})
+        return render(request,"Usuario.html",{"UsEr":user})
     except Exception as e:
-        print(e)
         messages.error(request,"Ha ocurrido un error inesperado")
     except ObjectDoesNotExist:
         messages.error(request,"Error, Usuario inexistente")  
-    return redirect("usuarios")
+    return redirect("home")
 
 def QR(request):
     home_qr_url=request.build_absolute_uri(reverse('home'))

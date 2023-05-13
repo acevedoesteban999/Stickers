@@ -1,328 +1,565 @@
 {% extends 'Base.html' %}
 {% block contenido %}
 {% load static %}
-<div class="container">
-    <div class="row justify-content-center my-4">
-        <div class="col-auto">
-            <div class="card">
-                <div class="card-body">    
-                    <div class="px-3 pt-2 row justify-content-center align-items-center h-100">
-                        <div class="col-12">
-                            <h1 class="display-4 text-center">{{category.name}}<br>{{subcategory.name}}</h1>
-                        </div>
-                        <div class="col-auto my-2 ">
-                            <button type="button" class=" btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">
-                                Editar
-                            </button> 
-                        </div>
-                        <div class="modal fade" id="EditModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="EditModalLabel">Editar {{subcategory.name}}</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <form method="POST" action="" enctype=multipart/form-data>
-                                        {% csrf_token %}
-                                        <div class="modal-body">
-                                            <div class="form-floating mb-3">
-                                                <input required type="text" maxlength="30" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{subcategory.name}}">
-                                                <label for="floatingInput">Nombre</label>
-                                            </div>
+{% if user.is_admin %}
+    <div class="container">
+        <div class="row justify-content-center my-4">
+            <div class="col-auto">
+                <div class="card">
+                    <div class="card-body">    
+                        <div class="px-3 pt-2 row justify-content-center align-items-center h-100">
+                            <div class="col-12">
+                                <h1 class="h1 text-center">{{category.name}}</h1>
+                                <h1 class="h3 text-center">{{subcategory.name}}</h1>
+                            </div>
+                            <div class="col-auto my-2 ">
+                                <button type="button" class=" btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#EditModal" data-bs-whatever="1">
+                                    Editar
+                                </button> 
+                            </div>
+                            <div class="modal fade" id="EditModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="EditModalLabel">Editar {{subcategory.name}}</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                        <div class="row justify-content-around m-2">
-                                            <div class="col-auto">
-                                                <div class="row justify-content-center">
-                                                    <div class="col-auto">
-                                                        <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">   
-                                                    </div>
-                                                </div>    
+                                        <form method="POST" action="" enctype=multipart/form-data>
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <div class="form-floating mb-3">
+                                                    <input required type="text" maxlength="30" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{subcategory.name}}">
+                                                    <label for="floatingInput">Nombre</label>
+                                                </div>
                                             </div>
-                                            <div class="col-auto">
-                                                <div class="row justify-content-center">
-                                                    <div class="col-auto">
-                                                        <input class="btn btn-warning" type="submit" name="EditSubCategory" value="Editar">
+                                            <div class="row justify-content-around m-2">
+                                                <div class="col-auto">
+                                                    <div class="row justify-content-center">
+                                                        <div class="col-auto">
+                                                            <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">   
+                                                        </div>
+                                                    </div>    
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="row justify-content-center">
+                                                        <div class="col-auto">
+                                                            <input class="btn btn-warning" type="submit" name="EditSubCategory" value="Editar">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </form>
+                                        </form>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>  
-                        
-                    </div>
-                </div>          
+                            </div>  
+                        </div>
+                    </div>          
+                </div>
             </div>
         </div>
-    </div>
-    <h1 class="display-2 text-center">Productos</h1>
-    <div class="row justify-content-center">
-        <div class="col-auto">
-            <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modalCreatePoduct">
-                Crear Producto
-            </button>
-            <div class="modal fade" data-bs-backdrop="static" id="modalCreatePoduct" tabindex="-1" aria-labelledby="modalCreatePoduct" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="modalCreatePoduct">Nuevo Producto</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form method="POST" action="" enctype=multipart/form-data>
-                                {% csrf_token %}
-                                <div class="modal-body">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" maxlength="30" required name="name" id="floatingInput" placeholder="Nombre">
-                                        <label for="floatingInput">Nombre</label>
-                                    </div>
-                                    {% comment %} <div class="form-floating mb-3">
-                                        <input type="number" class="form-control" maxlength="4" required name="i_d" id="floatingInput" placeholder="ID">
-                                        <label for="floatingInput">Id</label>
-                                    </div> {% endcomment %}
-                                    <fieldset class="border p-2 m-1">
-                                        <legend  class="float-none w-auto">Venta</legend> 
-                                        <div class="form-check">
-                                            <input class="form-check-input" value="0" onclick="VentasParesFunction(false)" checked type="radio" name="VentasPares">
-                                            <label class="form-check-label" for="flexRadioDefault1">
-                                            Venta por Unidad
-                                            </label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input" value="1" onclick="VentasParesFunction(true)" type="radio" name="VentasPares" >
-                                            <label class="form-check-label" for="flexRadioDefault2">
-                                            Venta Por Pares
-                                            </label>
-                                        </div>
-                                    </fieldset>
-                                    <div style="display: none;" id="ParesDivId">
+        <h1 class="display-2 text-center">Productos</h1>
+        <div class="row justify-content-center">
+            <div class="col-auto my-3">
+                <button type="button" id="BTNCreateProduct" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modalCreatePoduct">
+                    Crear Producto
+                </button>
+                {% if replica %}
+                    <script>
+                        window.onload=function()
+                        {
+                            document.getElementById("BTNCreateProduct").click()
 
-                                        <fieldset class="border p-2 m-1">
-                                        <legend  class="float-none w-auto">Por Pares</legend> 
-                                    
-                                            <div class="form-floating mb-3">
-                                                <input min="1" type="number"  class="form-control"  name="precio pares"id="ParesPrecio" placeholder="Precio">
-                                                <label for="floatingInput">Precio por Par </label>
-                                            </div>
-                                            <div class="form-floating mb-3">
-                                                <input min="1" type="number"  class="form-control"  name="ganancia pares"id="ParesGanancia" placeholder="Ganancia">
-                                                <label for="floatingInput">Ganancia por Par </label>
-                                            </div>
-                                            <div class="form-floating mb-3">
-                                                <input min="1" type="number"  class="form-control"  name="ganancia pares trabajador" id="ParesGananciaTrabajador" placeholder="Ganancia por Venta">
-                                                <label for="floatingInput">Pago a Trabajador por Par </label>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                    <fieldset class="border p-2 m-1">
-                                        <legend  class="float-none w-auto">Por Unidad</legend>    
-                                        <div class="form-floating mb-3">
-                                            <input min="1" type="number"  class="form-control" required name="precio unitario"id="floatingInput" placeholder="Precio">
-                                            <label for="floatingInput">Precio por Unidad </label>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input min="1" type="number"  class="form-control" required name="ganancia unitaria"id="floatingInput" placeholder="Ganancia">
-                                            <label for="floatingInput">Ganancia por Unidad </label>
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input min="1" type="number"  class="form-control" required name="ganancia unitaria trabajador" id="floatingInput" placeholder="Ganancia por Venta">
-                                            <label for="floatingInput">Pago a Trabajador por Unidad</label>
-                                        </div>
-                                    </fieldset>
-                                    
-                                    <div class="form-floating mb-3">
-                                        <textarea  type="text" class="form-control" maxlength="100" name="descripción" id="floatingInput" placeholder="Descripción"  style="height: 100px;"></textarea >
-                                        <label for="floatingInput">Descripción</label>
-                                    </div>
-                                    
-                                    <fieldset class="border p-2 m-1">
-                                        <legend  class="float-none w-auto">Categoria</legend>    
-                                        <div class="form-floating mb-3">
-                                            <input value="{{category.name}}" type="text"  class="form-control" disabled>
-                                            <label for="floatingInput">Categoria </label>
-                                        </div>
-                                        
-                                    </fieldset>
-                                    <fieldset class="border p-2 m-1">
-                                        <legend  class="float-none w-auto">Sub Categoria</legend>    
-                                        <div class="form-floating mb-3">
-                                            <input value="{{subcategory.name}}" type="text"  class="form-control" disabled >
-                                            <label for="floatingInput">Categoria </label>
-                                        </div>
-                                    </fieldset>
-                                    <fieldset class="border p-2 m-1">
-                                        <legend class="float-none w-auto">Color</legend>    
-                                        <select name="SelectColor" class="form-select" aria-label="Default select example">  
-                                            <option  selected  value="NC">Sin Color</option>
-                                            {% for color in colors  %}
-                                                <option value="{{color.id}}">{{color.name}}</option>
-                                            {% endfor %}
-                                        </select>
-                                        
-                                    </fieldset>
-                                    
-                                    
-                                    <div class="form-floating mb-3">
-                                        <div class="row m-2">
-                                            Imagen
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-9" id="ImgDiv">
-                                                <div id="divid">
-                                                    <input onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Imagen">
-                                                </div>
-                                            </div> 
-                                            <div class="col-3">
-                                                <a style="display: none;" class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
-                                            </div>    
-                                        </div>
-                                        <div class="d-flex justify-content-center m-3">
-                                            <img id="imgPre" class="img-fluid" src="" alt=" ">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <input class="btn btn-success" type="submit" name="CrearProducto" value="Crear">
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-        
-    
-    <div class="modal fade" id="modalCreateCategory" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalCreateCategory" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="CrearModalLabel">Nueva Sub Categoria</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST" action="">
-                        {% csrf_token %}
-                        <div class="modal-body">
-                            <div class="form-floating mb-3">
-                                <input type="text" class="form-control" maxlength="30" required name="name" id="floatingInput" placeholder="Nombre">
-                                <label for="floatingInput">Nombre</label>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <input class="btn btn-success" type="submit" name="CrearSubCategoria" value="Crear">
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% comment %} <div class="row justify-content-center">
-        <div class="col-12">
-            <div class="row justify-content-center align-items-center">
-                <div class="col-auto">
-                    <div class="card m-4    ">
-                        <div class="card-body">
-                            <a class="text-dark" style="text-decoration: none;" role="button" data-bs-toggle="collapse" href="#contentSubCategory" aria-expanded="false" aria-controls="contentSubCategory">
-                                <h1 class="display-3">Sub Categorias</h1>
-                            </a>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="collapse" id="contentSubCategory">
-                <div class="row justify-content-center">
-                    <div class="col-auto">
-                        <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modalCreateCategory">
-                            Crear Sub Categoria
-                          </button>
-                    </div>
-                </div>
+                        };
+                    </script>
+                {% endif %}
                 
-                
-                <div class="modal fade" id="modalCreateCategory" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalCreateCategory" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                <div class="modal fade" data-bs-backdrop="static" id="modalCreatePoduct" tabindex="-1" aria-labelledby="modalCreatePoduct" aria-hidden="true">
+                    <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="CrearModalLabel">Nueva Sub Categoria</h1>
+                                <h1 class="modal-title fs-5" id="modalCreatePoduct">Nuevo Producto</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form method="POST" action="">
+                                <form method="POST" action="" enctype=multipart/form-data>
                                     {% csrf_token %}
                                     <div class="modal-body">
+                                        
+                                        <div class="h6 text-center text-muted" id="IdNombreAlmacenar"></div>
                                         <div class="form-floating mb-3">
-                                            <input type="text" class="form-control" maxlength="30" required name="name" id="floatingInput" placeholder="Nombre">
+                                            <input oninput="EditNombreAlmacenar('{{subcategory.name}}')" type="text" class="form-control" maxlength="25" required name="name" id="nameProduct" placeholder="Nombre">
                                             <label for="floatingInput">Nombre</label>
+                                            <input type="hidden"  name="NombreAlmacenar" id="IdNombreAlmacenarHidden">
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <input {% if replica %}value="{{replica.purchase_price}}"{% endif %} min="1" type="number"  class="form-control"  required name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
+                                            <label for="floatingInput">Precio de Compra </label>
+                                        </div>  
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Venta</legend> 
+                                            <div class="form-check">
+                                                <input class="form-check-input" value="0" onclick="VentasParesFunction(false)" {% if not replica %}checked{% endif %} {% if replica and replica.pair == False %}checked{% endif %} type="radio" name="VentasPares">
+                                                <label class="form-check-label" for="flexRadioDefault1">
+                                                Venta por Unidad
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" value="1" onclick="VentasParesFunction(true)" {% if replica and replica.pair == True %}checked{% endif %} type="radio" name="VentasPares" >
+                                                <label class="form-check-label" for="flexRadioDefault2">
+                                                Venta Por Pares
+                                                </label>
+                                            </div>
+                                        </fieldset>
+                                        <div {% if replica and replica.pair == False %}style="display: none;"{% endif %} id="ParesDivId">
+
+                                            <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Por Pares</legend> 
+                                        
+                                                <div class="form-floating mb-3">
+                                                    <input {% if replica and replica.pair == True %}value="{{replica.pair_price}}"{% endif %} min="1" type="number"  class="form-control"  name="precio pares"id="ParesPrecio" placeholder="Precio">
+                                                    <label for="floatingInput">Precio por Par </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input {% if replica and replica.pair == True %}value="{{replica.pair_profit}}"{% endif %} min="1" type="number"  class="form-control"  name="ganancia pares"id="ParesGanancia" placeholder="Ganancia">
+                                                    <label for="floatingInput">Ganancia por Par </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input {% if replica and replica.pair == True %}value="{{replica.pair_profit_worker}}"{% endif %} min="1" type="number"  class="form-control"  name="ganancia pares trabajador" id="ParesGananciaTrabajador" placeholder="Ganancia por Venta">
+                                                    <label for="floatingInput">Pago a Trabajador por Par </label>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Por Unidad</legend>    
+                                            <div class="form-floating mb-3">
+                                                <input {% if replica %}value="{{replica.unit_price}}"{% endif %} min="1" type="number"  class="form-control" required name="precio unitario"id="floatingInput" placeholder="Precio">
+                                                <label for="floatingInput">Precio por Unidad </label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input {% if replica %}value="{{replica.unit_profit}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria"id="floatingInput" placeholder="Ganancia">
+                                                <label for="floatingInput">Ganancia por Unidad </label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input {% if replica %}value="{{replica.unit_profit_worker}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria trabajador" id="floatingInput" placeholder="Ganancia por Venta">
+                                                <label for="floatingInput">Pago a Trabajador por Unidad</label>
+                                            </div>
+                                        </fieldset>
+                                        
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Categoria</legend>    
+                                            <div class="form-floating mb-3">
+                                                <input value="{{category.name}}" type="text"  class="form-control" disabled>
+                                                <label for="floatingInput">Categoria </label>
+                                            </div>
+                                            
+                                        </fieldset>
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Sub Categoria</legend>    
+                                            <div class="form-floating mb-3">
+                                                <input value="{{subcategory.name}}" type="text"  class="form-control" disabled >
+                                                <input type="hidden" name="subcategoryid" value="{{subcategory.id}}">
+                                                <label for="floatingInput">Sub Categoria </label>
+                                            </div>
+                                        </fieldset>
+                                        <fieldset class="border p-2 m-1">
+                                            <legend class="float-none w-auto">Color</legend>    
+                                            <select name="SelectColor" id="ColorID" oninput="SetColor(this.options[this.selectedIndex].text,'{{subcategory.name}}')" class="form-select" aria-label="Default select example">  
+                                                <option  selected  value="NC">Sin Color</option>
+                                                {% for color in colors  %}
+                                                    <option value="{{color.id}}">{{color.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            
+                                        </fieldset>
+                                        <div class="form-floating mb-3">
+                                            <textarea  type="text" class="form-control" maxlength="100" name="descripción" id="floatingInput" placeholder="Descripción"  style="height: 100px;">{% if replica %}{{replica.description}}{% endif %}</textarea >
+                                            <label for="floatingInput">Descripción</label>
+                                        </div>
+                                        
+                                        <div class="form-floating mb-3">
+                                            <div class="row m-2">
+                                                Imagen
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-9" id="ImgDiv">
+                                                    <div id="divid">
+                                                        <input onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Imagen">
+                                                    </div>
+                                                </div> 
+                                                <div class="col-3">
+                                                    <a style="display: none;" class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
+                                                </div>    
+                                            </div>
+                                            <div class="d-flex justify-content-center m-3">
+                                                <img id="imgPre" class="img-fluid" src="" alt=" ">
+                                            </div>
                                         </div>
                                     </div>
+                                    {% comment %} <div class="modal-body">
+                                        
+                                        <div class="h6 text-center text-muted" id="IdNombreAlmacenar"></div>
+                                        <div class="form-floating mb-3">
+                                            <input oninput="EditNombreAlmacenar('{{subcategory.name}}')" type="text" class="form-control" maxlength="25" required name="name" id="nameProduct" placeholder="Nombre">
+                                            <label for="floatingInput">Nombre</label>
+                                            <input type="hidden"  name="NombreAlmacenar" id="IdNombreAlmacenarHidden">
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <input {% if replica %}value="{{replica.purchase_price}}"{% endif %} min="1" type="number"  class="form-control"  required name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
+                                            <label for="floatingInput">Precio de Compra </label>
+                                        </div>  
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Venta</legend> 
+                                            <div class="form-check">
+                                                <input class="form-check-input" value="0" onclick="VentasParesFunction(false)" {% if not replica %}checked{% endif %} {% if replica and replica.pair == False %}checked{% endif %} type="radio" name="VentasPares">
+                                                <label class="form-check-label" for="flexRadioDefault1">
+                                                Venta por Unidad
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" value="1" onclick="VentasParesFunction(true)" {% if replica and replica.pair == True %}checked{% endif %} type="radio" name="VentasPares" >
+                                                <label class="form-check-label" for="flexRadioDefault2">
+                                                Venta Por Pares
+                                                </label>
+                                            </div>
+                                        </fieldset>
+                                        <div {% if replica and replica.pair == False %}style="display: none;"{% endif %} id="ParesDivId">
+                                            <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Por Pares</legend> 
+                                        
+                                                <div class="form-floating mb-3">
+                                                    <input  min="1" type="number"  class="form-control"  name="precio pares"id="ParesPrecio" placeholder="Precio">
+                                                    <label for="floatingInput">Precio por Par </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input  min="1" type="number"  class="form-control"  name="ganancia pares"id="ParesGanancia" placeholder="Ganancia">
+                                                    <label for="floatingInput">Ganancia por Par </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input min="1" type="number"  class="form-control"  name="ganancia pares trabajador" id="ParesGananciaTrabajador" placeholder="Ganancia por Venta">
+                                                    <label for="floatingInput">Pago a Trabajador por Par </label>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                        
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Por Unidad</legend>    
+                                            <div class="form-floating mb-3">
+                                                <input {% if replica %}value="{{replica.unit_price}}"{% endif %} min="1" type="number"  class="form-control" required name="precio unitario"id="floatingInput" placeholder="Precio">
+                                                <label for="floatingInput">Precio por Unidad </label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input {% if replica %}value="{{replica.unit_profit}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria"id="floatingInput" placeholder="Ganancia">
+                                                <label for="floatingInput">Ganancia por Unidad </label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input {% if replica %}value="{{replica.unit_profit_worker}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria trabajador" id="floatingInput" placeholder="Ganancia por Venta">
+                                                <label for="floatingInput">Pago a Trabajador por Unidad</label>
+                                            </div>
+                                        </fieldset>
+                                        
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Categoria</legend>    
+                                            <div class="form-floating mb-3">
+                                                <input value="{{category.name}}" type="text"  class="form-control" disabled>
+                                                <label for="floatingInput">Categoria </label>
+                                            </div>
+                                            
+                                        </fieldset>
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Sub Categoria</legend>    
+                                            <div class="form-floating mb-3">
+                                                <input value="{{subcategory.name}}" type="text"  class="form-control" disabled >
+                                                <input type="hidden" name="subcategoryid" value="{{subcategory.id}}">
+                                                <label for="floatingInput">Sub Categoria </label>
+                                            </div>
+                                        </fieldset>
+                                        <fieldset class="border p-2 m-1">
+                                            <legend class="float-none w-auto">Color</legend>    
+                                            <select name="SelectColor" id="ColorID" oninput="SetColor(this.options[this.selectedIndex].text,'{{subcategory.name}}')" class="form-select" aria-label="Default select example">  
+                                                <option  selected  value="NC">Sin Color</option>
+                                                {% for color in colors  %}
+                                                    <option value="{{color.id}}">{{color.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            
+                                        </fieldset>
+                                        <div class="form-floating mb-3">
+                                            <textarea  type="text" class="form-control" maxlength="100" name="descripción" id="floatingInput" placeholder="Descripción"  style="height: 100px;"></textarea >
+                                            <label for="floatingInput">Descripción</label>
+                                        </div>
+                                        
+                                        <div class="form-floating mb-3">
+                                            <div class="row m-2">
+                                                Imagen
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-9" id="ImgDiv">
+                                                    <div id="divid">
+                                                        <input onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Imagen">
+                                                    </div>
+                                                </div> 
+                                                <div class="col-3">
+                                                    <a style="display: none;" class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
+                                                </div>    
+                                            </div>
+                                            <div class="d-flex justify-content-center m-3">
+                                                <img id="imgPre" class="img-fluid" src="" alt=" ">
+                                            </div>
+                                        </div>
+                                    </div> {% endcomment %}
+                                    {% comment %} <div class="modal-body">
+                                        
+                                        <div class="h6 text-center text-muted" id="IdNombreAlmacenar"></div>
+                                        <div class="form-floating mb-3">
+                                            <input oninput="EditNombreAlmacenar('{{subcategory.name}}')" type="text" class="form-control" maxlength="25" required name="name" id="nameProduct" placeholder="Nombre">
+                                            <label for="floatingInput">Nombre</label>
+                                            <input type="hidden"  name="NombreAlmacenar" id="IdNombreAlmacenarHidden">
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <input {% if replica %}value="{{replica.purchase_price}}"{% endif %} min="1" type="number"  class="form-control"  required name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
+                                            <label for="floatingInput">Precio de Compra </label>
+                                        </div>  
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Venta</legend> 
+                                            <div class="form-check">
+                                                <input class="form-check-input" value="0" onclick="VentasParesFunction(false)" {% if not replica %}checked{% endif %} {% if replica and replica.pair == False %}checked{% endif %} type="radio" name="VentasPares">
+                                                <label class="form-check-label" for="flexRadioDefault1">
+                                                Venta por Unidad
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" value="1" onclick="VentasParesFunction(true)" {% if replica and replica.pair == True %}checked{% endif %} type="radio" name="VentasPares" >
+                                                <label class="form-check-label" for="flexRadioDefault2">
+                                                Venta Por Pares
+                                                </label>
+                                            </div>
+                                        </fieldset>
+                                        <div {% if replica and replica.pair == False %}style="display: none;"{% endif %} id="ParesDivId">
+
+                                            <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Por Pares</legend> 
+                                        
+                                                <div class="form-floating mb-3">
+                                                    <input {% if replica %}value="{{replica.pair_price}}"{% endif %} min="1" type="number"  class="form-control"  name="precio pares"id="ParesPrecio" placeholder="Precio">
+                                                    <label for="floatingInput">Precio por Par </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input {% if replica %}value="{{replica.pair_profit}}"{% endif %} min="1" type="number"  class="form-control"  name="ganancia pares"id="ParesGanancia" placeholder="Ganancia">
+                                                    <label for="floatingInput">Ganancia por Par </label>
+                                                </div>
+                                                <div class="form-floating mb-3">
+                                                    <input {% if replica %}value="{{replica.pair_profit_worker}}"{% endif %} min="1" type="number"  class="form-control"  name="ganancia pares trabajador" id="ParesGananciaTrabajador" placeholder="Ganancia por Venta">
+                                                    <label for="floatingInput">Pago a Trabajador por Par </label>
+                                                </div>
+                                            </fieldset>
+                                        </div>
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Por Unidad</legend>    
+                                            <div class="form-floating mb-3">
+                                                <input {% if replica %}value="{{replica.unit_price}}"{% endif %} min="1" type="number"  class="form-control" required name="precio unitario"id="floatingInput" placeholder="Precio">
+                                                <label for="floatingInput">Precio por Unidad </label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input {% if replica %}value="{{replica.unit_profit}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria"id="floatingInput" placeholder="Ganancia">
+                                                <label for="floatingInput">Ganancia por Unidad </label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input {% if replica %}value="{{replica.unit_profit_worker}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria trabajador" id="floatingInput" placeholder="Ganancia por Venta">
+                                                <label for="floatingInput">Pago a Trabajador por Unidad</label>
+                                            </div>
+                                        </fieldset>
+                                        
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Categoria</legend>    
+                                            <div class="form-floating mb-3">
+                                                <input value="{{category.name}}" type="text"  class="form-control" disabled>
+                                                <label for="floatingInput">Categoria </label>
+                                            </div>
+                                            
+                                        </fieldset>
+                                        <fieldset class="border p-2 m-1">
+                                            <legend  class="float-none w-auto">Sub Categoria</legend>    
+                                            <div class="form-floating mb-3">
+                                                <input value="{{subcategory.name}}" type="text"  class="form-control" disabled >
+                                                <input type="hidden" name="subcategoryid" value="{{subcategory.id}}">
+                                                <label for="floatingInput">Sub Categoria </label>
+                                            </div>
+                                        </fieldset>
+                                        <fieldset class="border p-2 m-1">
+                                            <legend class="float-none w-auto">Color</legend>    
+                                            <select name="SelectColor" id="ColorID" oninput="SetColor(this.options[this.selectedIndex].text,'{{subcategory.name}}')" class="form-select" aria-label="Default select example">  
+                                                <option  selected  value="NC">Sin Color</option>
+                                                {% for color in colors  %}
+                                                    <option value="{{color.id}}">{{color.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            
+                                        </fieldset>
+                                        <div class="form-floating mb-3">
+                                            <textarea  type="text" class="form-control" maxlength="100" name="descripción" id="floatingInput" placeholder="Descripción"  style="height: 100px;">{% if replica %}{{replica.description}}{% endif %}</textarea >
+                                            <label for="floatingInput">Descripción</label>
+                                        </div>
+                                        
+                                        <div class="form-floating mb-3">
+                                            <div class="row m-2">
+                                                Imagen
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-9" id="ImgDiv">
+                                                    <div id="divid">
+                                                        <input onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Imagen">
+                                                    </div>
+                                                </div> 
+                                                <div class="col-3">
+                                                    <a style="display: none;" class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
+                                                </div>    
+                                            </div>
+                                            <div class="d-flex justify-content-center m-3">
+                                                <img id="imgPre" class="img-fluid" src="" alt=" ">
+                                            </div>
+                                        </div>
+                                    </div> {% endcomment %}
                                     <div class="modal-footer">
                                         <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <input class="btn btn-success" type="submit" name="CrearSubCategoria" value="Crear">
+                                        <input class="btn btn-success" type="submit" name="CrearProducto" value="Crear">
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row justify-content-center my-4">
-                    <div class="col-12">
-                        <div class="card">
+            </div>
+        </div>
+            
+        
+        <div class="modal fade" id="modalCreateCategory" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalCreateCategory" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="CrearModalLabel">Nueva Sub Categoria</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" maxlength="30" required name="name" id="floatingInput" placeholder="Nombre">
+                                    <label for="floatingInput">Nombre</label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <input class="btn btn-success" type="submit" name="CrearSubCategoria" value="Crear">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% comment %} <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="row justify-content-center align-items-center">
+                    <div class="col-auto">
+                        <div class="card m-4    ">
                             <div class="card-body">
-                                <div class="row justify-content-around align-items-center">
-                                    {% for subcategory in subcategorys %}
-                                        <a class="link-dark" style=" text-decoration: none;" href="{% url 'subcategoria' category.id subcategory.id %}">                                           
-                                            
-                                            {% if forloop.counter != 1  %}
-                                                <hr>
-                                            {% endif %}
-                                            <div class="col-6">
-                                                <div class="row justify-content-center">
-                                                    <div class="col-auto">
-                                                        <div class="h3 text-center">{{subcategory.name}}</div>
-                                                    </div>
-                                                </div>
-                                                
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="row justify-content-end">
-                                                    <div class="col-auto">
-                                                        <a class="h6 text-center">Editar</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                        {% empty %}
-                                        <div class="col-12 text-center">
-                                            <div class="h3">
-                                                No Existen Sub Categorias
+                                <a class="text-dark" style="text-decoration: none;" role="button" data-bs-toggle="collapse" href="#contentSubCategory" aria-expanded="false" aria-controls="contentSubCategory">
+                                    <h1 class="display-3">Sub Categorias</h1>
+                                </a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="collapse" id="contentSubCategory">
+                    <div class="row justify-content-center">
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modalCreateCategory">
+                                Crear Sub Categoria
+                            </button>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="modal fade" id="modalCreateCategory" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalCreateCategory" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="CrearModalLabel">Nueva Sub Categoria</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="POST" action="">
+                                        {% csrf_token %}
+                                        <div class="modal-body">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" maxlength="30" required name="name" id="floatingInput" placeholder="Nombre">
+                                                <label for="floatingInput">Nombre</label>
                                             </div>
                                         </div>
+                                        <div class="modal-footer">
+                                            <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <input class="btn btn-success" type="submit" name="CrearSubCategoria" value="Crear">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center my-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row justify-content-around align-items-center">
+                                        {% for subcategory in subcategorys %}
+                                            <a class="link-dark" style=" text-decoration: none;" href="{% url 'subcategoria' category.id subcategory.id %}">                                           
+                                                
+                                                {% if forloop.counter != 1  %}
+                                                    <hr>
+                                                {% endif %}
+                                                <div class="col-6">
+                                                    <div class="row justify-content-center">
+                                                        <div class="col-auto">
+                                                            <div class="h3 text-center">{{subcategory.name}}</div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="row justify-content-end">
+                                                        <div class="col-auto">
+                                                            <a class="h6 text-center">Editar</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            {% empty %}
+                                            <div class="col-12 text-center">
+                                                <div class="h3">
+                                                    No Existen Sub Categorias
+                                                </div>
+                                            </div>
 
-                                    {% endfor %}
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                    
             </div>
-                
-        </div>
-        
-    </div> {% endcomment %}
-</div>
-    
-    {% for product in products %}
-        {{product.id}}
-        {{product.name}}
-    {% endfor %}
+            
+        </div> {% endcomment %}
+    </div> 
+    {% include 'BaseProducts.html' %}
+{% else %}
+    <meta http-equiv="Refresh" content="0; url='{% url 'home' %}'" />
+{% endif %}
 
 {% endblock  %}
 {% block script_js %}
+    <script type="text/javascript" src="{% static 'js/create_product.js' %}" ></script>
     <script type="text/javascript" src="{% static 'js/base_prev_img.js' %}" ></script>
 {% endblock  %}

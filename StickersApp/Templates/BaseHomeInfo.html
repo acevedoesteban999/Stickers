@@ -66,7 +66,7 @@
                 <tbody>
                   {% for product in context.products.values %}
                     <tr class="">
-                      <td scope="row">{{product.i_d}}</td>
+                      <td scope="row">{{product.id}}</td>
                       <td>{{product.name}}</td>
                       <td>{{product.lot}}  </td>
                       <td>{{product.money}}$ </td>
@@ -113,7 +113,7 @@
                       </form>
                       <td>
                       <a style="text-decoration:none" class="text-dark border border-2 px-2 py-1 h6 "  href="{% url 'producto' operation.product.id %}">
-                        {{operation.product.i_d}}
+                        {{operation.product.id}}
                       </a>
                       </td>
                     </tr>

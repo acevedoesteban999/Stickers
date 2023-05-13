@@ -17,7 +17,6 @@ function LoadTodayInfo(addr)
         document.getElementById("IdDivTodayReadyInfo").setAttribute("class","d-block")
     })
     .catch(error => {
-        //alert(error)
         console.log("Error:",error);
     });
 }

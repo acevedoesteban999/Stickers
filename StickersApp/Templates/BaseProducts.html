@@ -1,0 +1,48 @@
+{% if products %}   
+    <div class="continer pt-4 m-2">
+        <div class="row cols-auto justify-content-center h-100 "> 
+        {% for product in products %}
+            <div class="col-5 col-sm-4 col-md-3 col-lg-2 my-3">
+                <a class="link-light h4 card-title" style=" text-decoration: none;" href="{% url 'producto' product.id %}">
+                    <div class="card h-100 ">
+                        <div class="row align-items-end justify-content-center text-center h-100">
+                            <div class="col-12 align-self-start">
+                                <img src="{{product.image.url}}" class="p-3 img-fluid img-thumbnail border border-0" alt="...">
+                            </div>
+                            <div class="col-12 ">
+                            <div class="row justify-content-center">
+                                <div class="col-auto">
+                                <div class="text-dark card-title text-center px-2">
+                                    <span class="w-100 h5">
+                                        {{product.name}}
+                                    </span>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="col-12 ">
+                            <div class="row justify-content-center  ">
+                                <div class="col-auto border-top border-dark py-2">
+                                
+                                    {% if product.pair %}
+                                    <div class="h5 m-1 text-dark ">
+                                    {{product.pair_price}}$
+                                    </div>
+                                {% else %}
+                                    <div class="h5 m-1 text-dark ">
+                                    {{product.unit_price}}$
+                                    </div>
+                                {% endif %} 
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}    
+        </div>
+    </div>
+  {% else %}
+    <div class="text-bg-dark p-5 m-5  d-flex justify-content-center"><h2>No hay productos para mostrar<h2></div>
+  {% endif %}

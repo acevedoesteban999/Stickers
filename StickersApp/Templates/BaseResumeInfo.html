@@ -147,7 +147,7 @@
                                 {% for product in worker_dict.products.values %}
                                     <tr class="table-success">
                                         <td scope="row"></td>
-                                        <td>{{product.i_d}}</td>
+                                        <td>{{product.name}}</td>
                                         <td>{{product.lot}}</td>
                                         <td>{{product.profit_worker}}$</td>
                                         <td>{{product.profit}}$</td>
@@ -208,7 +208,7 @@
                                 {% for product in context.products.values %}
                                     <tr class="table-success">
                                         <td scope="row">{{product.name}}</td>
-                                        <td>{{product.i_d}}</td>
+                                        <td>{{product.name}}</td>
                                         <td>{{product.lot}}</td>
                                         <td>{{product.profit_worker}}$</td>
                                         <td>{{product.profit}}$</td>
