@@ -110,7 +110,8 @@
                                                 </label>
                                             </div>
                                         </fieldset>
-                                        <div {% if replica and replica.pair == False %}style="display: none;"{% endif %} id="ParesDivId">
+                                        {{replica.pair}}
+                                        <div {% if not replica or replica.pair == False %}style="display: none;"{% endif %} id="ParesDivId">
 
                                             <fieldset class="border p-2 m-1">
                                             <legend  class="float-none w-auto">Por Pares</legend> 

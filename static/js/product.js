@@ -1,4 +1,4 @@
-function SubmitRelica()
+function SubmitReplica()
 {
     document.getElementById("IDFormREplica").submit()
 }
