@@ -65,26 +65,35 @@
               </div>
             </div>  
           {% endif %}
-          
-          
-          
-          
-          <!-- Optional: Place to the bottom of scripts -->
-          <script>
-            const myModal = new bootstrap.Modal(document.getElementById('modalId'), options)
-          
-          </script>
-          <script>
-            var alertList = document.querySelectorAll('.alert');
-            alertList.forEach(function (alert) {
-              new bootstrap.Alert(alert)
-            })
-          </script>
         </div>
       </div>
     </div>
   {% endif %}
-
+  {% if not user.is_authenticated %}
+    <div class="container">
+      <div class="d-flex justify-content-center">
+        <div class="p-3 px-5 m-3 alert alert-warning alert-dismissible fade show m-2 p-2 text-center" role="alert">
+          <div class="h5">
+            <strong>
+              Inicio de Sesión
+            </strong>
+        </div>
+        <div class="h6">
+          No se ha iniciado sesión 
+          <br>
+          <span style="border-radius: 60px;" class="btn btn-success px-3 my-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+            <svg  width="25" height="25" fill="currentColor" class="h6 d-block mx-auto bi bi-person-circle" viewBox="0 0 16 16">
+              <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+              <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+            </svg>
+              Ingresar
+          </span>
+        </div> 
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      </div> 
+    </div>
+  {% endif %}
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-auto col-md-4 m-3 p-2">
@@ -92,10 +101,9 @@
       </div>
     </div>
   </div>
-
-  {% comment %} {% if not user.is_authenticated %}
+  {% if not user.is_authenticated %}
     <div class="container">
-      <div class="d-flex justify-content-center">
+      {% comment %} <div class="d-flex justify-content-center">
         <div class="p-3 px-5 m-3 alert alert-warning alert-dismissible fade show m-2 p-2 text-center" role="alert">
           <div class="h5">
             <strong>
@@ -116,13 +124,13 @@
         </div> 
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-      </div>     
+      </div>      {% endcomment %}
 
       <div class="row justify-content-center">
         <a type="button" href="{% url 'tienda' %}"  style="border-radius: 20px;" class="px-5 m-5 btn btn-primary w-auto"><span class="h1"> Ir a la Tienda </span></a>
       </div>  
     </div>   
-  {% else %}{% endcomment %}
+  {% endif %}
   {% if user.is_authenticated %}
     <div class="container">
         <div class="row justify-content-end align-items-center text-center">
