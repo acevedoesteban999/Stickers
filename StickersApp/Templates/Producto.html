@@ -21,19 +21,20 @@
 
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
                                             <li>
-                                            <a class="dropdown-item" href="" onclick="SubmitReplica()" data-bs-toggle="modal" data-bs-target="#modalId">Crear Replica del Producto</a>
+                                            {% comment %} <a class="dropdown-item" href="" onclick="SubmitReplica()" data-bs-toggle="modal" data-bs-target="#modalId">Crear Replica del Producto</a> {% endcomment %}
+                                            <a class="dropdown-item" onclick="SubmitReplica()">Crear Replica del Producto</a>
                                             
                                             </li>
-                                            {% comment %} <form action="" method="post" id="IDFormREplica">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="ReplicaProduct">
-                                            </form> {% endcomment %}
                                         </ul>
                                         </div>
                                     </div>
 
                                 </div>
                             </div>
+                            <form action="" method="post" id="IDFormREplica">
+                                {% csrf_token %}
+                                <input type="hidden" name="ReplicaProduct">
+                            </form>
                         {% endif %}
                         <div class="row justify-content-center">
                             <div class="col-8 col-md-6">
@@ -720,7 +721,7 @@
                 {% endif %}
                 {% comment %} ========================== REPLICA =================== {% endcomment %}
                 {% if user.is_admin %}
-                <div class="modal fade" id="modalId" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+                {% comment %} <div class="modal fade" id="modalId" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -746,7 +747,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> {% endcomment %}
                 {% endif %}
                 {% comment %} =================  CONFIRM  ==================== {% endcomment %}   
                 {% if not product.confirm and user.is_worker%}
