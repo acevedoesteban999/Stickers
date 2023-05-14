@@ -904,7 +904,7 @@ def ProductoView(request,productoID):
         messages.error(request,"Error, producto inexistente")
     except Exception as e:
         print(e)
-        messages.error(request,"Error, Algo ha salido mal")  
+        messages.error(request,"Error, Algo ha salido mal:{}".format(e))  
     return redirect('administracion')        
 
 def OperacionesView(request):
