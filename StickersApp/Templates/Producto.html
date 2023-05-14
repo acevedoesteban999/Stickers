@@ -196,6 +196,12 @@
                                                     <div class="col-6 text-end">
                                                         <div class="h5">{{product.sub_category.name}}</div>
                                                     </div>
+                                                    <div class="col-6 text-start">
+                                                        <div class="h5">Precio de Compra:</div>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <div class="h5">{{product.purchase_price}}$</div>
+                                                    </div>
                                                     
                                                 </div>
                                                 <hr>
@@ -432,6 +438,10 @@
                                             <input required type="text" maxlength="30" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{product.name}}">
                                             <label for="floatingInput">Nombre</label>
                                         </div>
+                                        <div class="form-floating mb-3">
+                                            <input required value="{{product.purchase_price}}" min="1" type="number"  class="form-control"  name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
+                                            <label for="floatingInput">Precio de Compra </label>
+                                        </div>  
                                         {% comment %} <div class="form-floating mb-3">
                                             <input required type="text" maxlength="4" class="form-control" name="id" id="floatingInput" placeholder="Id" value="{{product.id}}">
                                             <label for="floatingInput">Id</label>

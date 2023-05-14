@@ -13,7 +13,9 @@ function EditNombreAlmacenar(subcategory_name)
     var color_="";
     if (color != null)
         color_=color
-    var total_name =name+" "+subcategory_name+" "+color_;
+    var total_name =name+" "+subcategory_name
+    if (color_) 
+        total_name+=" "+color_
     document.getElementById("IdNombreAlmacenar").innerHTML=total_name;
     document.getElementById("IdNombreAlmacenarHidden").value=total_name;
 }

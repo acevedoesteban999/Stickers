@@ -29,19 +29,19 @@ class SummaryDate(models.Model):
 
 
 class Category(models.Model):
-    name=models.CharField(max_length=30)
+    name=models.CharField(max_length=30,unique=True)
     image=models.ImageField(blank=True,null=True,upload_to='categorias',default="no_imagen.jpg", height_field=None, width_field=None, max_length=None)
     def __str__(self) -> str:
         return self.name
 
 class SubCategory(models.Model):
-    name=models.CharField(max_length=30)
+    name=models.CharField(max_length=30,unique=True)
     category=models.ForeignKey(Category, on_delete=models.DO_NOTHING)
     def __str__(self) -> str:
         return self.name
 
 class SubCategoryColor(models.Model):
-    name=models.CharField(max_length=30)
+    name=models.CharField(max_length=30,unique=True)
     def __str__(self) -> str:
         return self.name
 
@@ -86,6 +86,7 @@ MChoise = [
     ("eC","Editado de Categoría"),
     ("eP","Editado de Producto"),
     ("eS","Editado de SubCategoría"),
+    ("eT","Editado toda SubCategoría"),
     ('eU','Editado de Usuario'),
     ('SP','Quitado de Productos'),
     ("rP","Reembolso de Productos"),
@@ -285,11 +286,15 @@ class Movement(models.Model):
             return "E0"
         return False
     @classmethod
-    def Edit(cls,user,product,name,pair_price,pair_profit,pair_profit_worker,unit_price,unit_profit,unit_profit_worker,description,image):  
+    def Edit(cls,user,product,name,purchase_price,pair_price,pair_profit,pair_profit_worker,unit_price,unit_profit,unit_profit_worker,description,image):  
         str_info=""
         if product.name!=name:
             str_info+="Nombre: {} editado a {}<br>".format(product.name,name)
             product.name=name
+        if product.purchase_price!=purchase_price:
+            str_info+="Precio de Compra: {} editado a {}<br>".format(product.purchase_price,purchase_price)
+            product.purchase_price=purchase_price
+        
         if product.pair:
             if pair_price>0  and pair_profit_worker>0 and pair_profit>0:
                 if product.pair_price != pair_price:
@@ -360,6 +365,47 @@ class Movement(models.Model):
                 return True
             except:
                 return "E0"
+    @classmethod
+    def edit_price_products(cls,products,purchase_price,user,unit_price,pair_profit,unit_profit,unit_profit_worker,pair_price,pair_profit_worker):
+        str_info=""
+        if purchase_price:
+            str_info+="Precio de Compra editado a {}<br>".format(purchase_price)
+        if unit_price:
+            str_info+="Precio por Unidad a {}<br>".format(unit_price)
+        if unit_profit:
+            str_info+="Ganancia por Unidad editado a {}<br>".format(unit_profit)
+        if unit_profit_worker:
+            str_info+="Pago al Trabajador por Unidad editado a {}<br>".format(unit_profit_worker)
+        if pair_price:
+            str_info+="Precio por Par editado a {}<br>".format(pair_price)
+        if pair_profit:
+            str_info+="Ganancia por Par editado a {}<br>".format(pair_profit)
+        if pair_profit_worker:
+            str_info+="Pago al Trabajador por Par editado a {}<br>".format(pair_profit_worker)
+        movement=cls(type="eT",user=user,extra_info_str=str_info)
+        try:
+            for product in products:
+                if purchase_price:
+                    product.purchase_price=purchase_price
+                if unit_price:
+                    product.unit_price=unit_price
+                if unit_profit:
+                    product.unit_profit=unit_profit
+                if unit_profit_worker:
+                    product.unit_profit_worker=unit_profit_worker
+                if product.pair:
+                    if pair_price:
+                        product.pair_price=pair_price
+                    if pair_profit:
+                        product.pair_profit=pair_profit
+                    if pair_profit_worker:
+                        product.pair_profit_worker=pair_profit_worker
+                product.save()
+            movement.save()
+            return True
+        except Exception as e:
+            print(e)
+            return "E0"
     @classmethod
     def Add(cls,user,product,lot,lot_1,pair_action,note):
         if product and lot>0  :

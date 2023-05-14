@@ -307,7 +307,7 @@ def BasePost(request):
                     try:
                         if search_value:
                             q=Q(removed=False) & (Q(name__contains=search_value) | Q(id__contains=search_value))
-                            products=Product.objects.filter(q)[:5]
+                            products=Product.objects.exclude(removed=True).filter(q)[:5]
                             if products:
                                 return render(None,"BaseSearchProducts.html",{"products": products})
                     except Exception as e:
@@ -494,8 +494,7 @@ def HomeView(request):
         context={}
         
         if request.user.is_authenticated and (request.user.is_worker or request.user.is_admin):
-            products=Product.objects.filter(confirm=False)
-            print(products)
+            products=Product.objects.exclude(removed=True).filter(confirm=False)
             context.update({"confirms":{"products":products},"confirms_count":products.count()})
         return render(request,"Home.html",context)
     
@@ -565,7 +564,9 @@ def AdminView(request):
                     image=files.cleaned_data.get("imagen")
                     if Movement.create_category(name=name,image=image,user=user):
                         messages.success(request,"Se ha creado  la categoría {} correctamente".format(name))
-                        return render(request,"Administracion.html",{"context":{"OkCC":True},"categorys":categorys})
+                        #return render(request,"Administracion.html",{"context":{"OkCC":True},"categorys":categorys})
+                        category=Category.objects.get(name=name)
+                        return redirect('categoria',category.id)
                     else:
                         messages.error(request,"No se ha podido  crear, ya existe una categoría de nombre {}".format(name))
                         return render(request,"Administracion.html",{"categorys":categorys})
@@ -595,6 +596,8 @@ def CategoriaView(request,categoryID):
                 name=post_form.get("name").__str__().capitalize()
                 if Movement.create_sub_category(name=name,category=category,user=user):
                     messages.success(request,"Se ha creado  la sub categoría {} correctamente".format(name))
+                    subcategory=SubCategory.objects.get(name=name)
+                    return redirect("subcategoria",category.id,subcategory.id)
                 else:
                     messages.error(request,"No se ha podido crear, ya existe una sub categoría de nombre {}".format(name))
             elif "EditCategory" in request.POST:
@@ -610,7 +613,7 @@ def CategoriaView(request,categoryID):
                     messages.error(request,"No se ha podido editar, ya existe una categoría de nombre {}".format(name))
 
         
-        products=Product.objects.filter(sub_category__category__id=categoryID).values("name","id")
+        products=Product.objects.exclude(removed=True).filter(sub_category__category__id=categoryID).values("name","id")
         subcategorys=SubCategory.objects.filter(category__id=categoryID)
         return render(request,"Categoria.html",{"category":category,"products":products,"subcategorys":subcategorys})
     except ObjectDoesNotExist:
@@ -633,13 +636,57 @@ def SubCategoriaView(request,categoryID,subcategoryID):
         if replica_id != False:
             replica_id_context=replica_id
             replica_id=False
-            product=Product.objects.get(id=replica_id_context)
+            product=Product.objects.exclude(removed=True).get(id=replica_id_context)
             replica=product 
         if request.method=="POST":
             if "CrearProducto" in request.POST:
-                cp=create_product(request)
-                if  cp != False:
-                    return cp
+                # cp=create_product(request)
+                # if  cp != False:
+                #     return cp
+                crear_form=request.POST.dict()
+                files=FormImg(request.POST,request.FILES)
+                files.is_valid()
+                image=files.cleaned_data.get("imagen")
+                #name=crear_form.get("name").__str__().capitalize()
+                name=crear_form.get("NombreAlmacenar").__str__().capitalize()
+                pair=crear_form.get("VentasPares")
+                if pair == "1":
+                    pair=True
+                else:
+                    pair=False
+                
+                unit_price=int(crear_form.get("precio unitario") )
+                unit_profit=int(crear_form.get("ganancia unitaria") )
+                unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
+                pair_price=0
+                pair_profit=0
+                pair_profit_worker=0
+                if pair == True:
+                    pair_price=int(crear_form.get("precio pares"))
+                    pair_profit=int(crear_form.get("ganancia pares") )
+                    pair_profit_worker=int(crear_form.get("ganancia pares trabajador")) 
+                
+                color_id=crear_form.get("SelectColor")
+                if color_id and color_id!="NC":
+                    color=SubCategoryColor.objects.get(id=color_id)
+                else:
+                    color=None
+                description=crear_form.get("descripción")
+                purchase_price=int(crear_form.get("precio compra"))
+                subcategoryID=int(crear_form.get("subcategoryid"))
+                subcategory=SubCategory.objects.get(id=subcategoryID)
+                user=request.user
+                result=Movement.Create_Product(purchase_price=purchase_price,color=color,subcategory=subcategory,user=user,name=name,pair=pair,unit_price=unit_price,pair_profit=pair_profit,unit_profit=unit_profit,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker,description=description,image=image)
+                if result==True:
+                    #crear_form=FormProduc()
+                    product=Product.objects.exclude(removed=True).get(name=name)
+                    messages.success(request,"Se ha creado  el objeto {} correctamente".format(name))
+                    return redirect('producto',product.id)
+                elif result=="E0":
+                    messages.error(request,"No se ha podido  crear, ya existe un objeto de nombre {}".format(name))
+                else:
+                    messages.error(request,"No se ha podido  crear,ha ocurrido un error  insesperado")
+                
             elif "EditSubCategory" in request.POST:
                 post_form=request.POST.dict()
                 name=post_form.get("name").__str__().capitalize()
@@ -648,13 +695,35 @@ def SubCategoriaView(request,categoryID,subcategoryID):
                     messages.success(request,"Se ha editado  la subcategoría {} correctamente".format(name))
                 else:
                     messages.error(request,"No se ha podido editar, ya existe una subcategoría de nombre {}".format(name))
-        
+            
+            elif "EditarPreciosProductos" in request.POST:
+                post_form=request.POST.dict()
+                unit_price=post_form.get("precio unitario") 
+                unit_profit=post_form.get("ganancia unitaria") 
+                unit_profit_worker=post_form.get("ganancia unitaria trabajador") 
+                pair_price=post_form.get("precio pares")
+                pair_profit=post_form.get("ganancia pares") 
+                pair_profit_worker=post_form.get("ganancia pares trabajador")
+                purchase_price=post_form.get("precio compra")
+                user=request.user
+                products=Product.objects.exclude(removed=True).filter(sub_category=subcategory)
+                result=Movement.edit_price_products(products=products,purchase_price=purchase_price,user=user,unit_price=unit_price,pair_profit=pair_profit,unit_profit=unit_profit,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker)
+                if result==True:
+                    #product=Product.objects.exclude(removed=True).get(name=name)
+                    messages.success(request,"Se han editado todos los objectos de la sub categoría {} correctamente".format(subcategory.name))
+                    return redirect('subcategoria',category.id,subcategory.id)
+                elif result=="E0":
+                    messages.error(request,"No se ha podido editar")
+                else:
+                    messages.error(request,"No se ha podido  crear,ha ocurrido un error  insesperado")
+                
         colors=SubCategoryColor.objects.all()
-        products=Product.objects.filter(sub_category__id=subcategoryID)
+        products=Product.objects.exclude(removed=True).filter(sub_category__id=subcategoryID)
         return render(request,"SubCategoria.html",{"replica":replica,"colors":colors,"category":category,"subcategory":subcategory,"products":products})
     except ObjectDoesNotExist:
         messages.error(request,"Error, categoría o subcategoría inexistente")
     except Exception as e:
+        print(e)
         messages.error(request,"Error, Algo ha salido mal")
     return redirect('home')
         
@@ -704,6 +773,7 @@ def ProductoView(request,productoID):
                         name=edit_product.get("name")
                         id=edit_product.get("id")
                         pair_price=None
+                        pair_profit=None
                         pair_profit_worker=None
                         if product.pair:
                             pair_price=int(edit_product.get("precio pares"))
@@ -713,10 +783,11 @@ def ProductoView(request,productoID):
                         unit_profit=int(edit_product.get("ganancia unitario"))
                         unit_profit_worker=int(edit_product.get("ganancia unitario trabajador"))
                         description=edit_product.get("descripción")
+                        purchase_price=int(edit_product.get("precio compra"))
                         image=files.cleaned_data.get("imagen")
                         result=Movement.Edit(user=user,product=product,
                                             name=name,
-                                            id=id,
+                                            purchase_price=purchase_price,
                                             pair_price=pair_price,
                                             pair_profit=pair_profit,
                                             pair_profit_worker=pair_profit_worker,
@@ -785,10 +856,10 @@ def ProductoView(request,productoID):
                                     if movements_confirm.count()==0:
                                         movement_to_confirm.product.confirm=True
                                         movement_to_confirm.product.save()
-                                        product=Product.objects.get(id=product.id)
+                                        product=Product.objects.exclude(removed=True).get(id=product.id)
                                         return SuccessProduct("Se han confirmado y agregado {} {} {} {} correctamente".format(movement_to_confirm.lot," Pares" if movement_to_confirm.extra_info_int==1 or movement_to_confirm.extra_info_int==2 else "Unidades",("+ " + movement_to_confirm.extra_info_int_1.__str__()+" Unidades") if movement_to_confirm.extra_info_int==2 else "","de "+ movement_to_confirm.product.name))
                                     else:
-                                        product=Product.objects.get(id=product.id)
+                                        product=Product.objects.exclude(removed=True).get(id=product.id)
                                         return WarningProduct(no_redirect=True,text="Se han confirmado y agregado {} {} {} {} correctamente, pero aún quedan confirmaciones".format(movement_to_confirm.lot," Pares" if movement_to_confirm.extra_info_int==1 or movement_to_confirm.extra_info_int==2 else "Unidades","+ " + movement_to_confirm.extra_info_int_1.__str__()+" Unidades" if movement_to_confirm.extra_info_int==2 else "","de "+ movement_to_confirm.product.name))
                                         
                         return ErrorProduct("No se ha podido confirmar")
