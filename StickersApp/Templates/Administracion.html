@@ -10,7 +10,7 @@
                             <div class="card m-4    ">
                                 <div class="card-body">
                                     <a class="text-dark collapsed" style="text-decoration: none;" role="button" data-bs-toggle="collapse" href="#contentCategory" aria-expanded="true" aria-controls="contentCategory">
-                                        <h1 class="display-2">Categorias</h1>
+                                        <h1 class="display-2">Categorías</h1>
                                     </a>
                                 </div>
                             </div>
@@ -22,7 +22,7 @@
                         <div class="row justify-content-center">
                             <div class="col-auto">
                                 <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#modalCreateCategory">
-                                    Crear Categoria
+                                    Crear Categoría
                                   </button>
                             </div>
                         </div>
@@ -32,7 +32,7 @@
                             <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="CrearModalLabel">Nueva Categoria</h1>
+                                        <h1 class="modal-title fs-5" id="CrearModalLabel">Nueva Categoría</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
@@ -71,7 +71,7 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                <input class="btn btn-success" type="submit" name="CrearCategoria" value="Crear">
+                                                <input class="btn btn-success" type="submit" name="CrearCategoría" value="Crear">
                                             </div>
                                         </form>
                                     </div>
@@ -90,7 +90,7 @@
                                         
                                                         <div class="row justify-content-center">
                                                             <div class="col-12">
-                                                                <img src="{{category.image.url}}" class="img-fluid img-thumbnail" alt="Imagen Categoria">
+                                                                <img src="{{category.image.url}}" class="img-fluid img-thumbnail" alt="Imagen Categoría">
                                                             </div>
                                                             <div class="col-12">
                                                                 <div class="h3 text-center">{{category.name}}</div>
@@ -101,7 +101,7 @@
                                             {% empty %}
                                                 <div class="col-12">
                                                     <div class="h3">
-                                                        No Existen Categorias
+                                                        No Existen Categorías
                                                     </div>
                                                 </div>
                                             {% endfor %}
@@ -117,7 +117,7 @@
                                         <div class="card-body">
                                             <div class="row justify-content-center">
                                                 <div class="col-12">
-                                                    <img src="{{category.image.url}}" class="img-fluid img-thumbnail" alt="Imagen Categoria">
+                                                    <img src="{{category.image.url}}" class="img-fluid img-thumbnail" alt="Imagen Categoría">
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="h3 text-center">{{category.name}}</div>
@@ -160,7 +160,7 @@
                             <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="CrearModalLabel">Nueva SubCategoria</h1>
+                                        <h1 class="modal-title fs-5" id="CrearModalLabel">Nueva SubCategoría</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">

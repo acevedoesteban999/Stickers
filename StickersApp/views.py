@@ -488,30 +488,16 @@ def HomeView(request):
     try:
         if request.method=="GET":
             if "QR" in request.GET:
-                #visits=Visits.objects.update(F("total_visits") + 1)
                 visits=Visits.objects.first()
                 visits.total_visits+=1
                 visits.save()
         context={}
-        if request.user.is_authenticated and (request.user.is_admin or request.user.is_worker):
-            pass
-            #context.update({"context_today":Summary(products_bool=True,operations_bool=True,movements=Movement.objects.filter(type="VP",date__day=date.today().day))})
-            #context.update({'context_today':{"today":date.today().strftime("%d-%m-%y")}})
-                 
-            # summary_date=SummaryDate.objects.first()
-            # if not summary_date:
-            #     raise  Exception()
-            
-            # if summary_date.active:       
-            #     context.update({"context_this_week":Summary(Movement.objects.filter(Q(type="VP")|Q(type="rP"),date__range=( date.today()-timedelta(days=date.today().weekday() ), date.today()+timedelta(days=1) )))})
-            #     if context['context_this_week']:
-            #         context['context_this_week'].update({"this_week":ceil((date.today()-summary_date.start_date).days/7) })
-            #         context['context_this_week'].update({"total_weeks":ceil((summary_date.end_date-summary_date.start_date).days/7) })
-            #     context.update({"context_this_month":Summary(Movement.objects.filter(Q(type="VP")|Q(type="rP"),date__range=( summary_date.start_date, date.today()+timedelta(days=1) )))})
-            #     if context['context_this_month']:
-            #         context['context_this_month'].update({"start_date":summary_date.start_date.strftime("%d-%m-%y"),"end_date":summary_date.end_date.strftime("%d-%m-%y")})
-                
-        return render(request,"Home.html",{"context":context})
+        
+        if request.user.is_authenticated and (request.user.is_worker or request.user.is_admin):
+            products=Product.objects.filter(confirm=False)
+            print(products)
+            context.update({"confirms":{"products":products},"confirms_count":products.count()})
+        return render(request,"Home.html",context)
     
     except KeyError as e:
         pass
@@ -571,17 +557,17 @@ def AdminView(request):
             categorys=Category.objects.all()
             colors=SubCategoryColor.objects.all()
             if request.method == "POST":
-                if "CrearCategoria" in request.POST:
+                if "CrearCategoría" in request.POST:
                     crear_form=request.POST.dict()
                     files=FormImg(request.POST,request.FILES)
                     files.is_valid()
                     name=crear_form.get("name").__str__().capitalize()
                     image=files.cleaned_data.get("imagen")
                     if Movement.create_category(name=name,image=image,user=user):
-                        messages.success(request,"Se ha creado  la categoria {} correctamente".format(name))
+                        messages.success(request,"Se ha creado  la categoría {} correctamente".format(name))
                         return render(request,"Administracion.html",{"context":{"OkCC":True},"categorys":categorys})
                     else:
-                        messages.error(request,"No se ha podido  crear, ya existe una categoria de nombre {}".format(name))
+                        messages.error(request,"No se ha podido  crear, ya existe una categoría de nombre {}".format(name))
                         return render(request,"Administracion.html",{"categorys":categorys})
                 elif "CrearColor" in request.POST:
                     crear_form=request.POST.dict()
@@ -604,13 +590,13 @@ def CategoriaView(request,categoryID):
         user=request.user
         category=Category.objects.get(id=categoryID)
         if request.method=="POST":
-            if "CrearSubCategoria" in request.POST:
+            if "CrearSubCategoría" in request.POST:
                 post_form=request.POST.dict()
                 name=post_form.get("name").__str__().capitalize()
                 if Movement.create_sub_category(name=name,category=category,user=user):
-                    messages.success(request,"Se ha creado  la sub categoria {} correctamente".format(name))
+                    messages.success(request,"Se ha creado  la sub categoría {} correctamente".format(name))
                 else:
-                    messages.error(request,"No se ha podido crear, ya existe una sub categoria de nombre {}".format(name))
+                    messages.error(request,"No se ha podido crear, ya existe una sub categoría de nombre {}".format(name))
             elif "EditCategory" in request.POST:
                 post_form=request.POST.dict()
                 files=FormImg(request.POST,request.FILES)
@@ -619,16 +605,16 @@ def CategoriaView(request,categoryID):
                 image=files.cleaned_data.get("imagen")
                         
                 if Movement.edit_category(name=name,image=image,category=category,user=user):
-                    messages.success(request,"Se ha editado  la categoria {} correctamente".format(name))
+                    messages.success(request,"Se ha editado  la categoría {} correctamente".format(name))
                 else:
-                    messages.error(request,"No se ha podido editar, ya existe una categoria de nombre {}".format(name))
+                    messages.error(request,"No se ha podido editar, ya existe una categoría de nombre {}".format(name))
 
         
         products=Product.objects.filter(sub_category__category__id=categoryID).values("name","id")
         subcategorys=SubCategory.objects.filter(category__id=categoryID)
         return render(request,"Categoria.html",{"category":category,"products":products,"subcategorys":subcategorys})
     except ObjectDoesNotExist:
-        messages.error(request,"Error, categoria inexistente")
+        messages.error(request,"Error, categoría inexistente")
     except Exception as e:
         messages.error(request,"Error, Algo ha salido mal")  
     return redirect('home')
@@ -640,7 +626,7 @@ def SubCategoriaView(request,categoryID,subcategoryID):
         category=Category.objects.get(id=categoryID)
         subcategory=SubCategory.objects.get(id=subcategoryID)
         # if category!=subcategory.category:
-        #     messages.error(request,"Error, categoria y subcategoria desiguales")
+        #     messages.error(request,"Error, categoría y subcategoría desiguales")
         #     return redirect('home')
         global replica_id
         replica=None
@@ -659,20 +645,19 @@ def SubCategoriaView(request,categoryID,subcategoryID):
                 name=post_form.get("name").__str__().capitalize()
                         
                 if Movement.edit_sub_category(name=name,subcategory=subcategory,user=user):
-                    messages.success(request,"Se ha editado  la subcategoria {} correctamente".format(name))
+                    messages.success(request,"Se ha editado  la subcategoría {} correctamente".format(name))
                 else:
-                    messages.error(request,"No se ha podido editar, ya existe una subcategoria de nombre {}".format(name))
+                    messages.error(request,"No se ha podido editar, ya existe una subcategoría de nombre {}".format(name))
         
         colors=SubCategoryColor.objects.all()
         products=Product.objects.filter(sub_category__id=subcategoryID)
         return render(request,"SubCategoria.html",{"replica":replica,"colors":colors,"category":category,"subcategory":subcategory,"products":products})
     except ObjectDoesNotExist:
-        messages.error(request,"Error, categoria o subcategoria inexistente")
+        messages.error(request,"Error, categoría o subcategoría inexistente")
     except Exception as e:
         messages.error(request,"Error, Algo ha salido mal")
     return redirect('home')
         
-    
 def ProductoView(request,productoID):
     try:
         product=Product.objects.exclude(removed=True).get(id=productoID)
@@ -970,5 +955,5 @@ def UserView(request,usuarioID):
     return redirect("home")
 
 def QR(request):
-    home_qr_url=request.build_absolute_uri(reverse('home'))
+    home_qr_url=request.build_absolute_uri(reverse('home'))+"?QR"
     return render(request,"QR.html",{"home_qr_url":home_qr_url})
