@@ -4,7 +4,7 @@
 #echo ""
 #cd ../opt/python/django/Stickers
 #./update.sh
-
+set -e
 echo ""
 echo "========== Accediendo a la Carpeta de Stickers =========="
 echo ""
