@@ -1,10 +1,14 @@
 #!At root/update.sh
-    #set -e
-    #echo ""
-    #echo "========== Iniciando Proceso de Actualización =========="
-    #echo ""
-    #../opt/python/django/Stickers/update.sh
+#set -e
+#echo ""
+#echo "========== Iniciando Proceso de Actualización =========="
+#echo ""
+#../opt/python/django/Stickers/update.sh
 set -e
+echo ""
+echo "============= Accediendo a la Carpeta de Stickers ============="
+echo ""
+cd ../opt/python/django/Stickers
 echo ""
 echo "============= Accediendo al Entorno Virtual ============="
 echo ""
