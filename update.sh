@@ -18,6 +18,10 @@ echo "========== Actualizando remotamente de Github.com/Esteban1914/Stickers/ ==
 echo ""
 git pull origin master
 echo ""
+echo "========== Dando Permisos =========="
+echo ""
+chmod 777 update.sh
+echo ""
 echo "========== Haciendo Migraciones en la Base de Datos =========="
 echo ""
 python manage.py makemigrations
