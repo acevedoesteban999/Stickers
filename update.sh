@@ -24,6 +24,7 @@ chmod 777 update.sh
 echo ""
 echo "============= Permisos Asignados ============="
 echo ""
+echo ""
 echo "============= Haciendo Migraciones en la Base de Datos ============="
 echo ""
 python manage.py makemigrations
