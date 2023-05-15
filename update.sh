@@ -19,8 +19,8 @@ echo ""
 git pull origin master
 echo ""
 echo "========== Dando Permisos =========="
-echo ""
 chmod 777 update.sh
+echo "========== Permisos Asignados =========="
 echo ""
 echo "========== Haciendo Migraciones en la Base de Datos =========="
 echo ""
