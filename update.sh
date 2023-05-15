@@ -6,10 +6,6 @@
     #../opt/python/django/Stickers/update.sh
 set -e
 echo ""
-echo "============= Accediendo a la Carpeta de Stickers ============="
-echo ""
-cd ../opt/python/django/Stickers
-echo ""
 echo "============= Accediendo al Entorno Virtual ============="
 echo ""
 source .venv/bin/activate
