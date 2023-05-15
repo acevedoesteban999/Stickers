@@ -1,4 +1,4 @@
-#!At root/update.sh
+#At root/update.sh
 #set -e
 #echo ""
 #echo "========== Iniciando Proceso de Actualización =========="
