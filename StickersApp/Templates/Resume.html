@@ -240,7 +240,7 @@
       </div>
     </div>
   </div>
-  {% if context.context_global.SumaryDate == True %}
+  {% if user.is_admin and  context.context_global.SumaryDate == True %}
     <div class="container">
       <div class="row justify-content-end">
         <div class="col-auto my-4">
