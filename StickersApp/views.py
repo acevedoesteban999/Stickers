@@ -786,8 +786,12 @@ def ProductoView(request,productoID):
                         unit_profit_worker=int(edit_product.get("ganancia unitario trabajador"))
                         description=edit_product.get("descripción")
                         purchase_price=int(edit_product.get("precio compra"))
+                        color_id=edit_product.get("SelectColor")
+                        color=None
+                        if color_id and color_id!="NC":
+                            color=SubCategoryColor.objects.get(id=color_id)
                         image=files.cleaned_data.get("imagen")
-                        result=Movement.Edit(user=user,product=product,
+                        result=Movement.Edit(user=user,color=color,product=product,
                                             name=name,
                                             purchase_price=purchase_price,
                                             pair_price=pair_price,

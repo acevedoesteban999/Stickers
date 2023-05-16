@@ -195,6 +195,14 @@
                                                     <div class="col-6 text-end">
                                                         <div class="h5">{{product.sub_category.name}}</div>
                                                     </div>
+                                                    {% if product.color %}
+                                                        <div class="col-6 text-start">
+                                                            <div class="h5">Color:</div>
+                                                        </div>
+                                                        <div class="col-6 text-end">
+                                                            <div class="h5">{{product.color.name}}</div>
+                                                        </div>
+                                                    {% endif %}
                                                     <div class="col-6 text-start">
                                                         <div class="h5">Precio de Compra:</div>
                                                     </div>
@@ -483,7 +491,16 @@
                                             
                                             
                                         </fieldset>
-
+                                        <fieldset class="border p-2 m-1">
+                                            <legend class="float-none w-auto">Color</legend>    
+                                            <select name="SelectColor" id="ColorID" oninput="SetColor(this.options[this.selectedIndex].text,'{{subcategory.name}}')" class="form-select" aria-label="Default select example">  
+                                                <option  {% if not product.color %}selected{% endif %}  value="NC">Sin Color</option>
+                                                {% for color in colors  %}
+                                                    <option {% if product.color == color %}selected{% endif %} value="{{color.id}}">{{color.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            
+                                        </fieldset>
                                         <div class="form-floating mb-3">
                                             <textarea  type="text" class="form-control" name="descripción" id="floatingInput" placeholder="Descripción"  style="height: 100px;">{{product.description}}</textarea >
                                             <label for="floatingInput">Descripción</label>

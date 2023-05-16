@@ -286,7 +286,7 @@ class Movement(models.Model):
             return "E0"
         return False
     @classmethod
-    def Edit(cls,user,product,name,purchase_price,pair_price,pair_profit,pair_profit_worker,unit_price,unit_profit,unit_profit_worker,description,image):  
+    def Edit(cls,user,product,name,purchase_price,pair_price,pair_profit,pair_profit_worker,unit_price,unit_profit,unit_profit_worker,description,image,color):  
         str_info=""
         if product.name!=name:
             str_info+="Nombre: {} editado a {}<br>".format(product.name,name)
@@ -325,6 +325,24 @@ class Movement(models.Model):
             if image:
                 str_info+="Imagen Editada<br>"
                 product.image=image 
+            
+            
+            if product.color:
+                if color:
+                    if product.color != color:
+                        product.name=product.name.replace(product.color.name.lower(),color.name.lower())    
+                        str_info+="Color: {} editado a {}<br>".format(product.color.name,color.name)
+                        product.color=color
+                else:
+                    product.name=product.name.replace(product.color.name.lower(),"")[:-1]   
+                    str_info+="Color eliminado<br>"
+                    product.color=None
+            else:
+                if color:
+                    product.name+=" {}".format(color.name.lower()) 
+                    str_info+="Color: editado a {}<br>".format(color.name)
+                    product.color=color
+            
             if product.description!= description:
                 str_info+="Descripción Editada<br>"
                 product.description=description
