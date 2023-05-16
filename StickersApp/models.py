@@ -508,13 +508,14 @@ class Movement(models.Model):
                             product.pair_stored += movement.lot
                             movement_refund=cls(type="rP",extra_info_int_1=product.pair_profit,extra_info_int_2=product.pair_profit_worker,user=user,extra_info_str=note,extra_info_bool=True,extra_info_int=product.pair_price,product=product,lot=movement.lot)
                             if movement_refund:
+                                movement_refund.extra_info_str+="<br><div class='text-success'>Id de Operación Reembolsada: {}</div>".format(movement.id)
                                 movement_refund.save()
-                                movement.extra_info_str+="<div class='d-none'>R:Y</div>"
+                                movement.extra_info_str+="<br><div class='text-danger'>Reembolsado</div>"
                                 movement.save()
                                 product.save()
                                 r_box.save()
                                 user.save()
-                                return ("OK")
+                                return True
                             return False
                         return "E1"
                     return False
