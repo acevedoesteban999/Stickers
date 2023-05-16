@@ -2,7 +2,7 @@
 {% load static %}
 {% block contenido %}
   {% comment %} <div class="display-1 my-3 text-center">  Stickers </div> {% endcomment %}
-  {% if confirms %}
+  {% if confirms and confirms_count > 0 %}
     <div class="container">
       <div class="row justify-content-center m-4">
         <div class="col-auto">
