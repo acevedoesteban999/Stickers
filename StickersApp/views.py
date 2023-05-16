@@ -638,7 +638,8 @@ def SubCategoriaView(request,categoryID,subcategoryID):
             replica_id=False
             product=Product.objects.exclude(removed=True).get(id=replica_id_context)
             product.name=product.name.replace(product.sub_category.name.lower(),"")
-            product.name=product.name.replace(product.color.name.lower(),"")
+            if product.color:
+                product.name=product.name.replace(product.color.name.lower(),"")
             replica=product 
         if request.method=="POST":
             if "CrearProducto" in request.POST:
