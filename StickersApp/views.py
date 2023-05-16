@@ -558,11 +558,11 @@ def AdminView(request):
             if request.method == "POST":
                 if "CrearCategoría" in request.POST:
                     crear_form=request.POST.dict()
-                    files=FormImg(request.POST,request.FILES)
-                    files.is_valid()
+                    #files=FormImg(request.POST,request.FILES)
+                    #files.is_valid()
                     name=crear_form.get("name").__str__().capitalize()
-                    image=files.cleaned_data.get("imagen")
-                    if Movement.create_category(name=name,image=image,user=user):
+                    #image=files.cleaned_data.get("imagen")
+                    if Movement.create_category(name=name,user=user):
                         messages.success(request,"Se ha creado  la categoría {} correctamente".format(name))
                         #return render(request,"Administracion.html",{"context":{"OkCC":True},"categorys":categorys})
                         category=Category.objects.get(name=name)
@@ -602,12 +602,12 @@ def CategoriaView(request,categoryID):
                     messages.error(request,"No se ha podido crear, ya existe una sub categoría de nombre {}".format(name))
             elif "EditCategory" in request.POST:
                 post_form=request.POST.dict()
-                files=FormImg(request.POST,request.FILES)
-                files.is_valid()
+                #files=FormImg(request.POST,request.FILES)
+                #files.is_valid()
                 name=post_form.get("name").__str__().capitalize()
-                image=files.cleaned_data.get("imagen")
+                #image=files.cleaned_data.get("imagen")
                         
-                if Movement.edit_category(name=name,image=image,category=category,user=user):
+                if Movement.edit_category(name=name,category=category,user=user):
                     messages.success(request,"Se ha editado  la categoría {} correctamente".format(name))
                 else:
                     messages.error(request,"No se ha podido editar, ya existe una categoría de nombre {}".format(name))
@@ -637,6 +637,8 @@ def SubCategoriaView(request,categoryID,subcategoryID):
             replica_id_context=replica_id
             replica_id=False
             product=Product.objects.exclude(removed=True).get(id=replica_id_context)
+            product.name=product.name.replace(product.sub_category.name.lower(),"")
+            product.name=product.name.replace(product.color.name.lower(),"")
             replica=product 
         if request.method=="POST":
             if "CrearProducto" in request.POST:

@@ -43,7 +43,7 @@
                                                     <input type="text" class="form-control" maxlength="30" required name="name" id="floatingInput" placeholder="Nombre">
                                                     <label for="floatingInput">Nombre</label>
                                                 </div>
-                                                <div class="form-floating mb-3">
+                                                {% comment %} <div class="form-floating mb-3">
                                                     <div class="row m-2">
                                                         Imagen
                                                     </div>
@@ -64,10 +64,7 @@
                                                             </div>
                                                         </div>
                                                     </div> 
-                                                    {% comment %} <div class="d-flex justify-content-center m-3">
-                                                        <img id="imgPre" class="img-fluid" src="" alt=" ">
-                                                    </div> {% endcomment %}
-                                                </div>
+                                                </div> {% endcomment %}
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -80,24 +77,31 @@
                             </div>
                         </div>
                         <div class="row justify-content-center my-4">
-                            <div class="col-auto">
+                            <div class="col-12">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="row justify-content-center align-items-center">
                                             {% for category in categorys %}  
-                                                <div class="col-6 col-sm-4 col-md-3 col-lg-2 my-3">
-                                                    <a class="link-dark" style=" text-decoration: none;" href="{% url 'categoria' category.id %}">                                           
-                                        
-                                                        <div class="row justify-content-center">
-                                                            <div class="col-12">
-                                                                <img src="{{category.image.url}}" class="img-fluid img-thumbnail" alt="Imagen Categoría">
-                                                            </div>
-                                                            <div class="col-12">
-                                                                <div class="h3 text-center">{{category.name}}</div>
-                                                            </div>
+                                                {% comment %} <div class="col-12 my-3"> {% endcomment %}
+                                                <a class="link-dark" style=" text-decoration: none;" href="{% url 'categoria' category.id %}">                                           
+                                                    {% if forloop.counter != 1  %}
+                                                        <hr>
+                                                    {% endif %}
+                                                    <div class="row justify-content-center ">
+                                                        <div class="col-auto">
+                                                            <div class="h3 text-center">{{category.name}}</div>
                                                         </div>
-                                                    </a>
-                                                </div>
+                                                    </div>
+                                                    {% comment %} <div class="row justify-content-center">
+                                                        <div class="col-12">
+                                                            <img src="{{category.image.url}}" class="img-fluid img-thumbnail" alt="Imagen Categoría">
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="h3 text-center">{{category.name}}</div>
+                                                        </div>
+                                                    </div> {% endcomment %}
+                                                </a>
+                                                {% comment %} </div> {% endcomment %}
                                             {% empty %}
                                                 <div class="col-12">
                                                     <div class="h3">

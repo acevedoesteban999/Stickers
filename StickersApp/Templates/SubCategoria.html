@@ -3,7 +3,38 @@
 {% load static %}
 {% if user.is_admin %}
     <div class="container">
-        <div class="row justify-content-center my-4">
+        <div class="row justify-content-end">
+            
+            <div class="col-auto mt-2">
+                <div class="d-flex">
+                    <div class="dropdown me-1">
+                        <button type="button" class="btn btn-light dropdown-toggle" id="dropdownMenuOffset" data-bs-toggle="dropdown" aria-expanded="false" data-bs-offset="10,20">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                            </svg>
+                        </button>
+
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuOffset">
+                            <li>
+                            <a class="dropdown-item"data-bs-toggle="modal" data-bs-target="#modalCreatePoduct" id="ReplicaDropDown">Crear Producto</a>
+                            <a class="dropdown-item"data-bs-toggle="modal" data-bs-target="#EditModal">Editar Sub Categoria</a>
+                            <a class="dropdown-item"data-bs-toggle="modal" data-bs-target="#modalEditAllPoducts">Editar Precios</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row justify-content-around">
+            <div class="col-auto">
+                <h1 class="display-2">{{category.name}}</h1>
+            </div>
+            <div class="col-auto">
+                <h1 class="display-3">{{subcategory.name}}</h1>
+            </div>
+        </div>
+        {% comment %} <div class="row justify-content-center my-4">
             <div class="col-auto">
                 <div class="card">
                     <div class="card-body">    
@@ -17,48 +48,257 @@
                                     Editar
                                 </button> 
                             </div>
-                            <div class="modal fade" id="EditModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="EditModalLabel">Editar {{subcategory.name}}</h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <form method="POST" action="" enctype=multipart/form-data>
-                                            {% csrf_token %}
-                                            <div class="modal-body">
-                                                <div class="form-floating mb-3">
-                                                    <input required type="text" maxlength="30" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{subcategory.name}}">
-                                                    <label for="floatingInput">Nombre</label>
-                                                </div>
-                                            </div>
-                                            <div class="row justify-content-around m-2">
-                                                <div class="col-auto">
-                                                    <div class="row justify-content-center">
-                                                        <div class="col-auto">
-                                                            <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">   
-                                                        </div>
-                                                    </div>    
-                                                </div>
-                                                <div class="col-auto">
-                                                    <div class="row justify-content-center">
-                                                        <div class="col-auto">
-                                                            <input class="btn btn-warning" type="submit" name="EditSubCategory" value="Editar">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>  
+                            
                         </div>
                     </div>          
                 </div>
             </div>
+        </div> {% endcomment %}
+        {% if replica %}
+            <script>
+                window.onload=function()
+                {
+                    document.getElementById("ReplicaDropDown").click()
+
+                };
+
+            </script>
+        {% endif %}
+        {% comment %} =====================MODALS================= {% endcomment %}
+        {% comment %} MODAL CREATE PRODUCT {% endcomment %}
+        <div class="modal fade" data-bs-backdrop="static" id="modalCreatePoduct" tabindex="-1" aria-labelledby="modalCreatePoduct" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="modalCreatePoduct">Nuevo Producto</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="" enctype=multipart/form-data>
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                
+                                <div class="h6 text-center text-muted" id="IdNombreAlmacenar"></div>
+                                <div class="form-floating mb-3">
+                                    <input {% if replica %} value="{{replica.name}}" {% endif %} oninput="EditNombreAlmacenar()" type="text" class="form-control" maxlength="25" required name="name" id="nameProduct" placeholder="Nombre">
+                                    <label for="floatingInput">Nombre</label>
+                                    <input type="hidden"  name="NombreAlmacenar" id="IdNombreAlmacenarHidden">
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input {% if replica %}value="{{replica.purchase_price}}"{% endif %} min="1" type="number"  class="form-control"  required name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
+                                    <label for="floatingInput">Precio de Compra </label>
+                                </div>  
+                                <fieldset class="border p-2 m-1">
+                                    <legend  class="float-none w-auto">Venta</legend> 
+                                    <div class="form-check">
+                                        <input class="form-check-input" value="0" onclick="VentasParesFunction(false)" {% if not replica %}checked{% endif %} {% if replica and replica.pair == False %}checked{% endif %} type="radio" name="VentasPares">
+                                        <label class="form-check-label" for="flexRadioDefault1">
+                                        Venta por Unidad
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" value="1" onclick="VentasParesFunction(true)" {% if replica and replica.pair == True %}checked{% endif %} type="radio" name="VentasPares" >
+                                        <label class="form-check-label" for="flexRadioDefault2">
+                                        Venta Por Pares
+                                        </label>
+                                    </div>
+                                </fieldset>
+                                {{replica.pair}}
+                                <div {% if not replica or replica.pair == False %}style="display: none;"{% endif %} id="ParesDivId">
+
+                                    <fieldset class="border p-2 m-1">
+                                    <legend  class="float-none w-auto">Por Pares</legend> 
+                                
+                                        <div class="form-floating mb-3">
+                                            <input {% if replica and replica.pair == True %}value="{{replica.pair_price}}"{% endif %} min="1" type="number"  class="form-control"  name="precio pares"id="ParesPrecio" placeholder="Precio">
+                                            <label for="floatingInput">Precio por Par </label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <input {% if replica and replica.pair == True %}value="{{replica.pair_profit}}"{% endif %} min="1" type="number"  class="form-control"  name="ganancia pares"id="ParesGanancia" placeholder="Ganancia">
+                                            <label for="floatingInput">Ganancia por Par </label>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <input {% if replica and replica.pair == True %}value="{{replica.pair_profit_worker}}"{% endif %} min="1" type="number"  class="form-control"  name="ganancia pares trabajador" id="ParesGananciaTrabajador" placeholder="Ganancia por Venta">
+                                            <label for="floatingInput">Pago a Trabajador por Par </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <fieldset class="border p-2 m-1">
+                                    <legend  class="float-none w-auto">Por Unidad</legend>    
+                                    <div class="form-floating mb-3">
+                                        <input {% if replica %}value="{{replica.unit_price}}"{% endif %} min="1" type="number"  class="form-control" required name="precio unitario"id="floatingInput" placeholder="Precio">
+                                        <label for="floatingInput">Precio por Unidad </label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input {% if replica %}value="{{replica.unit_profit}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria"id="floatingInput" placeholder="Ganancia">
+                                        <label for="floatingInput">Ganancia por Unidad </label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input {% if replica %}value="{{replica.unit_profit_worker}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria trabajador" id="floatingInput" placeholder="Ganancia por Venta">
+                                        <label for="floatingInput">Pago a Trabajador por Unidad</label>
+                                    </div>
+                                </fieldset>
+                                
+                                <fieldset class="border p-2 m-1">
+                                    <legend  class="float-none w-auto">Categoría</legend>    
+                                    <div class="form-floating mb-3">
+                                        <input value="{{category.name}}" type="text"  class="form-control" disabled>
+                                        <label for="floatingInput">Categoría </label>
+                                    </div>
+                                    
+                                </fieldset>
+                                <fieldset class="border p-2 m-1">
+                                    <legend  class="float-none w-auto">Sub Categoría</legend>    
+                                    <div class="form-floating mb-3">
+                                        <input value="{{subcategory.name}}" type="text"  class="form-control" disabled >
+                                        <input type="hidden" name="subcategoryid" value="{{subcategory.id}}">
+                                        <label for="floatingInput">Sub Categoría </label>
+                                    </div>
+                                </fieldset>
+                                <fieldset class="border p-2 m-1">
+                                    <legend class="float-none w-auto">Color</legend>    
+                                    <select name="SelectColor" id="ColorID" oninput="SetColor(this.options[this.selectedIndex].text,'{{subcategory.name}}')" class="form-select" aria-label="Default select example">  
+                                        <option  selected  value="NC">Sin Color</option>
+                                        {% for color in colors  %}
+                                            <option value="{{color.id}}">{{color.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    
+                                </fieldset>
+                                <div class="form-floating mb-3">
+                                    <textarea  type="text" class="form-control" maxlength="100" name="descripción" id="floatingInput" placeholder="Descripción"  style="height: 100px;">{% if replica %}{{replica.description}}{% endif %}</textarea >
+                                    <label for="floatingInput">Descripción</label>
+                                </div>
+                                
+                                <div class="form-floating mb-3">
+                                    <div class="row m-2">
+                                        Imagen
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-9" id="ImgDiv">
+                                            <div id="divid">
+                                                <input onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Imagen">
+                                            </div>
+                                        </div> 
+                                        <div class="col-3">
+                                            <a style="display: none;" class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
+                                        </div>    
+                                    </div>
+                                    <div class="container">
+                                        <div class="row justify-content-center m-3">
+                                            <div class="col-auto">
+                                                <img id="imgPre" src="" class="img-fluid img-thumbnail"  alt=" " >
+                                            </div>
+                                        </div>
+                                    </div> 
+                                </div>
+                            </div>
+                            
+                            <div class="modal-footer">
+                                <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <input class="btn btn-success" type="submit" name="CrearProducto" value="Crear">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% comment %} MODAL EDIT SUBCATEGORY {% endcomment %}
+        <div class="modal fade" id="EditModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="EditModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="EditModalLabel">Editar {{subcategory.name}}</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="POST" action="" enctype=multipart/form-data>
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <div class="form-floating mb-3">
+                                <input required type="text" maxlength="30" class="form-control" name="name" id="floatingInput" placeholder="Nombre" value="{{subcategory.name}}">
+                                <label for="floatingInput">Nombre</label>
+                            </div>
+                        </div>
+                        <div class="row justify-content-around m-2">
+                            <div class="col-auto">
+                                <div class="row justify-content-center">
+                                    <div class="col-auto">
+                                        <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">   
+                                    </div>
+                                </div>    
+                            </div>
+                            <div class="col-auto">
+                                <div class="row justify-content-center">
+                                    <div class="col-auto">
+                                        <input class="btn btn-warning" type="submit" name="EditSubCategory" value="Editar">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>  
+        {% comment %} MODAL EDIT ALL SUBCATEGORY {% endcomment %}
+        <div class="modal fade" data-bs-backdrop="static" id="modalEditAllPoducts" tabindex="-1" aria-labelledby="modalEditAllPoducts" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="modalEditAllPoducts">Editar Precios</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="form-floating mb-3">
+                                    <input min="1" type="number"  class="form-control"  name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
+                                    <label for="floatingInput">Precio de Compra </label>
+                                </div>  
+                                <fieldset class="border p-2 m-1">
+                                <legend  class="float-none w-auto">Por Pares</legend> 
+                            
+                                    <div class="form-floating mb-3">
+                                        <input min="1" type="number"  class="form-control"  name="precio pares"id="ParesPrecio" placeholder="Precio">
+                                        <label for="floatingInput">Precio por Par </label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input min="1" type="number"  class="form-control"  name="ganancia pares"id="ParesGanancia" placeholder="Ganancia">
+                                        <label for="floatingInput">Ganancia por Par </label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input min="1" type="number"  class="form-control"  name="ganancia pares trabajador" id="ParesGananciaTrabajador" placeholder="Ganancia por Venta">
+                                        <label for="floatingInput">Pago a Trabajador por Par </label>
+                                    </div>
+                                </fieldset>
+                                <fieldset class="border p-2 m-1">
+                                    <legend  class="float-none w-auto">Por Unidad</legend>    
+                                    <div class="form-floating mb-3">
+                                        <input min="1" type="number"  class="form-control"  name="precio unitario"id="floatingInput" placeholder="Precio">
+                                        <label for="floatingInput">Precio por Unidad </label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input min="1" type="number"  class="form-control"  name="ganancia unitaria"id="floatingInput" placeholder="Ganancia">
+                                        <label for="floatingInput">Ganancia por Unidad </label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input min="1" type="number"  class="form-control"  name="ganancia unitaria trabajador" id="floatingInput" placeholder="Ganancia por Venta">
+                                        <label for="floatingInput">Pago a Trabajador por Unidad</label>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            
+                            <div class="modal-footer">
+                                <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <input class="btn btn-warning" type="submit" name="EditarPreciosProductos" value="Editar">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
         <h1 class="display-2 text-center">Productos</h1>
-        <div class="row justify-content-center">
+        {% comment %} <div class="row justify-content-center">
             <div class="col-12 my-1">
                 <div class="row justify-content-center">
                     <div class="col-auto">
@@ -68,153 +308,7 @@
                     </div>  
                 </div>
                 
-                {% if replica %}
-                    <script>
-                        window.onload=function()
-                        {
-                            document.getElementById("BTNCreateProduct").click()
-
-                        };
-                    </script>
-                {% endif %}
                 
-                <div class="modal fade" data-bs-backdrop="static" id="modalCreatePoduct" tabindex="-1" aria-labelledby="modalCreatePoduct" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="modalCreatePoduct">Nuevo Producto</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="POST" action="" enctype=multipart/form-data>
-                                    {% csrf_token %}
-                                    <div class="modal-body">
-                                        
-                                        <div class="h6 text-center text-muted" id="IdNombreAlmacenar"></div>
-                                        <div class="form-floating mb-3">
-                                            <input oninput="EditNombreAlmacenar('{{subcategory.name}}')" type="text" class="form-control" maxlength="25" required name="name" id="nameProduct" placeholder="Nombre">
-                                            <label for="floatingInput">Nombre</label>
-                                            <input type="hidden"  name="NombreAlmacenar" id="IdNombreAlmacenarHidden">
-                                        </div>
-                                        <div class="form-floating mb-3">
-                                            <input {% if replica %}value="{{replica.purchase_price}}"{% endif %} min="1" type="number"  class="form-control"  required name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
-                                            <label for="floatingInput">Precio de Compra </label>
-                                        </div>  
-                                        <fieldset class="border p-2 m-1">
-                                            <legend  class="float-none w-auto">Venta</legend> 
-                                            <div class="form-check">
-                                                <input class="form-check-input" value="0" onclick="VentasParesFunction(false)" {% if not replica %}checked{% endif %} {% if replica and replica.pair == False %}checked{% endif %} type="radio" name="VentasPares">
-                                                <label class="form-check-label" for="flexRadioDefault1">
-                                                Venta por Unidad
-                                                </label>
-                                            </div>
-                                            <div class="form-check">
-                                                <input class="form-check-input" value="1" onclick="VentasParesFunction(true)" {% if replica and replica.pair == True %}checked{% endif %} type="radio" name="VentasPares" >
-                                                <label class="form-check-label" for="flexRadioDefault2">
-                                                Venta Por Pares
-                                                </label>
-                                            </div>
-                                        </fieldset>
-                                        {{replica.pair}}
-                                        <div {% if not replica or replica.pair == False %}style="display: none;"{% endif %} id="ParesDivId">
-
-                                            <fieldset class="border p-2 m-1">
-                                            <legend  class="float-none w-auto">Por Pares</legend> 
-                                        
-                                                <div class="form-floating mb-3">
-                                                    <input {% if replica and replica.pair == True %}value="{{replica.pair_price}}"{% endif %} min="1" type="number"  class="form-control"  name="precio pares"id="ParesPrecio" placeholder="Precio">
-                                                    <label for="floatingInput">Precio por Par </label>
-                                                </div>
-                                                <div class="form-floating mb-3">
-                                                    <input {% if replica and replica.pair == True %}value="{{replica.pair_profit}}"{% endif %} min="1" type="number"  class="form-control"  name="ganancia pares"id="ParesGanancia" placeholder="Ganancia">
-                                                    <label for="floatingInput">Ganancia por Par </label>
-                                                </div>
-                                                <div class="form-floating mb-3">
-                                                    <input {% if replica and replica.pair == True %}value="{{replica.pair_profit_worker}}"{% endif %} min="1" type="number"  class="form-control"  name="ganancia pares trabajador" id="ParesGananciaTrabajador" placeholder="Ganancia por Venta">
-                                                    <label for="floatingInput">Pago a Trabajador por Par </label>
-                                                </div>
-                                            </fieldset>
-                                        </div>
-                                        <fieldset class="border p-2 m-1">
-                                            <legend  class="float-none w-auto">Por Unidad</legend>    
-                                            <div class="form-floating mb-3">
-                                                <input {% if replica %}value="{{replica.unit_price}}"{% endif %} min="1" type="number"  class="form-control" required name="precio unitario"id="floatingInput" placeholder="Precio">
-                                                <label for="floatingInput">Precio por Unidad </label>
-                                            </div>
-                                            <div class="form-floating mb-3">
-                                                <input {% if replica %}value="{{replica.unit_profit}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria"id="floatingInput" placeholder="Ganancia">
-                                                <label for="floatingInput">Ganancia por Unidad </label>
-                                            </div>
-                                            <div class="form-floating mb-3">
-                                                <input {% if replica %}value="{{replica.unit_profit_worker}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria trabajador" id="floatingInput" placeholder="Ganancia por Venta">
-                                                <label for="floatingInput">Pago a Trabajador por Unidad</label>
-                                            </div>
-                                        </fieldset>
-                                        
-                                        <fieldset class="border p-2 m-1">
-                                            <legend  class="float-none w-auto">Categoría</legend>    
-                                            <div class="form-floating mb-3">
-                                                <input value="{{category.name}}" type="text"  class="form-control" disabled>
-                                                <label for="floatingInput">Categoría </label>
-                                            </div>
-                                            
-                                        </fieldset>
-                                        <fieldset class="border p-2 m-1">
-                                            <legend  class="float-none w-auto">Sub Categoría</legend>    
-                                            <div class="form-floating mb-3">
-                                                <input value="{{subcategory.name}}" type="text"  class="form-control" disabled >
-                                                <input type="hidden" name="subcategoryid" value="{{subcategory.id}}">
-                                                <label for="floatingInput">Sub Categoría </label>
-                                            </div>
-                                        </fieldset>
-                                        <fieldset class="border p-2 m-1">
-                                            <legend class="float-none w-auto">Color</legend>    
-                                            <select name="SelectColor" id="ColorID" oninput="SetColor(this.options[this.selectedIndex].text,'{{subcategory.name}}')" class="form-select" aria-label="Default select example">  
-                                                <option  selected  value="NC">Sin Color</option>
-                                                {% for color in colors  %}
-                                                    <option value="{{color.id}}">{{color.name}}</option>
-                                                {% endfor %}
-                                            </select>
-                                            
-                                        </fieldset>
-                                        <div class="form-floating mb-3">
-                                            <textarea  type="text" class="form-control" maxlength="100" name="descripción" id="floatingInput" placeholder="Descripción"  style="height: 100px;">{% if replica %}{{replica.description}}{% endif %}</textarea >
-                                            <label for="floatingInput">Descripción</label>
-                                        </div>
-                                        
-                                        <div class="form-floating mb-3">
-                                            <div class="row m-2">
-                                                Imagen
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-9" id="ImgDiv">
-                                                    <div id="divid">
-                                                        <input onchange="PrevImg()" type="file"  class="form-control " name="imagen" id="inputImgPre" placeholder="Imagen">
-                                                    </div>
-                                                </div> 
-                                                <div class="col-3">
-                                                    <a style="display: none;" class="btn btn-danger" id="ButtonImgPree" onClick="RemImg()">Eliminar </a>
-                                                </div>    
-                                            </div>
-                                            <div class="container">
-                                                <div class="row justify-content-center m-3">
-                                                    <div class="col-auto">
-                                                        <img id="imgPre" src="" class="img-fluid img-thumbnail"  alt=" " >
-                                                    </div>
-                                                </div>
-                                            </div> 
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="modal-footer">
-                                        <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <input class="btn btn-success" type="submit" name="CrearProducto" value="Crear">
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="col-12 my-1">
                 <div class="row justify-content-center">
@@ -226,65 +320,9 @@
                 </div>
                 
                 
-                <div class="modal fade" data-bs-backdrop="static" id="modalEditAllPoducts" tabindex="-1" aria-labelledby="modalEditAllPoducts" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="modalEditAllPoducts">Editar Precios</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form method="POST" action="">
-                                    {% csrf_token %}
-                                    <div class="modal-body">
-                                        <div class="form-floating mb-3">
-                                            <input min="1" type="number"  class="form-control"  name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
-                                            <label for="floatingInput">Precio de Compra </label>
-                                        </div>  
-                                        <fieldset class="border p-2 m-1">
-                                        <legend  class="float-none w-auto">Por Pares</legend> 
-                                    
-                                            <div class="form-floating mb-3">
-                                                <input min="1" type="number"  class="form-control"  name="precio pares"id="ParesPrecio" placeholder="Precio">
-                                                <label for="floatingInput">Precio por Par </label>
-                                            </div>
-                                            <div class="form-floating mb-3">
-                                                <input min="1" type="number"  class="form-control"  name="ganancia pares"id="ParesGanancia" placeholder="Ganancia">
-                                                <label for="floatingInput">Ganancia por Par </label>
-                                            </div>
-                                            <div class="form-floating mb-3">
-                                                <input min="1" type="number"  class="form-control"  name="ganancia pares trabajador" id="ParesGananciaTrabajador" placeholder="Ganancia por Venta">
-                                                <label for="floatingInput">Pago a Trabajador por Par </label>
-                                            </div>
-                                        </fieldset>
-                                        <fieldset class="border p-2 m-1">
-                                            <legend  class="float-none w-auto">Por Unidad</legend>    
-                                            <div class="form-floating mb-3">
-                                                <input min="1" type="number"  class="form-control"  name="precio unitario"id="floatingInput" placeholder="Precio">
-                                                <label for="floatingInput">Precio por Unidad </label>
-                                            </div>
-                                            <div class="form-floating mb-3">
-                                                <input min="1" type="number"  class="form-control"  name="ganancia unitaria"id="floatingInput" placeholder="Ganancia">
-                                                <label for="floatingInput">Ganancia por Unidad </label>
-                                            </div>
-                                            <div class="form-floating mb-3">
-                                                <input min="1" type="number"  class="form-control"  name="ganancia unitaria trabajador" id="floatingInput" placeholder="Ganancia por Venta">
-                                                <label for="floatingInput">Pago a Trabajador por Unidad</label>
-                                            </div>
-                                        </fieldset>
-                                    </div>
-                                    
-                                    <div class="modal-footer">
-                                        <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <input class="btn btn-warning" type="submit" name="EditarPreciosProductos" value="Editar">
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
-        </div>
+        </div> {% endcomment %}
             
         
         <div class="modal fade" id="modalCreateCategory" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog" aria-labelledby="modalCreateCategory" aria-hidden="true">
@@ -416,5 +454,11 @@
 {% endblock  %}
 {% block script_js %}
     <script type="text/javascript" src="{% static 'js/create_product.js' %}" ></script>
-    <script type="text/javascript" src="{% static 'js/base_prev_img.js' %}" ></script>
+    <script>
+        SetSubCategoryName("{{subcategory.name}}");
+        {% if replica %}
+            EditNombreAlmacenar();
+        {% endif %}
+    </script>
+    {% comment %} <script type="text/javascript" src="{% static 'js/base_prev_img.js' %}" ></script> {% endcomment %}
 {% endblock  %}

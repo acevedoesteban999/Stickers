@@ -1,16 +1,23 @@
 var color=null;
+var subcategory_name=null;
 function SetColor(color_select,subcategory_name)
 {
     if (color_select != "NC")
         color=color_select;
     else 
         color=null;
-    EditNombreAlmacenar(subcategory_name)
+    EditNombreAlmacenar()
 }
-function EditNombreAlmacenar(subcategory_name)
+function SetSubCategoryName(subcategory_name_)
+{
+    subcategory_name=subcategory_name_;
+}
+function EditNombreAlmacenar()
 {
     var name=document.getElementById("nameProduct").value;
     var color_="";
+    if (subcategory_name == null)
+        return;
     if (color != null)
         color_=color
     var total_name =name+" "+subcategory_name

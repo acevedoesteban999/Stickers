@@ -30,7 +30,7 @@ class SummaryDate(models.Model):
 
 class Category(models.Model):
     name=models.CharField(max_length=30,unique=True)
-    image=models.ImageField(blank=True,null=True,upload_to='categorias',default="no_imagen.jpg", height_field=None, width_field=None, max_length=None)
+    #image=models.ImageField(blank=True,null=True,upload_to='categorias',default="no_imagen.jpg", height_field=None, width_field=None, max_length=None)
     def __str__(self) -> str:
         return self.name
 
@@ -160,11 +160,11 @@ class Movement(models.Model):
                         return "E0"
         return False
     @classmethod
-    def create_category(cls,name,image,user):
+    def create_category(cls,name,user):
         try:
             category=Category(name=name)
-            if image:
-                category.image=image
+            #if image:
+            #    category.image=image
             movement=cls(type="CC",extra_info_str=name,user=user)
             category.save()
             movement.save()
@@ -173,14 +173,14 @@ class Movement(models.Model):
             pass                
         return False
     @classmethod 
-    def edit_category(cls,name,image,category,user):
+    def edit_category(cls,name,category,user):
         str_info=""
         if category.name!=name:
             str_info+="Nombre: {} editado a {}<br>".format(category.name,name)
             category.name=name
-        if image:
-            str_info+="Imagen Editada<br>"
-            category.image=image 
+        #if image:
+        #    str_info+="Imagen Editada<br>"
+        #    category.image=image 
         movement=cls(type="eC",user=user,extra_info_str=str_info)
         if movement:
             try:
