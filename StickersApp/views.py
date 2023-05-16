@@ -819,7 +819,7 @@ def ProductoView(request,productoID):
                         else:
                             result=Movement.Unit_Sell(user=user,product=product,lot=lot_sell,note=note)
                         
-                        if result == True:
+                        if result == True or result=="OK0":
                             return SuccessProduct("Se han vendido {} {} {} {},con un importe de {}$".format(lot_sell,"pares de" if pair_action  else "unidades de",product.name,", se ha descontado una unidad de un lote par " if result=="OK0" else "",product.pair_price*lot_sell if pair_action  else product.unit_price*lot_sell))
                         elif result == 'E2':
                             return ErrorProduct("No se ha podido vender {} productos, solo se admite vender 1 unidad cuando ya no exsisten unidades por separado, esta unidad sera descontada de un par".format(lot_sell))

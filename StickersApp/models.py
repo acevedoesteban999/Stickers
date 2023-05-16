@@ -255,10 +255,10 @@ class Movement(models.Model):
                         r_box.save()
                         user.save()
                         if bool_div_par == True:
-                            return "OK0"    
+                            return "OK0"
                         return True
                 return False
-            if lot==1 and product.pair_stored > 0 :
+            if product.pair and lot==1 and product.pair_stored > 0 :
                 product.unit_stored+=2
                 product.pair_stored-=1
                 return Movement.Unit_Sell(user=user,product=product,lot=1,note=note,bool_div_par=True)
