@@ -747,8 +747,14 @@ def ProductoView(request,productoID):
                     messages.error(request,text)
                     return render(request,"Producto.html",{"colors":colors,'product_qr_url':product_qr_url,'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
                 
-                def SuccessProduct(text):
-                    #Eliminar si se redirecciona a 'home'
+                def SuccessProduct(text,no_redirect=True):
+                    if no_redirect != True:
+                        try:
+                            messages.success(request,text)
+                            return redirect(no_redirect)
+                        except Exception as e:
+                            messages.error(request,"Errror:{}".format(e))
+                            return redirect('home')
                     messages.success(request,text)
                     return render(request,"Producto.html",{"colors":colors,'product_qr_url':product_qr_url,'MovementsConfirm':movements_confirm,'product':product,"movements":movements}) 
                 
@@ -820,7 +826,7 @@ def ProductoView(request,productoID):
                             result=Movement.Unit_Sell(user=user,product=product,lot=lot_sell,note=note)
                         
                         if result == True or result=="OK0":
-                            return SuccessProduct("Se han vendido {} {} {} {},con un importe de {}$".format(lot_sell,"pares de" if pair_action  else "unidades de",product.name,", se ha descontado una unidad de un lote par " if result=="OK0" else "",product.pair_price*lot_sell if pair_action  else product.unit_price*lot_sell))
+                            return SuccessProduct("Se han vendido {} {} {} {},con un importe de {}$".format(lot_sell,"pares de" if pair_action  else "unidades de",product.name,", se ha descontado una unidad de un lote par " if result=="OK0" else "",product.pair_price*lot_sell if pair_action  else product.unit_price*lot_sell),no_redirect='home')
                         elif result == 'E2':
                             return ErrorProduct("No se ha podido vender {} productos, solo se admite vender 1 unidad cuando ya no exsisten unidades por separado, esta unidad sera descontada de un par".format(lot_sell))
                         elif result == 'E0':
