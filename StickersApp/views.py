@@ -759,9 +759,9 @@ def SubCategoriaView(request,categoryID,subcategoryID):
             replica_id_context=replica_id
             replica_id=False
             product=Product.objects.exclude(removed=True).get(id=replica_id_context)
-            product.name=product.name.replace(product.sub_category.name.lower(),"")
-            if product.color:
-                product.name=product.name.replace(product.color.name.lower(),"")
+            #product.name=product.name.replace(product.sub_category.name.lower(),"")
+            #if product.color:
+            #    product.name=product.name.replace(product.color.name.lower(),"")
             replica=product 
         if request.method=="POST":
             if "CrearProducto" in request.POST:
@@ -772,8 +772,8 @@ def SubCategoriaView(request,categoryID,subcategoryID):
                 files=FormImg(request.POST,request.FILES)
                 files.is_valid()
                 image=files.cleaned_data.get("imagen")
-                #name=crear_form.get("name").__str__().capitalize()
-                name=crear_form.get("NombreAlmacenar").__str__().capitalize()
+                name=crear_form.get("name").__str__().capitalize()
+                #name=crear_form.get("NombreAlmacenar").__str__().capitalize()
                 pair=crear_form.get("VentasPares")
                 if pair == "1":
                     pair=True

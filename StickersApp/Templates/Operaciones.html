@@ -1,7 +1,7 @@
 {% extends 'Base.html' %}
 {% load static %}
 {% block contenido %}
-{% if user.is_authenticated %}
+{% if user.is_admin or user.is_worker %}
     
     <div class="display-2 my-3 text-center">  Operaciones </div>
     {% comment %} =================  FILTER ==================== {% endcomment %}

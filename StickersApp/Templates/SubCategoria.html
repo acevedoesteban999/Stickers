@@ -81,11 +81,11 @@
                             {% csrf_token %}
                             <div class="modal-body">
                                 
-                                <div class="h6 text-center text-muted" id="IdNombreAlmacenar"></div>
+                                {% comment %} <div class="h6 text-center text-muted" id="IdNombreAlmacenar"></div> {% endcomment %}
                                 <div class="form-floating mb-3">
-                                    <input {% if replica %} value="{{replica.name}}" {% endif %} oninput="EditNombreAlmacenar()" type="text" class="form-control" maxlength="25" required name="name" id="nameProduct" placeholder="Nombre">
+                                    <input {% if replica %} value="{{replica.name}}" {% endif %} {% comment %} oninput="EditNombreAlmacenar()" {% endcomment %} type="text" class="form-control" maxlength="25" required name="name" id="nameProduct" placeholder="Nombre">
                                     <label for="floatingInput">Nombre</label>
-                                    <input type="hidden"  name="NombreAlmacenar" id="IdNombreAlmacenarHidden">
+                                    {% comment %} <input type="hidden"  name="NombreAlmacenar" id="IdNombreAlmacenarHidden"> {% endcomment %}
                                 </div>
                                 <div class="form-floating mb-3">
                                     <input oninput="CalcGain(null)" {% if replica %}value="{{replica.purchase_price}}"{% endif %} min="1" type="number"  class="form-control"  required name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
@@ -181,7 +181,7 @@
                                 </fieldset>
                                 <fieldset class="border p-2 m-1">
                                     <legend class="float-none w-auto">Color</legend>    
-                                    <select name="SelectColor" id="ColorID" oninput="SetColor(this.options[this.selectedIndex].text,'{{subcategory.name}}')" class="form-select" aria-label="Default select example">  
+                                    <select name="SelectColor" id="ColorID" {% comment %} oninput="SetColor(this.options[this.selectedIndex].text,'{{subcategory.name}}')" {% endcomment %} class="form-select" aria-label="Default select example">  
                                         <option  selected  value="NC">Sin Color</option>
                                         {% for color in colors  %}
                                             <option value="{{color.id}}">{{color.name}}</option>
@@ -514,10 +514,10 @@
 {% block script_js %}
     <script type="text/javascript" src="{% static 'js/create_product.js' %}" ></script>
     <script>
-        SetSubCategoryName("{{subcategory.name}}");
-        {% if replica %}
-            EditNombreAlmacenar();
-        {% endif %}
+        //SetSubCategoryName("{{subcategory.name}}");
+        //{% if replica %}
+        //    EditNombreAlmacenar();
+        //{% endif %}
     </script>
     <script type="text/javascript" src="{% static 'js/base_prev_img.js' %}" ></script> 
 {% endblock  %}

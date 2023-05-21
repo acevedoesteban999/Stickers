@@ -1,34 +1,34 @@
-var color=null;
-var subcategory_name=null;
+//var color=null;
+//var subcategory_name=null;
 var ventas_pares=null
-function SetColor(color_select,subcategory_name)
-{
-    if (color_select != "NC")
-        color=color_select;
-    else 
-        color=null;
-    EditNombreAlmacenar()
-}
+// function SetColor(color_select,subcategory_name)
+// {
+//     if (color_select != "NC")
+//         color=color_select;
+//     else 
+//         color=null;
+//     EditNombreAlmacenar()
+// }
 
-function SetSubCategoryName(subcategory_name_)
-{
-    subcategory_name=subcategory_name_;
-}
+// function SetSubCategoryName(subcategory_name_)
+// {
+//     subcategory_name=subcategory_name_;
+// }
 
-function EditNombreAlmacenar()
-{
-    var name=document.getElementById("nameProduct").value;
-    var color_="";
-    if (subcategory_name == null)
-        return;
-    if (color != null)
-        color_=color
-    var total_name =name+" "+subcategory_name
-    if (color_) 
-        total_name+=" "+color_
-    document.getElementById("IdNombreAlmacenar").innerHTML=total_name;
-    document.getElementById("IdNombreAlmacenarHidden").value=total_name;
-}
+// function EditNombreAlmacenar()
+// {
+//      var name=document.getElementById("nameProduct").value;
+//      var color_="";
+//      if (subcategory_name == null)
+//          return;
+//      if (color != null)
+//          color_=color
+//      var total_name =name+" "+subcategory_name
+//      if (color_) 
+//          total_name+=" "+color_
+//      document.getElementById("IdNombreAlmacenar").innerHTML=total_name;
+//      document.getElementById("IdNombreAlmacenarHidden").value=total_name;
+// }
 
 function VentasParesFunction(VentasParesBool)
 {

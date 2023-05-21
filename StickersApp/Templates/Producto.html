@@ -216,6 +216,16 @@
                                             <div class="col-auto">
                                                 <hr>
                                                 <div class="row justify-content-around my-3">
+                                                    
+                                                    {% if user.is_admin %}
+                                                        <div class="col-6 text-start">
+                                                            <div class="h5">Precio de Compra:</div>
+                                                        </div>
+                                                        <div class="col-6 text-end">
+                                                            <div class="h5">{{product.purchase_price}}$</div>
+                                                        </div>
+                                                    {% endif %}
+                                                        
                                                     <div class="col-6 text-start">
                                                         <div class="h5">Tip de Venta:</div>
                                                     </div>
@@ -246,12 +256,7 @@
                                                             <div class="h5">{{product.color.name}}</div>
                                                         </div>
                                                     {% endif %}
-                                                    <div class="col-6 text-start">
-                                                        <div class="h5">Precio de Compra:</div>
-                                                    </div>
-                                                    <div class="col-6 text-end">
-                                                        <div class="h5">{{product.purchase_price}}$</div>
-                                                    </div>
+                                                    
                                                     
                                                 </div>
                                                 <hr>
