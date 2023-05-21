@@ -725,20 +725,23 @@ def CategoriaView(request,categoryID):
                 #files.is_valid()
                 name=post_form.get("name").__str__().capitalize()
                 #image=files.cleaned_data.get("imagen")
-                        
                 if Movement.edit_category(name=name,category=category,user=user):
                     messages.success(request,"Se ha editado  la categoría {} correctamente".format(name))
                 else:
                     messages.error(request,"No se ha podido editar, ya existe una categoría de nombre {}".format(name))
-
-        
+            elif "EliminateCategory" in  request.POST:
+                name=category.name
+                if Movement.eliminate_category(name=name,category=category,user=user):
+                    messages.success(request,"Se ha eliminado  la categoría: {} correctamente".format(name))
+                    return redirect('administracion')
+                messages.error(request,"No se ha podido eliminar la categoría: {}".format(name))
         products=Product.objects.exclude(removed=True).filter(sub_category__category__id=categoryID).values("name","id")
         subcategorys=SubCategory.objects.filter(category__id=categoryID)
         return render(request,"Categoria.html",{"category":category,"products":products,"subcategorys":subcategorys})
     except ObjectDoesNotExist:
         messages.error(request,"Error, categoría inexistente")
-    except Exception as e:
-        messages.error(request,"Error, Algo ha salido mal")  
+    #except Exception as e:
+    #    messages.error(request,"Error, Algo ha salido mal")  
     return redirect('home')
 
 def SubCategoriaView(request,categoryID,subcategoryID):
@@ -844,7 +847,13 @@ def SubCategoriaView(request,categoryID,subcategoryID):
                     messages.error(request,"No se ha podido editar")
                 else:
                     messages.error(request,"No se ha podido  crear,ha ocurrido un error  insesperado")
-                
+            
+            elif "EliminateSubCategory" in  request.POST:
+                name=subcategory.name
+                if Movement.eliminate_subcategory(name=name,subcategory=subcategory,user=user):
+                    messages.success(request,"Se ha eliminado  la subcategoría: {} correctamente".format(name))
+                    return redirect('administracion')
+                messages.error(request,"No se ha podido eliminar la subcategoría: {}".format(name))
         colors=SubCategoryColor.objects.all()
         products=Product.objects.exclude(removed=True).filter(sub_category__id=subcategoryID)
         return render(request,"SubCategoria.html",{"replica":replica,"colors":colors,"category":category,"subcategory":subcategory,"products":products})

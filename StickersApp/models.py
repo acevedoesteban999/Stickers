@@ -84,8 +84,10 @@ MChoise = [
     ("cP","Confirmado de Producto"),
     ('CP','Creado de Producto'),
     ("eC","Editado de Categoría"),
+    ("ec","Eliminado de Categoría"),
     ("eP","Editado de Producto"),
     ("eS","Editado de SubCategoría"),
+    ("es","Eliminado de SubCategoría"),
     ("eT","Editado toda SubCategoría"),
     ('eU','Editado de Usuario'),
     ('SP','Quitado de Productos'),
@@ -194,6 +196,14 @@ class Movement(models.Model):
             except:
                 return False
     @classmethod 
+    def eliminate_category(cls,name,category,user=user):
+        if SubCategory.objects.filter(category__id=category.id).count()==0:
+            category.delete()
+            movement=cls(type="ec",user=user,extra_info_str=name)
+            movement.save()
+            return True
+        return False
+    @classmethod 
     def edit_sub_category(cls,name,subcategory,user):
         str_info=""
         if subcategory.name!=name:
@@ -218,6 +228,14 @@ class Movement(models.Model):
         except Exception as e:
             pass    
         return False
+    @classmethod 
+    def eliminate_subcategory(cls,name,subcategory,user=user):
+        if Product.objects.exclude(removed=True).filter(sub_category__id=subcategory.id).count()==0:
+            subcategory.delete()
+            movement=cls(type="es",user=user,extra_info_str=name)
+            movement.save()
+            return True
+        return False
     @classmethod
     def create_color(cls,name,user):
         try:
@@ -233,6 +251,8 @@ class Movement(models.Model):
     def Remove(cls,user,product):
         product.removed = True
         product.description=product.name
+        product.sub_category=None
+        product.color=None
         product.name+="[XxX{}XxX]".format(product.id)
         movement=cls(type="RP",product=product,user=user)
         if movement:

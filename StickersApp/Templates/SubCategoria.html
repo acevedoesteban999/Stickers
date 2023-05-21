@@ -19,6 +19,9 @@
                             <a class="dropdown-item"data-bs-toggle="modal" data-bs-target="#modalCreatePoduct" id="ReplicaDropDown">Crear Producto</a>
                             <a class="dropdown-item"data-bs-toggle="modal" data-bs-target="#EditModal">Editar Sub Categoria</a>
                             <a class="dropdown-item"data-bs-toggle="modal" data-bs-target="#modalEditAllPoducts">Editar Precios</a>
+                            {% if not products %}
+                                <a class="dropdown-item"data-bs-toggle="modal" data-bs-target="#EliminateModal">Eliminar SubCategoria</a>
+                            {% endif %}
                             </li>
                         </ul>
                     </div>
@@ -85,25 +88,25 @@
                                     <input type="hidden"  name="NombreAlmacenar" id="IdNombreAlmacenarHidden">
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input {% if replica %}value="{{replica.purchase_price}}"{% endif %} min="1" type="number"  class="form-control"  required name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
+                                    <input oninput="CalcGain(null)" {% if replica %}value="{{replica.purchase_price}}"{% endif %} min="1" type="number"  class="form-control"  required name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
                                     <label for="floatingInput">Precio de Compra </label>
                                 </div>  
                                 <fieldset class="border p-2 m-1">
                                     <legend  class="float-none w-auto">Venta</legend> 
                                     <div class="form-check">
-                                        <input class="form-check-input" value="0" onclick="VentasParesFunction(false)" {% if not replica %}checked{% endif %} {% if replica and replica.pair == False %}checked{% endif %} type="radio" name="VentasPares">
+                                        <input class="form-check-input" value="0" onclick="VentasParesFunction(false)" {% if not replica %}checked{% endif %} {% if replica and replica.pair == False %}checked{% endif %} type="radio" id="VentasPares"name="VentasPares">
                                         <label class="form-check-label" for="flexRadioDefault1">
                                             Venta por Unidad
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" value="1" onclick="VentasParesFunction(true)" {% if replica and replica.pair == True %}checked{% endif %} type="radio" name="VentasPares" >
+                                        <input class="form-check-input" value="1" onclick="VentasParesFunction(true)" {% if replica and replica.pair == True %}checked{% endif %} type="radio" id="VentasPares"name="VentasPares" >
                                         <label class="form-check-label" for="flexRadioDefault2">
                                             Venta Por Pares
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" value="2" onclick="VentasParesFunction(null)" {% if replica and replica.pair == None %}checked{% endif %} type="radio" name="VentasPares" >
+                                        <input class="form-check-input" value="2" onclick="VentasParesFunction(null)" {% if replica and replica.pair == None %}checked{% endif %} type="radio" id="VentasPares"name="VentasPares" >
                                         <label class="form-check-label" for="flexRadioDefault2">
                                             Venta Por Unidades y Pares
                                         </label>
@@ -123,15 +126,15 @@
                                     <legend  class="float-none w-auto">Por Pares</legend> 
                                 
                                         <div class="form-floating mb-3">
-                                            <input {% if replica  %}value="{{replica.pair_price}}"{% endif %} min="1" type="number"  class="form-control"  name="precio pares"id="ParesPrecio" placeholder="Precio">
+                                            <input oninput="CalcGain(true)" {% if replica  %}value="{{replica.pair_price}}"{% endif %} min="1" type="number"  class="form-control"  name="precio pares"id="ParesPrecio" placeholder="Precio">
                                             <label for="floatingInput">Precio por Par </label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <input {% if replica  %}value="{{replica.pair_profit}}"{% endif %} min="1" type="number"  class="form-control"  name="ganancia pares"id="ParesGanancia" placeholder="Ganancia">
+                                            <input oninput="CalcGain(true,true)" {% if replica  %}value="{{replica.pair_profit}}"{% endif %} min="1" type="number"  class="form-control"  name="ganancia pares"id="ParesGanancia" placeholder="Ganancia">
                                             <label for="floatingInput">Ganancia por Par </label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <input {% if replica  %}value="{{replica.pair_profit_worker}}"{% endif %} min="1" type="number"  class="form-control"  name="ganancia pares trabajador" id="ParesGananciaTrabajador" placeholder="Ganancia por Venta">
+                                            <input oninput="CalcGain(true,false)" {% if replica  %}value="{{replica.pair_profit_worker}}"{% endif %} min="1" type="number"  class="form-control"  name="ganancia pares trabajador" id="ParesGananciaTrabajador" placeholder="Ganancia por Venta">
                                             <label for="floatingInput">Pago a Trabajador por Par </label>
                                         </div>
                                     </fieldset>
@@ -147,15 +150,15 @@
                                     <fieldset class="border p-2 m-1">
                                         <legend  class="float-none w-auto">Por Unidad</legend>    
                                         <div class="form-floating mb-3">
-                                            <input {% if replica %}value="{{replica.unit_price}}"{% endif %} min="1" type="number"  class="form-control" required name="precio unitario"id="UnidadesPrecio" placeholder="Precio">
+                                            <input oninput="CalcGain(false)" {% if replica %}value="{{replica.unit_price}}"{% endif %} min="1" type="number"  class="form-control" required name="precio unitario"id="UnidadesPrecio" placeholder="Precio">
                                             <label for="floatingInput">Precio por Unidad </label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <input {% if replica %}value="{{replica.unit_profit}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria"id="UnidadesGanancia" placeholder="Ganancia">
+                                            <input oninput="CalcGain(false,true)" {% if replica %}value="{{replica.unit_profit}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria"id="UnidadesGanancia" placeholder="Ganancia">
                                             <label for="floatingInput">Ganancia por Unidad </label>
                                         </div>
                                         <div class="form-floating mb-3">
-                                            <input {% if replica %}value="{{replica.unit_profit_worker}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria trabajador" id="UnidadesGananciaTrabajador" placeholder="Ganancia por Venta">
+                                            <input oninput="CalcGain(false,false)" {% if replica %}value="{{replica.unit_profit_worker}}"{% endif %} min="1" type="number"  class="form-control" required name="ganancia unitaria trabajador" id="UnidadesGananciaTrabajador" placeholder="Ganancia por Venta">
                                             <label for="floatingInput">Pago a Trabajador por Unidad</label>
                                         </div>
                                     </fieldset>
@@ -273,37 +276,37 @@
                             {% csrf_token %}
                             <div class="modal-body">
                                 <div class="form-floating mb-3">
-                                    <input min="1" type="number" oninput="CalcGain(null)" class="form-control"  name="precio compra"id="" placeholder="Precio de Compra">
+                                    <input min="1" type="number"  class="form-control"  name="precio compra"id="" placeholder="Precio de Compra">
                                     <label for="floatingInput">Precio de Compra </label>
                                 </div>  
                                 <fieldset class="border p-2 m-1">
                                 <legend  class="float-none w-auto">Por Pares</legend> 
                             
                                     <div class="form-floating mb-3">
-                                        <input min="1" type="number" oninput="CalcGain(true)"  class="form-control"  name="precio pares"id="" placeholder="Precio">
+                                        <input min="1" type="number"  class="form-control"  name="precio pares"id="" placeholder="Precio">
                                         <label for="floatingInput">Precio por Par </label>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <input min="1" type="number" oninput="CalcGain(true)"  class="form-control"  name="ganancia pares"id="" placeholder="Ganancia">
+                                        <input min="1" type="number"   class="form-control"  name="ganancia pares"id="" placeholder="Ganancia">
                                         <label for="floatingInput">Ganancia por Par </label>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <input min="1" type="number" oninput="CalcGain(true)"  class="form-control"  name="ganancia pares trabajador" id="" placeholder="Ganancia por Venta">
+                                        <input min="1" type="number"  class="form-control"  name="ganancia pares trabajador" id="" placeholder="Ganancia por Venta">
                                         <label for="floatingInput">Pago a Trabajador por Par </label>
                                     </div>
                                 </fieldset>
                                 <fieldset class="border p-2 m-1">
                                     <legend  class="float-none w-auto">Por Unidad</legend>    
                                     <div class="form-floating mb-3">
-                                        <input min="1" type="number" oninput="CalcGain(false)"  class="form-control"  name="precio unitario"id="" placeholder="Precio">
+                                        <input min="1" type="number"   class="form-control"  name="precio unitario"id="" placeholder="Precio">
                                         <label for="floatingInput">Precio por Unidad </label>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <input min="1" type="number" oninput="CalcGain(false)" class="form-control"  name="ganancia unitaria"id="" placeholder="Ganancia">
+                                        <input min="1" type="number"  class="form-control"  name="ganancia unitaria"id="" placeholder="Ganancia">
                                         <label for="floatingInput">Ganancia por Unidad </label>
                                     </div>
                                     <div class="form-floating mb-3">
-                                        <input min="1" type="number" oninput="CalcGain(false)" class="form-control"  name="ganancia unitaria trabajador" id="" placeholder="Ganancia por Venta">
+                                        <input min="1" type="number"  class="form-control"  name="ganancia unitaria trabajador" id="" placeholder="Ganancia por Venta">
                                         <label for="floatingInput">Pago a Trabajador por Unidad</label>
                                     </div>
                                 </fieldset>
@@ -318,6 +321,41 @@
                 </div>
             </div>
         </div>
+        {% comment %} MODAL ELIMINATE CATEGORY {% endcomment %}
+        <div class="modal fade" id="EliminateModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="EliminateModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="EliminateModalLabel">Eliminar {{subcategory.name}}</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <div class="h3 text-center">
+                                Elminar {{subcategory.name}}?
+                            </div>
+                        </div>
+                        <div class="row justify-content-around m-2">
+                            <div class="col-auto">
+                                <div class="row justify-content-center">
+                                    <div class="col-auto">
+                                        <input type="reset" class="btn btn-secondary" data-bs-dismiss="modal" value="Cancelar">   
+                                    </div>
+                                </div>    
+                            </div>
+                            <div class="col-auto">
+                                <div class="row justify-content-center">
+                                    <div class="col-auto">
+                                        <input class="btn btn-danger" type="submit" name="EliminateSubCategory" value="Eliminar">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div> 
         <h1 class="display-2 text-center">Productos</h1>
         {% comment %} <div class="row justify-content-center">
             <div class="col-12 my-1">
