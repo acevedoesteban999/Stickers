@@ -852,7 +852,7 @@ def SubCategoriaView(request,categoryID,subcategoryID):
                 name=subcategory.name
                 if Movement.eliminate_subcategory(name=name,subcategory=subcategory,user=user):
                     messages.success(request,"Se ha eliminado  la subcategoría: {} correctamente".format(name))
-                    return redirect('administracion')
+                    return redirect('categoria',category.id)
                 messages.error(request,"No se ha podido eliminar la subcategoría: {}".format(name))
         colors=SubCategoryColor.objects.all()
         products=Product.objects.exclude(removed=True).filter(sub_category__id=subcategoryID)
