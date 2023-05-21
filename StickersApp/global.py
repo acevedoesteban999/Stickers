@@ -1,6 +1,8 @@
 from .models import RegisteCash,Visits,SummaryDate
 #from datetime import datetime
 
+version="1.6.3.3"
+
 def GlobalElements(request):
     visits=Visits.objects.first()  
     registe_cash=RegisteCash.objects.first()
@@ -21,5 +23,5 @@ def GlobalElements(request):
     if not summary_date:
         summary_date=SummaryDate()
         summary_date.save()
-    return {"global_context":{"registe_cash":registe_cash,"visits":visits,"summary_date":summary_date}}
+    return {"global_context":{"registe_cash":registe_cash,"visits":visits,"summary_date":summary_date,"version":version}}
     
