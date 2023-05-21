@@ -15,6 +15,7 @@
     {% endif %}
 </div>
 {% if context.movements_exists %}
+    
     {% if context.final_exists %}
         <div class="display-4 text-center my-3">Información General</div>
         <div class="container">
@@ -108,6 +109,82 @@
         </div>
     {% endif %}
     
+    {% if context.products_exists %}
+        <div class="display-4 text-center my-3">Por Producto</div>
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col">
+                    <div class="table-responsive">
+                        <table class="table table-dark  table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Info</th>
+                                    <th scope="col">Prod</th>
+                                    <th scope="col">Cant</th>
+                                    <th scope="col">Trab</th>
+                                    <th scope="col">Ganc</th>
+                                    <th scope="col">Impt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="table-active">
+                                    <td scope="row">Ventas</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                {% for product in context.products.values %}
+                                    <tr class="table-success">
+                                        <td scope="row"></td>
+                                        <td>{{product.name}}</td>
+                                        <td>{{product.lot}}</td>
+                                        <td>{{product.profit_worker}}$</td>
+                                        <td>{{product.profit}}$</td>
+                                        <td>{{product.money}}$</td>
+                                    </tr>
+                                {% endfor %}
+
+                                {% if context.refund_products %}
+                                    <tr class="table-active">
+                                        <td scope="row">Reembolsos</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    {% for product in context.refund_products.values %}
+                                        <tr class="table-danger">
+                                            <td scope="row"></td>
+                                            <td>{{product.name}}</td>
+                                            <td>{{product.lot}}</td>
+                                            <td>{{product.profit_worker}}$</td>
+                                            <td>{{product.profit}}$</td>
+                                            <td>{{product.money}}$</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+
+
+                                
+                                <tr class="table-active">
+                                    <td scope="row">Total</td>
+                                    <td></td>
+                                    <td>{{context.products_totals.total_lot}}</td>
+                                    <td>{{context.products_totals.total_profit_worker}}$</td>
+                                    <td>{{context.products_totals.total_profit}}$</td>
+                                    <td>{{context.products_totals.total_money}}$</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
     {% if context.workers_exists %}
         <div class="display-4 text-center my-3">Por Trabajdor</div>
         <div class="container">
@@ -163,6 +240,48 @@
                                         <td>{{worker_dict.total_money}}$</td>
                                     </tr>
                                 {% endfor %}
+                                
+                                {% if context.refund_worker_products %}
+                                    <tr class="table-active">
+                                        <td scope="row">Reembolsos</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    {% for worker_name,worker_dict in context.refund_worker_products.items %}
+                                    
+                                    <tr class="table-secondary">
+                                        <td scope="row">{{worker_name}}</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    {% for product in worker_dict.products.values %}
+                                        <tr class="table-danger">
+                                            <td scope="row"></td>
+                                            <td>{{product.name}}</td>
+                                            <td>{{product.lot}}</td>
+                                            <td>{{product.profit_worker}}$</td>
+                                            <td>{{product.profit}}$</td>
+                                            <td>{{product.money}}$</td>
+                                        </tr>
+                                    {% endfor %}
+                                        <tr class="table-secondary">
+                                            <td scope="row">Total</td>
+                                            <td></td>
+                                            <td>{{worker_dict.lot}}</td>
+                                            <td>{{worker_dict.total_profit_worker}}$</td>
+                                            <td>{{worker_dict.total_profit}}$</td>
+                                            <td>{{worker_dict.total_money}}$</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+
+
                                 <tr class="table-active">
                                     <td scope="row">Total</td>
                                     <td></td>
@@ -171,6 +290,10 @@
                                     <td>{{context.workers_totals.total_profit}}$</td>
                                     <td>{{context.workers_totals.total_money}}$</td>
                                 </tr>
+
+                                
+                                
+                                    
                             </tbody>
                         </table>
                     </div>
@@ -179,57 +302,7 @@
             </div>
         </div>
     {% endif %}
-    {% if context.products_exists %}
-        <div class="display-4 text-center my-3">Por Producto</div>
-        <div class="container">
-            <div class="row justify-content-center text-center">
-                <div class="col">
-                    <div class="table-responsive">
-                        <table class="table table-dark  table-hover">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Info</th>
-                                    <th scope="col">Prod</th>
-                                    <th scope="col">Cant</th>
-                                    <th scope="col">Trab</th>
-                                    <th scope="col">Ganc</th>
-                                    <th scope="col">Impt</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="table-active">
-                                    <td scope="row">Ventas</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                {% for product in context.products.values %}
-                                    <tr class="table-success">
-                                        <td scope="row">{{product.name}}</td>
-                                        <td>{{product.name}}</td>
-                                        <td>{{product.lot}}</td>
-                                        <td>{{product.profit_worker}}$</td>
-                                        <td>{{product.profit}}$</td>
-                                        <td>{{product.money}}$</td>
-                                    </tr>
-                                {% endfor %}
-                                <tr class="table-active">
-                                    <td scope="row">Total</td>
-                                    <td></td>
-                                    <td>{{context.products_totals.total_lot}}</td>
-                                    <td>{{context.products_totals.total_profit_worker}}$</td>
-                                    <td>{{context.products_totals.total_profit}}$</td>
-                                    <td>{{context.products_totals.total_money}}$</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+
 {% else %}
         <div class="container text-center">
             <div class="h1">Sin Información</div>

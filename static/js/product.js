@@ -62,19 +62,45 @@ function VerifRefund(addr,product_id)
 function onPairAddUni()
 {
     pair_add_unit=document.getElementById("PairAddUni").checked;
-    
+    span=document.getElementById("SpanID")
     if (pair_add_unit)
     {
-        document.getElementById("divIdCantUni").removeAttribute("style");
-        document.getElementById("PairAddUnitInput").required=true;
-        document.getElementById("idPairLotInput").min=0;
+
+        span.innerHTML="Agregar Unidades";
 
     }
     else
     {
-        document.getElementById("divIdCantUni").setAttribute("style","display: none") ;
-        document.getElementById("PairAddUnitInput").required=false;
-        document.getElementById("idPairLotInput").min=1;
+
+        span.innerHTML="Agregar Pares";
     }
-    console.log(document.getElementById("PairAddUnitInput").min)
+}
+function onPairSellUni()
+{
+    pair_add_unit=document.getElementById("VentaPresId").checked;
+    span=document.getElementById("SpanID1")
+    if (pair_add_unit)
+    {
+
+        span.innerHTML="Vender Unidades";
+
+    }
+    else
+    {
+        span.innerHTML="Vender Pares";
+    }
+}
+function onPairSubUni()
+{
+    pair_add_unit=document.getElementById("VentaPresId").checked;
+    span=document.getElementById("SpanID2")
+    if (pair_add_unit)
+    {
+        span.innerHTML="Quitar Unidades";
+
+    }
+    else
+    {
+        span.innerHTML="Quitar Pares";
+    }
 }

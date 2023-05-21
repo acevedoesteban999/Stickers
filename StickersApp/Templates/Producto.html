@@ -75,8 +75,8 @@
                                     </div>
                                     
                                     <div class="row justify-content-center my-3">
-                                        {% if product.pair %}
-                                            <div class="col-12">
+                                        {% if product.pair == True or product.pair == None %}
+                                            <div class="col-auto">
                                                 <span class="h2">
                                                     {{product.pair_price}}$
                                                 </span>
@@ -86,7 +86,7 @@
                                                     </small>
                                                 </span>
                                             </div>
-                                            {% if user.is_admin or user.is_worker %}
+                                            {% comment %} {% if user.is_admin or user.is_worker %}
                                                 <div class="row justify-content-center">
                                                     
                                                     <div class="col-auto">
@@ -103,8 +103,7 @@
                                                         
                                                     </div>        
                                                             
-                                                    {% if product.unit_stored != 0 %}      
-                                                        
+                                                    {% if product.pair == None %} 
                                                         <div class="col-auto">
                                                             <div class="row justify-content-center">
                                                                 <div class="col-auto">
@@ -116,12 +115,13 @@
                                                                     </fieldset>
                                                                 </div>
                                                             </div>
-                                                        </div>                   
-                                                    {% endif %}
+                                                        </div>  
+                                                    {% endif %}                    
                                                 </div>
-                                            {% endif %}
-                                        {% else %}
-                                            <div class="col-12">
+                                            {% endif %} {% endcomment %}
+                                        {% endif %}
+                                        {% if product.pair == False or product.pair == None %}
+                                            <div class="col-auto">
                                                 <span class="h2">
                                                     {{product.unit_price}}$
                                                 </span>
@@ -131,7 +131,7 @@
                                                     </small>
                                                 </span>
                                             </div>
-                                            {% if user.is_admin or user.is_worker %}
+                                            {% comment %} {% if user.is_admin or user.is_worker %}
                                                 <div class="row justify-content-center">
                                                     <div class="col-auto">
                                                         <fieldset class="border px-3 my-3">
@@ -142,8 +142,41 @@
                                                         </fieldset>
                                                     </div>                   
                                                 </div>
-                                            {% endif %}
+                                            {% endif %} {% endcomment %}
                                         {% endif %}
+                                        {% if user.is_admin or user.is_worker %}
+                                                <div class="row justify-content-center">
+                                                    {% if product.pair == True or product.pair == None %}
+                                                    <div class="col-auto">
+                                                        <div class="row justify-content-center">
+                                                            <div class="col-auto">
+                                                                <fieldset class="border px-3 my-3">
+                                                                    <legend class="float-none w-auto h6 mx-auto">Pares Almacenados</legend>
+                                                                    <div class="h5">
+                                                                        {{product.pair_stored}}
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                    </div>        
+                                                    {% endif %}
+                                                    {% if product.pair == False or product.pair == None %}
+                                                        <div class="col-auto">
+                                                            <div class="row justify-content-center">
+                                                                <div class="col-auto">
+                                                                    <fieldset class="border px-3 my-3">
+                                                                        <legend class="float-none w-auto h6 mx-auto">Unidades Almacenadas</legend>
+                                                                        <div class="h5">
+                                                                            {{product.unit_stored}}
+                                                                        </div>
+                                                                    </fieldset>
+                                                                </div>
+                                                            </div>
+                                                        </div>  
+                                                    {% endif %}                    
+                                                </div>
+                                            {% endif %}
                                     <div class="col-12 text-break">
                                         <small class="text-muted">
                                             {{product.description}}
@@ -184,16 +217,26 @@
                                                 <hr>
                                                 <div class="row justify-content-around my-3">
                                                     <div class="col-6 text-start">
+                                                        <div class="h5">Tip de Venta:</div>
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        <div class="h5">Por {% if product.pair == True %}Pares{% elif product.pair == False %}Unidades {% else %}Pares y Unidades{% endif %}</div>
+                                                    </div>
+                                                    <div class="col-6 text-start">
                                                         <div class="h5">Categoría:</div>
                                                     </div>
                                                     <div class="col-6 text-end">
-                                                        <div class="h5">{{product.sub_category.category.name}}</div>
+                                                        <a class="link-dark" style=" text-decoration: none;" {% if user.is_admin %} href="{% url 'categoria' product.sub_category.category.id %}" {% endif %}>  
+                                                            <div class="h5">{{product.sub_category.category.name}}</div>
+                                                        </a>
                                                     </div>
                                                     <div class="col-6 text-start">
-                                                        <div class="h5">Sub Categoría:</div>
+                                                            <div class="h5">Sub Categoría:</div>
                                                     </div>
                                                     <div class="col-6 text-end">
-                                                        <div class="h5">{{product.sub_category.name}}</div>
+                                                        <a class="link-dark" style=" text-decoration: none;" {% if user.is_admin %} href="{% url 'subcategoria' product.sub_category.category.id product.sub_category.id %}" {% endif %}>  
+                                                            <div class="h5">{{product.sub_category.name}}</div>
+                                                        </a>
                                                     </div>
                                                     {% if product.color %}
                                                         <div class="col-6 text-start">
@@ -220,51 +263,62 @@
                                                             <thead>
                                                                 <tr>
                                                                     <th scope="col h3"></th>
-                                                                    {% if product.pair %}
+                                                                    {% if product.pair == True or product.pair == None %}
                                                                         <th scope="col  h3">Por Par</th>
                                                                     {% endif %}
-                                                                    <th scope="col h3">Por Unidad</th>
+                                                                    {% if product.pair == False or product.pair == None %}
+                                                                        <th scope="col h3">Por Unidad</th>
+                                                                    {% endif %}
                                                                 </tr>
                                                                 <tbody>
                                                                     <tr>
                                                                         <th scope="row h3">Precio</th>
-                                                                        {% if product.pair %}
+                                                                        {% if product.pair == True or product.pair == None %}
                                                                                 <td class="h3">{{product.pair_price}}$</td>
                                                                         {% endif %}
-                                                                        <td class="h3">{{product.unit_price}}$</td>
+                                                                        {% if product.pair == False or product.pair == None %}
+                                                                            <td class="h3">{{product.unit_price}}$</td>
+                                                                        {% endif %}
                                                                     </tr>
-                                                                    {% if user.is_admin %}  
+                                                                    {% comment %} {% if user.is_admin %}  
                                                                         <tr>
                                                                             <th scope="row h3">Precio de Compra</th>
-                                                                            {% if product.pair %}
+                                                                            {% if product.pair == True or product.pair == None %}
                                                                                 <td class="h3">-</td>
                                                                             {% endif %}
-                                                                            <td class="h3">{{product.purchase_price}}$</td>
-                                                                            
+                                                                            {% if product.pair == False or product.pair == None %}
+                                                                                <td class="h3">{{product.purchase_price}}$</td>
+                                                                            {% endif %}
                                                                         </tr>
-                                                                    {% endif %}
+                                                                    {% endif %} {% endcomment %}
                                                                     {% if user.is_admin %}  
                                                                         <tr>
                                                                             <th scope="row h3">Ganancia</th>
-                                                                            {% if product.pair %}
+                                                                            {% if product.pair == True or product.pair == None %}
                                                                                     <td class="h3">{{product.pair_profit}}$</td>
                                                                             {% endif %}
-                                                                            <td class="h3">{{product.unit_profit}}$</td>
+                                                                            {% if product.pair == False or product.pair == None %}
+                                                                                <td class="h3">{{product.unit_profit}}$</td>
+                                                                            {% endif %}
                                                                         </tr>
                                                                     {% endif %}
                                                                     <tr>
                                                                         <th scope="row h3">Pago a Trabajdor</th>
-                                                                        {% if product.pair %}
+                                                                        {% if product.pair == True or product.pair == None %}
                                                                                 <td class="h3">{{product.pair_profit_worker}}$</td>
                                                                         {% endif %}
-                                                                        <td class="h3">{{product.unit_profit_worker}}$</td>
+                                                                        {% if product.pair == False or product.pair == None %}
+                                                                            <td class="h3">{{product.unit_profit_worker}}$</td>
+                                                                        {% endif %}
                                                                     </tr>
                                                                     <tr>
                                                                         <th scope="row h3">Total Vendido</th>
-                                                                        {% if product.pair %}
+                                                                        {% if product.pair == True or product.pair == None %}
                                                                             <td class="h3">{{product.pair_sold}}</td>
                                                                         {% endif %}
-                                                                        <td class="h3">{{product.unit_sold}}</td>
+                                                                        {% if product.pair == False or product.pair == None %}
+                                                                            <td class="h3">{{product.unit_sold}}</td>
+                                                                        {% endif %}
                                                                     </tr>
                                                                     
                                                                 </tbody>
@@ -355,27 +409,27 @@
                                 
                                         <div class="row">
                                             <div class="input-group mb-3">
-                                                <span class="input-group-text">Agregar {% if product.pair %} Pares {% else %} Unidades {% endif %} </span>
+                                                <span id="SpanID" class="input-group-text">Agregar {% if product.pair == True or product.pair == None  %} Pares {% else %} Unidades {% endif %} </span>
                                                 <div class="form-floating">
                                                     <input required value="1" type="number" required min="1" name="cantidad" class="form-control" id="idPairLotInput" placeholder="Cantidad">
                                                     <label for="floatingInput">Cantidad de {{product.name}}</label>        
                                                 </div>
                                             </div>
                                         </div>
-                                        {% if product.pair %}
+                                        {% if product.pair == None %}
                                             <div class="form-check form-switch mb-3 m-1">
                                                 <input type="checkbox" class="form-check-input" id="PairAddUni" name="AccionPar" onchange="onPairAddUni()" >
                                                 <label class="form-check-label">                   
-                                                    Agregar Unidades
+                                                    Agregado por Unidades
                                                 </label>
-                                            </div>
-                                            <div class="input-group mb-3" id="divIdCantUni" style="display: none;">
+                                            </div> 
+                                            {% comment %} <div class="input-group mb-3" id="divIdCantUni">
                                                 <span class="input-group-text">Agregar Unidades</span>
                                                 <div class="form-floating">
                                                     <input required value="1"  type="number" min="1" name="cantidad_1" class="form-control" id="PairAddUnitInput" placeholder="Cantidad Unidades">
                                                     <label for="floatingInput">Cantidad de Unidades de {{product.name}}</label>        
                                                 </div>
-                                            </div>
+                                            </div> {% endcomment %}
                                         {% endif %}
                                         <div class="form-floating mb-3">
                                             <textarea  type="text" class="form-control" maxlength="100" name="nota" id="floatingInput" placeholder="Nota Adicional"  style="height: 100px;"></textarea >
@@ -449,10 +503,6 @@
                                             <input required value="{{product.purchase_price}}" min="1" type="number"  class="form-control"  name="precio compra"id="PrecioCompra" placeholder="Precio de Compra">
                                             <label for="floatingInput">Precio de Compra </label>
                                         </div>  
-                                        {% comment %} <div class="form-floating mb-3">
-                                            <input required type="text" maxlength="4" class="form-control" name="id" id="floatingInput" placeholder="Id" value="{{product.id}}">
-                                            <label for="floatingInput">Id</label>
-                                        </div> {% endcomment %}
                                         {% if product.pair %}
                                             <fieldset class="border p-2 m-1">
                                                 <legend  class="float-none w-auto">Por Pares</legend> 
@@ -564,22 +614,22 @@
                                     
                                             <div class="row">
                                                 <div class="input-group mb-3">
-                                                    <span class="input-group-text">Vender</span>
+                                                    <span id="SpanID1" class="input-group-text">Vender {% if product.pair == True or product.pair == None  %} Pares {% else %} Unidades {% endif %} </span>
                                                     <div class="form-floating">
-                                                        <input  required type="number"  oninput="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.pair_profit}}','{{product.pair_profit_worker}}','{{product.unit_price}}','{{product.unit_profit}}','{{product.unit_profit_worker}}')" value="1" min="1" max="{% if product.pair %}{{product.pair_stored}} {% else %}{{product.unit_stored}}{% endif %} " name="cantidad" class="form-control" id="idLotatChange" placeholder="Cantidad">
+                                                        <input  required type="number"   value="1" min="1" max="{% if product.pair %}{{product.pair_stored}} {% else %}{{product.unit_stored}}{% endif %} " name="cantidad" class="form-control" id="idLotatChange" placeholder="Cantidad">
                                                         
-                                                        {% if product.pair == True %} 
+                                                        {% comment %} {% if product.pair == True %} 
                                                             <input type="hidden" id="HiddenInptMaxMin"value="{{product.unit_stored}}">
-                                                        {% endif %}
+                                                        {% endif %} {% endcomment %}
                                                         <label for="floatingInput">Cantidad</label>       
                                                     </div>
                                                 </div>
                                             </div>
-                                            {% if product.pair %}
+                                            {% if product.pair == None %}
                                                 <div class="form-check form-switch mb-3 m-1">
-                                                    <input onclick="ChangeSellLot('{{product.pair}}','{{product.pair_price}}','{{product.pair_profit}}','{{product.pair_profit_worker}}','{{product.unit_price}}','{{product.unit_profit}}','{{product.unit_profit_worker}}')" id="VentaPresId" type="checkbox" class="form-check-input" name="AccionPar" checked >
+                                                    <input  id="VentaPresId" type="checkbox" onclick="onPairSellUni()" class="form-check-input" name="AccionPar" >
                                                     <label class="form-check-label">                   
-                                                        Venta por Pares
+                                                        Venta por Unidades
                                                     </label>
                                                 </div>
                                             {% endif %}    
@@ -686,21 +736,43 @@
                                         <form method="POST" action="">
                                             {% csrf_token %}
                                             <div class="modal-body">
-                                    
+                                                
+                                                {% comment %} <div class="row">
+                                                    <div class="input-group mb-3">
+                                                        <span id="SpanID1" class="input-group-text">Vender {% if product.pair == True or product.pair == None  %} Pares {% else %} Unidades {% endif %} </span>
+                                                        <div class="form-floating">
+                                                            <input  required type="number"   value="1" min="1" max="{% if product.pair %}{{product.pair_stored}} {% else %}{{product.unit_stored}}{% endif %} " name="cantidad" class="form-control" id="idLotatChange" placeholder="Cantidad">
+                                                            
+                                                            {% comment %} {% if product.pair == True %} 
+                                                                <input type="hidden" id="HiddenInptMaxMin"value="{{product.unit_stored}}">
+                                                            {% endif %} {% endcomment %}
+                                                            {% comment %} <label for="floatingInput">Cantidad</label>        {% endcomment %}
+                                                        {% comment %} </div>
+                                                    </div>
+                                                </div>
+                                                {% if product.pair == None %}
+                                                    <div class="form-check form-switch mb-3 m-1">
+                                                        <input  id="VentaPresId" type="checkbox" onclick="onPairSellUni()" class="form-check-input" name="AccionPar" >
+                                                        <label class="form-check-label">                   
+                                                            Venta por Unidades
+                                                        </label>
+                                                    </div>
+                                                {% endif %}     {% endcomment %} 
+
                                                 <div class="row">
                                                     <div class="input-group mb-3">
-                                                        <span class="input-group-text">Quitar</span>
+                                                        <span id="SpanID2" class="input-group-text">Quitar {% if product.pair == True or product.pair == None  %} Pares {% else %} Unidades {% endif %}</span>
                                                         <div class="form-floating">
                                                             <input required type="number" value="1" min="1" max="{% if product.pair %}{{product.pair_stored}} {% else %}{{product.unit_stored}}{% endif %}" name="cantidad" class="form-control" id="floatingInput" placeholder="Cantidad">
                                                             <label for="floatingInput">Cantidad</label>       
                                                         </div>
                                                     </div>
                                                 </div>  
-                                                {% if product.pair %}
+                                                {% if product.pair == None %}
                                                     <div class="form-check form-switch mb-3 m-1">
-                                                        <input type="checkbox" class="form-check-input" name="AccionPar" checked >
+                                                        <input type="checkbox" class="form-check-input" name="AccionPar" onclick="onPairSubUni()" >
                                                         <label class="form-check-label">                   
-                                                            Quitado por Pares
+                                                            Quitado por Unidades
                                                         </label>
                                                     </div>
                                                 {% endif %} 

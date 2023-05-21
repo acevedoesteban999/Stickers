@@ -48,7 +48,7 @@ class SubCategoryColor(models.Model):
 class Product(models.Model):
     #i_d=models.CharField(max_length=4)
     name=models.CharField(max_length=40, unique=True)
-    pair=models.BooleanField(default=False)
+    pair=models.BooleanField(default=False,null=True)
     purchase_price=models.IntegerField(default=0)
     unit_price=models.IntegerField(default=0)
     unit_profit=models.IntegerField(default=0)
@@ -114,40 +114,44 @@ class Movement(models.Model):
 
     @classmethod
     def Create_Product(cls,user,name,pair,unit_price,unit_profit,unit_profit_worker,pair_price,pair_profit,pair_profit_worker,description,image,subcategory,color,purchase_price):
-        if unit_price > 0  and unit_profit_worker >= 0  and unit_profit >= 0 :
-            if pair == True :
-                if pair_price > 0 and pair_profit >= 0 and pair_profit_worker >= 0 :
-                    pass
-                else:
-                    return False
-            product=Product(
-                name=name,
-                pair=pair,
-                unit_price=unit_price,
-                unit_profit=unit_profit,
-                unit_profit_worker=unit_profit_worker,
-                pair_price=pair_price,
-                pair_profit=pair_profit,
-                pair_profit_worker=pair_profit_worker,
-                description=description,
-                sub_category=subcategory,
-                purchase_price=purchase_price,
-                )
-            if color:
-                product.color=color
-            str_info="Nombre:{}<br>Por Pares:{}<br>{}{}<br>Category:{}<br>SubCategory:{}{}<br>Descripción:{}<br>Imagen:{}<br>".format(
-                name,
-                "Si" if pair else "No",
-                "Precio por Par:{}<br>Gannacia por Par:{}<br>Pago a Trabajador por Par:{}<br>".format(pair_price,pair_profit,pair_profit_worker) if pair else "",
-                "Precio por Unidad:{}<br>Ganancia por Unidad:{}<br>Pago a Trabajador por Unidad:{}".format(unit_price,unit_profit,unit_profit_worker),
-                subcategory.category.name,
-                subcategory.name,
-                "<br>Color:{}".format(color.name) if color else "",
-                "Si" if len(description.__str__()) > 0 else "No",
-                "Si" if image else "No",
-                
-                )
-            if product:
+        print(pair)
+        if pair == True or  pair == None:
+            if pair_price > 0 and pair_profit >= 0 and pair_profit_worker >= 0 :
+                pass
+            else:
+                return False
+        if pair == False or pair == None: 
+            if unit_price > 0  and unit_profit_worker >= 0  and unit_profit >= 0 :
+                pass
+            else:
+                return False
+        product=Product(
+            name=name,
+            pair=pair,
+            unit_price=unit_price,
+            unit_profit=unit_profit,
+            unit_profit_worker=unit_profit_worker,
+            pair_price=pair_price,
+            pair_profit=pair_profit,
+            pair_profit_worker=pair_profit_worker,
+            description=description,
+            sub_category=subcategory,
+            purchase_price=purchase_price,
+            )
+        if color:
+            product.color=color
+        str_info="Nombre:{}<br>{}{}<br>Category:{}<br>SubCategory:{}{}<br>Descripción:{}<br>Imagen:{}<br>".format(
+            name,
+            "Precio por Par:{}<br>Gannacia por Par:{}<br>Pago a Trabajador por Par:{}<br>".format(pair_price,pair_profit,pair_profit_worker) if pair  == True or pair == None else "",
+            "Precio por Unidad:{}<br>Ganancia por Unidad:{}<br>Pago a Trabajador por Unidad:{}".format(unit_price,unit_profit,unit_profit_worker) if pair  == False or pair == None else "",
+            subcategory.category.name,
+            subcategory.name,
+            "<br>Color:{}".format(color.name) if color else "",
+            "Si" if len(description.__str__()) > 0 else "No",
+            "Si" if image else "No",
+            
+            )
+        if product:
                 if image:
                     product.image=image
                 movement=cls(type="CP",product=product,extra_info_str=str_info,user=user)
@@ -229,7 +233,7 @@ class Movement(models.Model):
     def Remove(cls,user,product):
         product.removed = True
         product.description=product.name
-        product.name+="[_X_]"
+        product.name+="[XxX{}XxX]".format(product.id)
         movement=cls(type="RP",product=product,user=user)
         if movement:
             movement.save()
@@ -258,11 +262,12 @@ class Movement(models.Model):
                             return "OK0"
                         return True
                 return False
-            if product.pair and lot==1 and product.pair_stored > 0 :
-                product.unit_stored+=2
-                product.pair_stored-=1
-                return Movement.Unit_Sell(user=user,product=product,lot=1,note=note,bool_div_par=True)
-            return "E2"                    
+            if product.pair == None and product.pair_stored > 0 :
+                if lot==1:
+                    product.unit_stored+=2
+                    product.pair_stored-=1
+                    return Movement.Unit_Sell(user=user,product=product,lot=1,note=note,bool_div_par=True)
+                return "E2"                    
         return False
     @classmethod
     def Pair_Sell(cls,user,product,lot,note):
@@ -295,8 +300,8 @@ class Movement(models.Model):
             str_info+="Precio de Compra: {} editado a {}<br>".format(product.purchase_price,purchase_price)
             product.purchase_price=purchase_price
         
-        if product.pair:
-            if pair_price>0  and pair_profit_worker>0 and pair_profit>0:
+        if product.pair == True or  product.pair == None :
+            if pair_price > 0  and pair_profit_worker > 0 and pair_profit > 0:
                 if product.pair_price != pair_price:
                     str_info+="Precio por Par: {} editado a {}<br>".format(product.pair_price,pair_price)
                     product.pair_price=pair_price
@@ -310,16 +315,17 @@ class Movement(models.Model):
                 
             else:
                 return  False    
-        if unit_price>0  and unit_profit_worker>0:
-            if product.unit_price != unit_price:
-                str_info+="Precio por Unidad:{} editado a {}<br>".format(product.unit_price,unit_price)
-                product.unit_price=unit_price
-            if product.unit_profit != unit_profit:
-                str_info+="Ganancia por Unidad: {} editado a {}<br>".format(product.unit_profit,unit_profit)
-                product.unit_profit=unit_profit
-            if product.unit_profit_worker != unit_profit_worker:
-                str_info+="Pago a Trabajador por Unidad: {} editado a {}<br>".format(product.unit_profit_worker,unit_profit_worker)
-                product.unit_profit_worker=unit_profit_worker
+        if product.pair == False or  product.pair == None :
+            if unit_price > 0  and unit_profit_worker > 0 and unit_profit > 0:
+                if product.unit_price != unit_price:
+                    str_info+="Precio por Unidad:{} editado a {}<br>".format(product.unit_price,unit_price)
+                    product.unit_price=unit_price
+                if product.unit_profit != unit_profit:
+                    str_info+="Ganancia por Unidad: {} editado a {}<br>".format(product.unit_profit,unit_profit)
+                    product.unit_profit=unit_profit
+                if product.unit_profit_worker != unit_profit_worker:
+                    str_info+="Pago a Trabajador por Unidad: {} editado a {}<br>".format(product.unit_profit_worker,unit_profit_worker)
+                    product.unit_profit_worker=unit_profit_worker
            
            
             if image:
@@ -405,13 +411,14 @@ class Movement(models.Model):
             for product in products:
                 if purchase_price:
                     product.purchase_price=purchase_price
-                if unit_price:
-                    product.unit_price=unit_price
-                if unit_profit:
-                    product.unit_profit=unit_profit
-                if unit_profit_worker:
-                    product.unit_profit_worker=unit_profit_worker
-                if product.pair:
+                if product.pair == False or product.pair == None:
+                    if unit_price:
+                        product.unit_price=unit_price
+                    if unit_profit:
+                        product.unit_profit=unit_profit
+                    if unit_profit_worker:
+                        product.unit_profit_worker=unit_profit_worker
+                if product.pair == True or product.pair == None:
                     if pair_price:
                         product.pair_price=pair_price
                     if pair_profit:
@@ -425,15 +432,15 @@ class Movement(models.Model):
             print(e)
             return "E0"
     @classmethod
-    def Add(cls,user,product,lot,lot_1,pair_action,note):
-        if product and lot>0  :
+    def Add(cls,user,product,lot,pair_action,note):
+        if product and lot > 0  :
             extra_info_int=None
             if pair_action:
                 extra_info_int=1
                 movement=cls(type="EP",user=user,product=product,lot=lot)
-                if lot_1!=None and lot_1 > 0:
-                    extra_info_int=2
-                    movement.extra_info_int_1=lot_1
+                #if lot_1!=None and lot_1 > 0:
+                #    extra_info_int=2
+                #    movement.extra_info_int_1=lot_1
                 
             else:  
                 extra_info_int=0
@@ -453,18 +460,18 @@ class Movement(models.Model):
             if movement.product.confirm == False and movement.type=="EP" and movement.extra_info_bool==False:
                 
                 movement_confirm=None
-                if (movement.extra_info_int==1 or movement.extra_info_int==0 ) and movement.lot>0 :
+                if (movement.extra_info_int==1 or movement.extra_info_int==0 ) and movement.lot > 0 :
                     movement_confirm=cls(type="cP",user=user,extra_info_str=note,product=movement.product,lot=movement.lot,extra_info_int=movement.extra_info_int)
-                elif movement.extra_info_int==2 and movement.lot>0 and  movement.extra_info_int_1 > 0 :
-                    movement_confirm=cls(type="cP",user=user,extra_info_str=note,product=movement.product,lot=movement.lot,extra_info_int=movement.extra_info_int,extra_info_int_1=movement.extra_info_int_1)
+                #elif movement.extra_info_int==2 and movement.lot>0 and  movement.extra_info_int_1 > 0 :
+                #    movement_confirm=cls(type="cP",user=user,extra_info_str=note,product=movement.product,lot=movement.lot,extra_info_int=movement.extra_info_int,extra_info_int_1=movement.extra_info_int_1)
                 
                 if movement_confirm:
                     
                     if  movement.extra_info_int==1:
                         movement_confirm.product.pair_stored += movement.lot
-                    elif  movement.extra_info_int==2:
-                        movement_confirm.product.pair_stored += movement.lot
-                        movement_confirm.product.unit_stored += movement.extra_info_int_1
+                    #elif  movement.extra_info_int==2:
+                    #    movement_confirm.product.pair_stored += movement.lot
+                    #    movement_confirm.product.unit_stored += movement.extra_info_int_1
                     elif movement.extra_info_int==0:
                         movement_confirm.product.unit_stored += movement.lot
                     else:
@@ -479,19 +486,32 @@ class Movement(models.Model):
     @classmethod
     def Sub(cls,user,product,lot,note,pair):
         if product and lot > 0:
-            diff= product.pair_stored - lot
-            if diff >= 0:
-                product.pair_stored = diff
-                movement=cls(type="SP",user=user,extra_info_str=note,extra_info_bool=pair,product=product,lot=lot)
-                
-                if movement:
-                
-                    movement.save()
-                    product.save()
+            if product.pair==True or (product.pair==None and pair==True):
+                diff= product.pair_stored - lot
+                if diff >= 0:
+                    product.pair_stored = diff
+                    movement=cls(type="SP",user=user,extra_info_str=note,extra_info_bool=True,product=product,lot=lot)
                     
-                    return True
-                return False
-            return "E0"
+                    if movement:
+                    
+                        movement.save()
+                        product.save()
+                        
+                        return True
+                    return False
+                return "E0"
+            else:
+                diff= product.unit_stored - lot
+                if diff >= 0:
+                    product.unit_stored = diff
+                    movement=cls(type="SP",user=user,extra_info_str=note,extra_info_bool=False,product=product,lot=lot)
+                    if movement:
+                        movement.save()
+                        product.save()
+                        
+                        return True
+                    return False
+                return "E0" 
         return False
     @classmethod
     def Refund(cls,user,product,movement,note):

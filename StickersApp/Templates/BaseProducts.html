@@ -24,9 +24,9 @@
                             <div class="row justify-content-center  ">
                                 <div class="col-auto border-top border-dark py-2">
                                 
-                                    {% if product.pair %}
+                                {% if product.pair == True or product.pair == None %}
                                     <div class="h5 m-1 text-dark ">
-                                    {{product.pair_price}}$
+                                        {{product.pair_price}}$
                                     </div>
                                 {% else %}
                                     <div class="h5 m-1 text-dark ">

@@ -56,6 +56,10 @@ def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_
                                     default=0,
                                     filter=Q(type="VP"),
                                     ),
+                            refund_lot=Count(
+                                    "lot",
+                                    filter=Q(type="rP"),
+                                ),
                             refund_money=Sum(
                                     F('lot')* F('extra_info_int'),
                                     default=0,
@@ -132,10 +136,48 @@ def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_
                             context2['total_profit']+=product['extra_info_int_1']*product['lot'] 
                             context2['total_profit_worker']+=product['extra_info_int_2']*product['lot']
                             context2['total_lot']+=product['lot'] 
-                    context.update({"products":context1}) 
-                    context.update({"products_totals":context2}) 
-                    context.update({"products_exists":True})   
-            
+                            
+                    refund_products=movements.filter(type="rP").values(
+                    'product__name',
+                    'product__id',
+                    'lot',
+                    'extra_info_int',
+                    'extra_info_int_1',
+                    'extra_info_int_2',
+                    )
+                    if refund_products:
+                        context3={}
+                        for product in refund_products:
+                            if context3.get(product['product__id']):
+                                context3[product['product__id']]['lot']+=product['lot']
+                                context3[product['product__id']]['money']+=product['extra_info_int']*product['lot'] 
+                                context3[product['product__id']]['profit']+=product['extra_info_int_1']*product['lot'] 
+                                context3[product['product__id']]['profit_worker']+=product['extra_info_int_2']*product['lot'] 
+                                context2['total_money']-=product['extra_info_int']*product['lot'] 
+                                context2['total_profit']-=product['extra_info_int_1']*product['lot'] 
+                                context2['total_profit_worker']-=product['extra_info_int_2']*product['lot'] 
+                                context2['total_lot']-=product['lot'] 
+                            else:
+                                context3[product['product__id']]={
+                                    "name":product['product__name'],
+                                    "id":product['product__id'],
+                                    "lot":product['lot'],
+                                    "money":product['extra_info_int']*product['lot'],
+                                    'profit':product['extra_info_int_1']*product['lot'],
+                                    'profit_worker':product['extra_info_int_2']*product['lot'],
+                                    }
+                                context2['total_money']-=product['extra_info_int']*product['lot'] 
+                                context2['total_profit']-=product['extra_info_int_1']*product['lot'] 
+                                context2['total_profit_worker']-=product['extra_info_int_2']*product['lot']
+                                context2['total_lot']-=product['lot'] 
+                        context.update({"refund_products":context3})  
+                            
+                                
+                                
+                        context.update({"products":context1}) 
+                        context.update({"products_totals":context2}) 
+                        context.update({"products_exists":True})   
+                    
             if workers_bool == True:
                 q=Q(type="VP")
                 if only_worker!=False:
@@ -209,6 +251,83 @@ def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_
                             context2["total_profit"]+=product['extra_info_int_1'] *product['lot']
                             context2["total_profit_worker"]+=product['extra_info_int_2'] *product['lot']
                             context2["total_lot"]+=product['lot']
+                           
+                            q=Q(type="rP")
+                            if only_worker!=False:
+                                q=q&Q(user__id=only_worker)
+                            refund_worker_products=movements.filter(q).values(
+                                'id',
+                                'product__name',
+                                'product__id',
+                                'lot',
+                                'extra_info_int',
+                                'extra_info_int_1',
+                                'extra_info_int_2',
+                                'extra_info_bool',
+                                'user__username',
+                            )
+                            
+                    if refund_worker_products:
+                        context3={}
+                        for product in refund_worker_products:
+                            print("A")
+                            print(product)
+                            if context3.get(product['user__username']):
+                                if context3[product['user__username']]["products"].get(product['product__id']):
+                                    context3[product['user__username']]["products"][product['product__id']]['lot']+=product['lot']
+                                    context3[product['user__username']]["products"][product['product__id']]['money']+=product['extra_info_int']*product['lot']
+                                    context3[product['user__username']]["products"][product['product__id']]['profit']+=product['extra_info_int_1']*product['lot']
+                                    context3[product['user__username']]["products"][product['product__id']]['profit_worker']+=product['extra_info_int_2']*product['lot']
+                                    context3[product['user__username']]["total_money"]+=product['extra_info_int'] *product['lot']
+                                    context3[product['user__username']]["total_profit"]+=product['extra_info_int_1'] *product['lot']
+                                    context3[product['user__username']]["total_profit_worker"]+=product['extra_info_int_2'] *product['lot']
+                                    context3[product['user__username']]["total_lot"]+=product['lot']
+                                    context2["total_money"]-=product['extra_info_int'] *product['lot']
+                                    context2["total_profit"]-=product['extra_info_int_1'] *product['lot']
+                                    context2["total_profit_worker"]-=product['extra_info_int_2'] *product['lot']
+                                    context2["total_lot"]-=product['lot']
+                                else:
+                                    context3[product['user__username']]["products"][product['product__id']]={
+                                        "name":product['product__name'],
+                                        "id":product['product__id'],
+                                        "lot":product['lot'],
+                                        "money":product['extra_info_int'] *product['lot'] ,
+                                        "profit":product['extra_info_int_1'] *product['lot'] ,
+                                        "profit_worker":product['extra_info_int_2'] *product['lot'],
+                                    }
+                                    context3[product['user__username']]["total_money"]+=product['extra_info_int'] *product['lot']
+                                    context3[product['user__username']]["total_profit"]+=product['extra_info_int_1'] *product['lot']
+                                    context3[product['user__username']]["total_profit_worker"]+=product['extra_info_int_2'] *product['lot']
+                                    context3[product['user__username']]["total_lot"]+=product['lot']
+                                    context2["total_money"]-=product['extra_info_int'] *product['lot']
+                                    context2["total_profit"]-=product['extra_info_int_1'] *product['lot']
+                                    context2["total_profit_worker"]-=product['extra_info_int_2'] *product['lot']
+                                    context2["total_lot"]-=product['lot']
+                                    
+                            else:
+                                context3[product['user__username']]={
+                                    "products":{
+                                        product['product__id']:{
+                                            "name":product['product__name'],
+                                            "id":product['product__id'],
+                                            "lot":product['lot'],
+                                            "money":product['extra_info_int'] *product['lot'] ,
+                                            "profit":product['extra_info_int_1'] *product['lot'] ,
+                                            "profit_worker":product['extra_info_int_2'] *product['lot'] ,
+                                        }
+                                    },
+                                    "total_money":product['extra_info_int'] *product['lot'],
+                                    "total_profit":product['extra_info_int_1'] *product['lot'],
+                                    "total_profit_worker":product['extra_info_int_2'] *product['lot'],
+                                    "total_lot":product['lot'],
+                                }
+                                context2["total_money"]-=product['extra_info_int'] *product['lot']
+                                context2["total_profit"]-=product['extra_info_int_1'] *product['lot']
+                                context2["total_profit_worker"]-=product['extra_info_int_2'] *product['lot']
+                                context2["total_lot"]-=product['lot']
+                                
+                        context.update({"refund_worker_products":context3})
+
                     context.update({"workers":context1})
                     context.update({"workers_totals":context2}) 
                     context.update({"workers_exists":True})
@@ -216,53 +335,53 @@ def Summary(movements,days_bool=False,products_bool=False,final_bool=False,only_
             context={"final_money":0,"final_profit":0,"final_profit_worker":0}
         return context
     
-def create_product(request):
-    crear_form=request.POST.dict()
-    files=FormImg(request.POST,request.FILES)
-    files.is_valid()
-    image=files.cleaned_data.get("imagen")
-    #name=crear_form.get("name").__str__().capitalize()
-    name=crear_form.get("NombreAlmacenar").__str__().capitalize()
-    pair=crear_form.get("VentasPares")
-    if pair == "1":
-        pair=True
-    else:
-        pair=False
+# def create_product(request):
+#     crear_form=request.POST.dict()
+#     files=FormImg(request.POST,request.FILES)
+#     files.is_valid()
+#     image=files.cleaned_data.get("imagen")
+#     #name=crear_form.get("name").__str__().capitalize()
+#     name=crear_form.get("NombreAlmacenar").__str__().capitalize()
+#     pair=crear_form.get("VentasPares")
+#     if pair == "1":
+#         pair=True
+#     else:
+#         pair=False
     
-    unit_price=int(crear_form.get("precio unitario") )
-    unit_profit=int(crear_form.get("ganancia unitaria") )
-    unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
-    pair_price=0
-    pair_profit=0
-    pair_profit_worker=0
-    if pair == True:
-        pair_price=int(crear_form.get("precio pares"))
-        pair_profit=int(crear_form.get("ganancia pares") )
-        pair_profit_worker=int(crear_form.get("ganancia pares trabajador")) 
+#     unit_price=int(crear_form.get("precio unitario") )
+#     unit_profit=int(crear_form.get("ganancia unitaria") )
+#     unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
+#     pair_price=0
+#     pair_profit=0
+#     pair_profit_worker=0
+#     if pair == True:
+#         pair_price=int(crear_form.get("precio pares"))
+#         pair_profit=int(crear_form.get("ganancia pares") )
+#         pair_profit_worker=int(crear_form.get("ganancia pares trabajador")) 
     
-    color_id=crear_form.get("SelectColor")
-    if color_id and color_id!="NC":
-        color=SubCategoryColor.objects.get(id=color_id)
-    else:
-        color=None
-    description=crear_form.get("descripción")
-    purchase_price=int(crear_form.get("precio compra"))
-    subcategoryID=int(crear_form.get("subcategoryid"))
-    subcategory=SubCategory.objects.get(id=subcategoryID)
-    user=request.user
-    result=Movement.Create_Product(purchase_price=purchase_price,color=color,subcategory=subcategory,user=user,name=name,pair=pair,unit_price=unit_price,pair_profit=pair_profit,unit_profit=unit_profit,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker,description=description,image=image)
-    if result==True:
-        crear_form=FormProduc()
-        product=Product.objects.exclude(removed=True).get(name=name)
-        messages.success(request,"Se ha creado  el objeto {} correctamente".format(name))
-        #return redirect("/Producto/{}".format(product.id))
-        return redirect('producto',product.id)
-        #return True
-    elif result=="E0":
-        messages.error(request,"No se ha podido  crear, ya existe un objeto de nombre {}".format(name))
-    else:
-        messages.error(request,"No se ha podido  crear,ha ocurrido un error  insesperado")
-    return False
+#     color_id=crear_form.get("SelectColor")
+#     if color_id and color_id!="NC":
+#         color=SubCategoryColor.objects.get(id=color_id)
+#     else:
+#         color=None
+#     description=crear_form.get("descripción")
+#     purchase_price=int(crear_form.get("precio compra"))
+#     subcategoryID=int(crear_form.get("subcategoryid"))
+#     subcategory=SubCategory.objects.get(id=subcategoryID)
+#     user=request.user
+#     result=Movement.Create_Product(purchase_price=purchase_price,color=color,subcategory=subcategory,user=user,name=name,pair=pair,unit_price=unit_price,pair_profit=pair_profit,unit_profit=unit_profit,unit_profit_worker=unit_profit_worker,pair_price=pair_price,pair_profit_worker=pair_profit_worker,description=description,image=image)
+#     if result==True:
+#         crear_form=FormProduc()
+#         product=Product.objects.exclude(removed=True).get(name=name)
+#         messages.success(request,"Se ha creado  el objeto {} correctamente".format(name))
+#         #return redirect("/Producto/{}".format(product.id))
+#         return redirect('producto',product.id)
+#         #return True
+#     elif result=="E0":
+#         messages.error(request,"No se ha podido  crear, ya existe un objeto de nombre {}".format(name))
+#     else:
+#         messages.error(request,"No se ha podido  crear,ha ocurrido un error  insesperado")
+#     return False
 """
 View Functions
 """
@@ -463,7 +582,7 @@ def ResumeView(request):
             
             this_monday=today - timedelta(days=today.weekday())
             this_sunday=today + timedelta(days=6-today.weekday())
-            this_week=floor((this_sunday-summary_date.start_date).days/7)
+            this_week=ceil((this_sunday-summary_date.start_date).days/7)
             total_weeks=ceil((summary_date.end_date-summary_date.start_date).days/7)
             days_ok=(summary_date.end_date-today).days 
             context['context_this_week'].update({"start_date":this_monday.strftime("%d-%m-%y")})
@@ -655,16 +774,22 @@ def SubCategoriaView(request,categoryID,subcategoryID):
                 pair=crear_form.get("VentasPares")
                 if pair == "1":
                     pair=True
-                else:
+                elif pair == "0":
                     pair=False
-                
-                unit_price=int(crear_form.get("precio unitario") )
-                unit_profit=int(crear_form.get("ganancia unitaria") )
-                unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
+                else:
+                    pair=None
+                unit_price=0
+                unit_profit=0
+                unit_profit_worker=0
+                if pair == False or pair== None:
+                    unit_price=int(crear_form.get("precio unitario") )
+                    unit_profit=int(crear_form.get("ganancia unitaria") )
+                    unit_profit_worker=int(crear_form.get("ganancia unitaria trabajador") )
+                    
                 pair_price=0
                 pair_profit=0
                 pair_profit_worker=0
-                if pair == True:
+                if pair == True or pair == None:
                     pair_price=int(crear_form.get("precio pares"))
                     pair_profit=int(crear_form.get("ganancia pares") )
                     pair_profit_worker=int(crear_form.get("ganancia pares trabajador")) 
@@ -725,9 +850,9 @@ def SubCategoriaView(request,categoryID,subcategoryID):
         return render(request,"SubCategoria.html",{"replica":replica,"colors":colors,"category":category,"subcategory":subcategory,"products":products})
     except ObjectDoesNotExist:
         messages.error(request,"Error, categoría o subcategoría inexistente")
-    except Exception as e:
-        print(e)
-        messages.error(request,"Error, Algo ha salido mal")
+    #except Exception as e:
+    #    print(e)
+    #    messages.error(request,"Error, Algo ha salido mal")
     return redirect('home')
         
 def ProductoView(request,productoID):
@@ -771,10 +896,6 @@ def ProductoView(request,productoID):
                         global replica_id
                         replica_id=productoID
                         return redirect('subcategoria',product.sub_category.category.id,product.sub_category.id)
-                    if "CrearProducto" in request.POST:
-                        cp=create_product(request)
-                        if  cp != False:
-                            return cp
                     if "EditProduct" in request.POST:
                         edit_product=request.POST.dict()
                         files=FormImg(request.POST,request.FILES)
@@ -784,13 +905,17 @@ def ProductoView(request,productoID):
                         pair_price=None
                         pair_profit=None
                         pair_profit_worker=None
-                        if product.pair:
+                        unit_price=None
+                        unit_profit=None
+                        unit_profit_worker=None
+                        if product.pair == True or product.pair == None:
                             pair_price=int(edit_product.get("precio pares"))
                             pair_profit=int(edit_product.get("ganancia pares"))
                             pair_profit_worker=int(edit_product.get("ganancia pares trabajador"))
-                        unit_price=int(edit_product.get("precio unitario"))
-                        unit_profit=int(edit_product.get("ganancia unitario"))
-                        unit_profit_worker=int(edit_product.get("ganancia unitario trabajador"))
+                        if product.pair == False or product.pair == None:
+                            unit_price=int(edit_product.get("precio unitario"))
+                            unit_profit=int(edit_product.get("ganancia unitario"))
+                            unit_profit_worker=int(edit_product.get("ganancia unitario trabajador"))
                         description=edit_product.get("descripción")
                         purchase_price=int(edit_product.get("precio compra"))
                         color_id=edit_product.get("SelectColor")
@@ -817,20 +942,40 @@ def ProductoView(request,productoID):
                     elif "SellProduct" in request.POST:
                         sell_product=request.POST.dict()
                         lot_sell=int(sell_product.get("cantidad"))
-                        
-                        pair_action=sell_product.get("AccionPar")
+                        accion_par=None
+                        if product.pair==None:
+                            accion_par=sell_product.get("AccionPar")
+                            if accion_par:
+                                accion_par=False
+                            else:
+                                accion_par=True
                         note=sell_product.get("nota")
-                        if pair_action:
+                        
+                        if product.pair == True:
                             result=Movement.Pair_Sell(user=user,product=product,lot=lot_sell,note=note)
-                        else:
+                        elif product.pair == False:
                             result=Movement.Unit_Sell(user=user,product=product,lot=lot_sell,note=note)
+                        else:
+                            if accion_par == True:
+                                result=Movement.Pair_Sell(user=user,product=product,lot=lot_sell,note=note)
+                            else:
+                                result=Movement.Unit_Sell(user=user,product=product,lot=lot_sell,note=note)
                         
                         if result == True or result=="OK0":
-                            return SuccessProduct("Se han vendido {} {} {} {},con un importe de {}$".format(lot_sell,"pares de" if pair_action  else "unidades de",product.name,", se ha descontado una unidad de un lote par " if result=="OK0" else "",product.pair_price*lot_sell if pair_action  else product.unit_price*lot_sell),no_redirect='home')
+                            return SuccessProduct(
+                                "Se han vendido {} {} {} {},con un importe de {}$".format(
+                                    lot_sell,
+                                    "pares de" if product.pair == True or (product.pair==None and accion_par == True)  else "unidades de",
+                                    product.name,
+                                    ", se ha descontado una unidad de un lote par " if result=="OK0" else "",
+                                    product.pair_price*lot_sell if product.pair == True or (product.pair==None and accion_par == True)  else product.unit_price*lot_sell,
+                                ),
+                                #no_redirect='home',
+                                )
                         elif result == 'E2':
                             return ErrorProduct("No se ha podido vender {} productos, solo se admite vender 1 unidad cuando ya no exsisten unidades por separado, esta unidad sera descontada de un par".format(lot_sell))
                         elif result == 'E0':
-                            return ErrorProduct("No se ha podido vender {} {}, solo quedan {} productos almacenados".format(lot_sell,product.name,product.pair_stored.__str__() +" pares de" if pair_action  else product.unit_stored.__str__() +" unidades de"))       
+                            return ErrorProduct("No se ha podido vender {} {}, solo quedan {} de productos almacenados".format(lot_sell,product.name,(product.pair_stored.__str__() +" pares") if product.pair == True or (product.pair==None and accion_par == True)   else product.unit_stored.__str__() +" unidades"))       
                     #Form Eliminar
                     elif "RemoveProduct" in request.POST:
                         name=product.name
@@ -841,20 +986,29 @@ def ProductoView(request,productoID):
                     elif "AddProduct" in request.POST:
                         add_product=request.POST.dict()
                         lot_add=int(add_product.get("cantidad"))
-                        lot_add_1=None
-                        if product.pair:
-                            unit_action=add_product.get("AccionPar")
-                            pair_action=True
-                            if unit_action:
-                                lot_add_1=int(add_product.get("cantidad_1"))
-                                if lot_add==0:
-                                    pair_action=False
-                                    lot_add=lot_add_1
-                        else:             
-                            pair_action=False
+                        pair_action=None
+                        pair_action=product.pair
+                        if product.pair == None:
+                            pair_action=add_product.get("AccionPar")
+                            if pair_action:
+                                pair_action=True
+                            else:
+                                pair_action=False
+                            # =True
+                            # if unit_action:
+                            #     lot_add_1=int(add_product.get("cantidad_1"))
+                            #     if lot_add==0:
+                            #         pair_action=False
+                            #         lot_add=lot_add_1
+                        #else:             
+                        #    pair_action=False
                         note=add_product.get("nota")
-                        if Movement.Add(user=user,product=product,lot=lot_add,pair_action=pair_action,lot_1=lot_add_1,note=note):
-                            return SuccessProduct("Se ha agregado {} {} {} {}, esperando a ser confirmado".format(lot_add ,"pares" if pair_action==True else "unidades",(" + " + lot_add_1.__str__()+" unidades de") if pair_action==True and lot_add_1!=None and lot_add_1>0  else "de" ,product.name))
+                        if Movement.Add(user=user,product=product,lot=lot_add,pair_action=pair_action,note=note):
+                            return SuccessProduct("Se ha agregado {} {} {} , esperando a ser confirmado".format(
+                                lot_add ,
+                                "pares" if pair_action==True else "unidades",
+                                " de " + product.name)
+                                )
                         return ErrorProduct("No se han podido insertar {} {}".format(lot_add,product.name))
                     #Form Confirmar Agregar
                     elif "ConfirmAddProduct" in request.POST:
@@ -880,12 +1034,18 @@ def ProductoView(request,productoID):
                     elif "SubProduct" in request.POST:
                         sub_product=request.POST.dict()
                         lot_sub=int(sub_product.get("cantidad"))
-                        
-                        pair_action=sub_product.get("AccionPar")
+                        accion_par=None
+                        if product.pair==None:
+                            accion_par=sub_product.get("AccionPar")
+                            if accion_par:
+                                accion_par=False
+                            else:
+                                accion_par=True
+                        #pair_action=sub_product.get("AccionPar")
                         note=sub_product.get("nota")
-                        result=Movement.Sub(user=user,product=product,lot=lot_sub,note=note,pair=True if pair_action else False)
+                        result=Movement.Sub(user=user,product=product,lot=lot_sub,note=note,pair=accion_par)
                         if result == True:
-                            return SuccessProduct("Se han quitado {} {} {} correctamente".format(lot_sub,"Pares de " if pair_action else "Unidades de",product.name))
+                            return SuccessProduct("Se han quitado {} {} {} correctamente".format(lot_sub,"Pares de " if product.pair==True or (product.pair==None and accion_par==True) else "Unidades de",product.name))
                         elif result == "E0":
                             return ErrorProduct("No se han podido quitar {} {}".format(lot_sub,product.name))
                     #Form Reembolsar
@@ -915,9 +1075,9 @@ def ProductoView(request,productoID):
             return redirect('home') 
     except ObjectDoesNotExist:
         messages.error(request,"Error, producto inexistente")
-    except Exception as e:
-        print(e)
-        messages.error(request,"Error, Algo ha salido mal:{}".format(e))  
+    #except Exception as e:
+    #    print(e)
+    #    messages.error(request,"Error, Algo ha salido mal:{}".format(e))  
     return redirect('administracion')        
 
 def OperacionesView(request):
